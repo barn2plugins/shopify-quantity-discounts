@@ -130,7 +130,7 @@ export default function Index() {
                 <Text variant="headingLg" as="h4">
                   Discount bundles
                 </Text>
-                <Button variant="primary" url="/app/discount">New discount</Button>
+                <Button variant="primary" url="/app/discount/create">New discount</Button>
               </InlineStack>
               <LegacyCard>
                 <IndexTable
