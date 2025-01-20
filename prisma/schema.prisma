@@ -14,28 +14,29 @@ datasource db {
 }
 
 model Session {
-  id            String    @id
-  shop          String
-  state         String
-  isOnline      Boolean   @default(false)
-  scope         String?
-  expires       DateTime?
-  accessToken   String
-  userId        BigInt?
-  firstName     String?
-  lastName      String?
-  email         String?
-  accountOwner  Boolean   @default(false)
-  locale        String?
-  collaborator  Boolean?  @default(false)
-  emailVerified Boolean?  @default(false)
-  discounts     Discount[]
+  id              String    @id
+  shop            String
+  state           String
+  isOnline        Boolean   @default(false)
+  scope           String?
+  expires         DateTime?
+  accessToken     String
+  userId          BigInt?
+  firstName       String?
+  lastName        String?
+  email           String?
+  accountOwner    Boolean   @default(false)
+  locale          String?
+  collaborator    Boolean?  @default(false)
+  emailVerified   Boolean?  @default(false)
+  discountBundles DiscountBundle[]
 }
 
-model Discount {
+model DiscountBundle {
   id              Int   @id @default(autoincrement())
   sessionId       String
   session         Session  @relation(fields: [sessionId], references: [id])
+  active          Boolean
   previewEnabled  Boolean
   discountType    String
   whichProducts   String
