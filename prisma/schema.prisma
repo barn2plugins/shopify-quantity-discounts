@@ -14,22 +14,45 @@ datasource db {
 }
 
 model Session {
-  id              String    @id
-  shop            String
-  state           String
-  isOnline        Boolean   @default(false)
-  scope           String?
-  expires         DateTime?
-  accessToken     String
-  userId          BigInt?
-  firstName       String?
-  lastName        String?
-  email           String?
-  accountOwner    Boolean   @default(false)
-  locale          String?
-  collaborator    Boolean?  @default(false)
-  emailVerified   Boolean?  @default(false)
-  discountBundles DiscountBundle[]
+  id                              String    @id
+  shop                            String
+  storeName                       String?
+  state                           String
+  isOnline                        Boolean   @default(false)
+  scope                           String?
+  expires                         DateTime?
+  accessToken                     String
+
+  // User Information
+  userId                          String?
+  firstName                       String?
+  lastName                        String?
+  email                           String?
+  url                             String?
+  shopOwnerName                   String?
+  accountOwner                    Boolean   @default(false)
+  locale                          String?
+  collaborator                    Boolean?  @default(false)
+  emailVerified                   Boolean?  @default(false)
+
+  // Shop Information
+  currency                        String?
+  timezone                        String?
+  planDisplayName                 String?
+  isPartnerDevelopment            Boolean?  @default(false)
+  isShopifyPlus                   Boolean?  @default(false)
+
+  // Money Formats
+  moneyFormat                     String?
+  moneyInEmailsFormat             String?
+  moneyWithCurrencyFormat         String?
+  moneyWithCurrencyInEmailsFormat String?
+
+  // API Support
+  checkoutApiSupported            Boolean?  @default(false)
+
+  // Relations
+  discountBundles                 DiscountBundle[]
 }
 
 model DiscountBundle {
@@ -41,7 +64,7 @@ model DiscountBundle {
   priority        Int   @default(0)
   active          Boolean
   sessionId       String
-  session         Session  @relation(fields: [sessionId], references: [id])
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
