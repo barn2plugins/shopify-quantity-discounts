@@ -2,6 +2,7 @@
 import {
   Page,
   RadioButton,
+  TextField,
   Button,
   Tooltip,
   Layout,
@@ -17,7 +18,6 @@ import {
   BookIcon,
   CashPoundIcon,
   QuestionCircleIcon,
-  FileIcon,
 } from '@shopify/polaris-icons';
 import { json } from "@remix-run/node";
 import { useState, useEffect } from "react";
@@ -45,7 +45,6 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const discountData = Object.fromEntries(formData);
   let discountBundle = {};
-  console.log(discountData);
   
   if ( (discountData.intent && discountData.intent === 'update') || !discountData.active ) {
     discountBundle = await prisma.discountBundle.update({
@@ -53,7 +52,8 @@ export const action = async ({ request }) => {
         id: parseInt(discountData.discountBundleId)
       },
       data: {
-        discountType: discountData.discountType,
+        type: discountData.discountType,
+        name: discountData.discountName,
         whichProducts: discountData.whichProducts,
         previewEnabled: discountData.preview ? true : false,
         active: discountData.active ? true : false,
@@ -62,7 +62,8 @@ export const action = async ({ request }) => {
   } else {
     discountBundle = await prisma.discountBundle.create({
       data: {
-        discountType: discountData.discountType,
+        name: discountData.discountName,
+        type: discountData.discountType,
         whichProducts: discountData.whichProducts,
         previewEnabled: discountData.preview ? true : false,
         active: discountData.active ? true : false,
@@ -121,6 +122,17 @@ export default function DiscountPage() {
             <Layout.Section>
               <Card>
                 <BlockStack gap={600}>
+                    <BlockStack gap={200}>
+                        <Text as="p" variant="bodyLg" fontWeight="medium">Discount type</Text>
+                        <TextField
+                          label="Discount name"
+                          labelHidden
+                          name="discountName"
+                          value={formState?.discountName}
+                          onChange={(value) => setFormState({...formState, discountName: value})}
+                          autoComplete="off"
+                        />
+                    </BlockStack>
                     <BlockStack gap={200}>
                       <InlineStack blockAlign="center" gap={100}>
                         <Text as="p" variant="bodyLg" fontWeight="medium">Discount type</Text>

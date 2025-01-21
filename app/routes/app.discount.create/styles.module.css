@@ -1,9 +1,33 @@
-.toggle input[type=checkbox]{
-	height: 0;
-	width: 0;
-	visibility: hidden;
-    position: absolute;
-    left: -10000px;
+@media screen and (min-width: 1200px) {
+    .pageWrapper {
+        padding:  0px 15em;
+    }
+}
+
+@media screen and (min-width: 1000px) and (max-width: 1199px) {
+    .pageWrapper {
+        padding:  0px 6em;
+    }
+}
+
+@media screen and (max-width: 999px) {
+    .pageWrapper {
+        padding: 0px;
+    }
+}
+.checkboxWrapper label:hover {
+    cursor: pointer;
+}
+.checkboxWrapper input[type=radio] {
+    display: none;
+}
+
+.toggle input[type=checkbox] {
+	height: 0 !important;
+	width: 0 !important;
+	visibility: hidden !important;
+    position: absolute !important;
+    left: -10000px !important;
 }
 
 .toggle label {
