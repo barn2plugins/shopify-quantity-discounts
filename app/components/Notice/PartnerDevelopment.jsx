@@ -3,7 +3,8 @@ export default function PartnerDevelopment() {
     const styles = {
         backgroundColor: 'rgb(254 252 232 / var(--tw-bg-opacity, 1))',
         padding: '.75rem',
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: '20px'
     }
 
     return (
