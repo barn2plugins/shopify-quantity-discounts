@@ -9,7 +9,6 @@ import {
 
 // Internal components and libraries
 import DataCard from "./DataCard";
-
 export default function DiscountStatistics({statisticsData}) {
   
   return (

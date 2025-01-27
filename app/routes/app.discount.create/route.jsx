@@ -39,7 +39,7 @@ export const loader = async ({ request }) => {
     discountType: 'volume_bundle',
     whichProducts: 'all_products',
     preview: true,
-    enabled: false
+    active: false
   }
   return settings
 };
@@ -49,7 +49,6 @@ export const action = async ({ request }) => {
 
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
-  console.log(fetcherData);
    
   // Load products from merchants store
   if ( fetcherData.intent === 'loadProducts' ) {
@@ -104,10 +103,9 @@ export default function DiscountPage() {
   const createDiscountBundle = () => {
     const formData = {
       ...formState,
+      active: true,
       intent: discountBundleId !== undefined ? 'update' : 'create'
     }
-    console.log('formData');
-    console.log(formData);
     
     fetcher.submit(formData, { method: "POST" })
   };
