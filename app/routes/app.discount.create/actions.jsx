@@ -40,6 +40,36 @@ export const fetchProducts = async (admin) => {
     return responseJson;
 }
 
+export const fetchCollections = async (admin) => {
+  const response = await admin.graphql(
+      `#graphql
+        query {
+          collections(first: 30) {
+            edges {
+              node {
+                id
+                title
+                handle
+                productsCount {
+                  count
+                }
+                image {
+                  url
+                }
+              }
+              cursor
+            }
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }`
+  );
+  
+  const responseJson = await response.json();
+  return responseJson;
+}
+
 export const saveDiscounts = async () => {
     console.log('fetchProducts');
 }

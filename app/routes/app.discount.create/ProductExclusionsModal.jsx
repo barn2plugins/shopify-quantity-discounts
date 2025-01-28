@@ -13,8 +13,8 @@ import { useState, useEffect } from "react";
 
 export default function ProductExclusionsModal({ 
   fetcher, 
-  selectedProducts, 
-  setSelectedProducts, 
+  excludedProducts, 
+  setExcludedProducts, 
 }) {
 
   const [ productSearchQuery, setProductSearchQuery ] = useState('');
@@ -55,14 +55,10 @@ export default function ProductExclusionsModal({
   const loadProducts = () => {
     // Set the loader
     setProductsLoading(true);
-    // Empty the pre-existing and selected products
-    setStoreProducts([]);
-    setSelectedProducts([]);
 
     // Submit the form to load products
     fetcher.submit({
-      intent: 'loadProducts',
-      test: 'wow',
+      intent: 'loadProducts'
     }, { method: "POST" })
   }
 
@@ -84,15 +80,15 @@ export default function ProductExclusionsModal({
   }, [fetchedProducts])
 
   return (
-    <Modal id="my-modal" variant="base" onShow={loadProducts}>
+    <Modal id="exclude-products-modal" variant="base" onShow={loadProducts}>
       <TitleBar title="Select products"></TitleBar>
       <div style={{ maxHeight: '600px' }}>
         <ResourceList
           resourceName={resourceName}
           items={storeProducts}
           renderItem={renderItem}
-          selectedItems={selectedProducts}
-          onSelectionChange={setSelectedProducts}
+          selectedItems={excludedProducts}
+          onSelectionChange={setExcludedProducts}
           promotedBulkActions={promotedBulkActions}
           filterControl={
             <Filters

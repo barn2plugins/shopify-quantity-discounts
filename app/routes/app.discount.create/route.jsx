@@ -13,6 +13,7 @@ import {
   BlockStack,
   InlineStack,
   Box,
+  ButtonGroup,
 } from "@shopify/polaris";
 import {
   BookIcon,
@@ -27,8 +28,11 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import styles from "./styles.module.css";
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
-import { fetchProducts, updateDiscount, createDiscountBundle } from "./actions";
+import { fetchProducts, fetchCollections, updateDiscount, createDiscountBundle } from "./actions";
+import ProductSelectorModal from "./ProductSelectorModal";
+import CollectionSelectorModal from "./CollectionSelectorModal";
 import ProductExclusionsModal from "./ProductExclusionsModal";
+import CollectionExclusionsModal from "./CollectionExclusionsModal";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
@@ -59,6 +63,16 @@ export const action = async ({ request }) => {
       return { success: false, error: "Failed to fetch products" };
     }
   }
+ 
+  // Load collections from merchants store
+  if ( fetcherData.intent === 'loadCollections' ) {
+    try {
+      const { data: { collections: { edges } } } = await fetchCollections(admin);
+      return { success: true, collections: edges };
+    } catch (error) {
+      return { success: false, error: "Failed to fetch collections" };
+    }
+  }
 
   // Create or update discount bundle
   if ( fetcherData.intent === 'create' || fetcherData.intent === 'update' ) {
@@ -85,6 +99,10 @@ export default function DiscountPage() {
   const settings = useLoaderData();
   
   const [ formState, setFormState ] = useState(settings);
+  const [ selectedProducts, setSelectedProducts ] = useState([]);
+  const [ selectedCollections, setSelectedCollections ] = useState([]);
+  const [ excludedProducts, setExcludedProducts ] = useState([]);
+  const [ excludedCollections, setExcludedCollections ] = useState([]);
 
   const isLoading = ["loading", "submitting"].includes(fetcher.state) 
     && fetcher.formMethod === "POST" 
@@ -110,7 +128,37 @@ export default function DiscountPage() {
     fetcher.submit(formData, { method: "POST" })
   };
 
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const selectedProductsBtnLabel = () => {
+    if ( selectedProducts.length === 0 ) {
+      return 'Select products';
+    } else {
+      return `Select products (${selectedProducts.length} selected)`;
+    }
+  }
+
+  const selectedCollectionsBtnLabel = () => {
+    if ( selectedCollections.length === 0 ) {
+      return 'Select collections';
+    } else {
+      return `Select collections (${selectedCollections.length} selected)`;
+    }
+  }
+
+  const excludeProductsBtnLabel = () => {
+    if ( excludedProducts.length === 0 ) {
+      return 'Exclude products';
+    } else {
+      return `Exclude products (${excludedProducts.length} selected)`;
+    }
+  }
+
+  const excludeCollectionsBtnLabel = () => {
+    if ( excludedCollections.length === 0 ) {
+      return 'Exclude collections';
+    } else {
+      return `Exclude collections (${excludedCollections.length} selected)`;
+    }
+  }
 
   return (
     <div className={styles.pageWrapper}>
@@ -210,46 +258,65 @@ export default function DiscountPage() {
                         </Grid.Cell>
                       </Grid>
                     </BlockStack>
-                    <BlockStack gap={200}>
-                      <Text as="p" variant="bodyLg" fontWeight="medium">Which products?</Text>
-                      <BlockStack>
-                        <RadioButton
-                          id="all_products"
-                          label="All products"
-                          checked={formState?.whichProducts === 'all_products' ? true : false}
-                          name="whichProducts"
-                          value="all_products"
-                          onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
-                        />
-                        <RadioButton
-                          id="all_products_except_selected"
-                          label="All products except selected"
-                          checked={formState?.whichProducts === 'all_products_except_selected' ? true : false}
-                          name="whichProducts"
-                          value="all_products_except_selected"
-                          onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
-                        />
-                        <RadioButton
-                          id="selected_products"
-                          label="Selected products"
-                          checked={formState?.whichProducts === 'selected_products' ? true : false}
-                          name="whichProducts"
-                          value="selected_products"
-                          onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
-                        />
-                        <RadioButton
-                          id="selected_collections"
-                          label="Selected collections"
-                          checked={formState?.whichProducts === 'selected_collections' ? true : false}
-                          name="whichProducts"
-                          value="selected_collections"
-                          onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
-                        />
-                      </BlockStack>
-                      { formState.whichProducts === 'all_products_except_selected' && (
-                        <BlockStack onClick={() => shopify.modal.show('my-modal')}>
-                          <Button variant="primary">Exclude products or collections</Button>
+                    <BlockStack gap={400}>
+                      <BlockStack gap={200}>
+                        <Text as="p" variant="bodyLg" fontWeight="medium">Which products?</Text>
+                        <BlockStack>
+                          <RadioButton
+                            id="all_products"
+                            label="All products"
+                            checked={formState?.whichProducts === 'all_products' ? true : false}
+                            name="whichProducts"
+                            value="all_products"
+                            onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
+                          />
+                          <RadioButton
+                            id="all_products_except_selected"
+                            label="All products except selected"
+                            checked={formState?.whichProducts === 'all_products_except_selected' ? true : false}
+                            name="whichProducts"
+                            value="all_products_except_selected"
+                            onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
+                          />
+                          <RadioButton
+                            id="selected_products"
+                            label="Selected products"
+                            checked={formState?.whichProducts === 'selected_products' ? true : false}
+                            name="whichProducts"
+                            value="selected_products"
+                            onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
+                          />
+                          <RadioButton
+                            id="selected_collections"
+                            label="Selected collections"
+                            checked={formState?.whichProducts === 'selected_collections' ? true : false}
+                            name="whichProducts"
+                            value="selected_collections"
+                            onChange={(checked, value) => setFormState({...formState, whichProducts: value})}
+                          />
                         </BlockStack>
+                      </BlockStack>
+
+                      { formState.whichProducts === 'all_products_except_selected' && (
+                          <BlockStack>
+                            <ButtonGroup>
+                              <Button variant="primary" onClick={() => shopify.modal.show('exclude-products-modal')}>{excludeProductsBtnLabel()}</Button>
+                              <Button variant="primary" onClick={() => shopify.modal.show('exclude-collections-modal')}>{excludeCollectionsBtnLabel()}</Button>
+                            </ButtonGroup>
+                          </BlockStack>
+                      ) }
+                      { formState.whichProducts === 'selected_products' && (
+                          <InlineStack>
+                            <Button variant="primary" onClick={() => shopify.modal.show('select-products-modal')}>{selectedProductsBtnLabel()}</Button>
+                          </InlineStack>
+                      ) }
+                      { formState.whichProducts === 'selected_collections' && (
+                          <InlineStack>
+                            <ButtonGroup>
+                              <Button variant="primary" onClick={() => shopify.modal.show('select-collections-modal')}>{selectedCollectionsBtnLabel()}</Button>
+                              <Button variant="primary" onClick={() => shopify.modal.show('exclude-products-modal')}>{excludeProductsBtnLabel()}</Button>
+                            </ButtonGroup>
+                          </InlineStack>
                       ) }
                     </BlockStack>
                 </BlockStack>
@@ -277,10 +344,25 @@ export default function DiscountPage() {
             </Layout.Section>
           </Layout>
         </Page>
-        
-        <ProductExclusionsModal
+
+        <ProductSelectorModal
           selectedProducts={selectedProducts}
           setSelectedProducts={setSelectedProducts}
+          fetcher={fetcher}
+        />
+        <CollectionSelectorModal
+          selectedCollections={selectedCollections}
+          setSelectedCollections={setSelectedCollections}
+          fetcher={fetcher}
+        />
+        <ProductExclusionsModal
+          excludedProducts={excludedProducts}
+          setExcludedProducts={setExcludedProducts}
+          fetcher={fetcher}
+        />
+        <CollectionExclusionsModal
+          excludedCollections={excludedCollections}
+          setExcludedCollections={setExcludedCollections}
           fetcher={fetcher}
         />
 
