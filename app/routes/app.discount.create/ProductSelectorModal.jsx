@@ -87,8 +87,13 @@ import {
             resourceName={resourceName}
             items={storeProducts}
             renderItem={renderItem}
-            selectedItems={selectedProducts}
-            onSelectionChange={setSelectedProducts}
+            selectedItems={selectedProducts.map(item => item.id)}
+            onSelectionChange={(selectedIds) => {
+              const selectedItems = storeProducts.filter(item => 
+                selectedIds.includes(item.id)
+              );
+              setSelectedProducts(selectedItems);
+            }}
             promotedBulkActions={promotedBulkActions}
             filterControl={
               <Filters

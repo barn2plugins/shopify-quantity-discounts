@@ -88,8 +88,13 @@ import {
             resourceName={resourceName}
             items={storeCollections}
             renderItem={renderItem}
-            selectedItems={excludedCollections}
-            onSelectionChange={setExcludedCollections}
+            selectedItems={excludedCollections.map(item => item.id)}
+            onSelectionChange={(selectedIds) => {
+              const selectedItems = storeCollections.filter(item =>
+                selectedIds.includes(item.id)
+              );
+              setExcludedCollections(selectedItems);
+            }}
             promotedBulkActions={promotedBulkActions}
             filterControl={
               <Filters

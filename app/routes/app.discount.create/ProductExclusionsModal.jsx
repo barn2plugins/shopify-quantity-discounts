@@ -87,8 +87,13 @@ export default function ProductExclusionsModal({
           resourceName={resourceName}
           items={storeProducts}
           renderItem={renderItem}
-          selectedItems={excludedProducts}
-          onSelectionChange={setExcludedProducts}
+          selectedItems={excludedProducts.map(item => item.id)}
+          onSelectionChange={(selectedIds) => {
+            const selectedItems = storeProducts.filter(item =>
+              selectedIds.includes(item.id)
+            );
+            setExcludedProducts(selectedItems);
+          }}
           promotedBulkActions={promotedBulkActions}
           filterControl={
             <Filters
