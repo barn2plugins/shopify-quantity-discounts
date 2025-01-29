@@ -56,15 +56,19 @@ model Session {
 }
 
 model DiscountBundle {
-  id              Int   @id @default(autoincrement())
-  name            String
-  type            String
-  previewEnabled  Boolean
-  whichProducts   String
-  priority        Int   @default(0)
-  active          Boolean
-  sessionId       String
-  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                    Int       @id @default(autoincrement())
+  name                  String
+  type                  String
+  previewEnabled        Boolean
+  whichProducts         String
+  priority              Int       @default(0)
+  active                Boolean
+  sessionId             String
+  session               Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  selectedProducts      String?
+  selectedCollections   String?
+  excludedProducts      String?
+  excludedCollections   String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }

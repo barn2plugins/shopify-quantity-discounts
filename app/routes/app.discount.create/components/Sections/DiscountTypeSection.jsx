@@ -1,6 +1,6 @@
 import { BlockStack, InlineStack, Text, Tooltip, Icon, Grid, Card, Box } from "@shopify/polaris";
 import { BookIcon, CashPoundIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
-import styles from "../styles.module.css";
+import styles from "../../styles.module.css";
 
 export default function DiscountTypeSection({ formState, setFormState }) {
   return (

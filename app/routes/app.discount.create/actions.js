@@ -17,12 +17,16 @@ export const actions = {
         whichProducts: fetcherData.whichProducts,
         previewEnabled: fetcherData.preview ? true : false,
         active: fetcherData.active ? true : false,
-        session: { connect: { id: session.id } }
+        session: { connect: { id: session.id } },
+        selectedProducts: fetcherData.selectedProducts,
+        selectedCollections: fetcherData.selectedCollections,
+        excludedProducts: fetcherData.excludedProducts,
+        excludedCollections: fetcherData.excludedCollections
       }
     });
     return { success: true, discountBundle };
   },
-  
+
   update: async ({ prisma, fetcherData }) => {
     const discountBundle = await prisma.discountBundle.update({
       where: { id: parseInt(fetcherData.discountBundleId) },
@@ -32,6 +36,10 @@ export const actions = {
         whichProducts: fetcherData.whichProducts,
         previewEnabled: fetcherData.preview ? true : false,
         active: fetcherData.active ? true : false,
+        selectedProducts: fetcherData.selectedProducts,
+        selectedCollections: fetcherData.selectedCollections,
+        excludedProducts: fetcherData.excludedProducts,
+        excludedCollections: fetcherData.excludedCollections
       }
     });
     return { success: true, discountBundle };

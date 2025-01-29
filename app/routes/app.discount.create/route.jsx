@@ -17,11 +17,11 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import styles from "./styles.module.css";
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
-import { actions } from "./actions";
+import { actions } from "./actions.js";
 
-import DiscountNameSection from "./components/DiscountNameSection";
-import DiscountTypeSection from "./components/DiscountTypeSection";
-import ProductSelectionSection from "./components/ProductSelectionSection";
+import DiscountNameSection from "./components/Sections/DiscountNameSection.jsx";
+import DiscountTypeSection from "./components/Sections/DiscountTypeSection.jsx";
+import ProductSelectionSection from "./components/Sections/ProductSelectionSection.jsx";
 
 import { useButtonLabels } from "./hooks/useButtonLabels";
 
@@ -98,11 +98,15 @@ export default function DiscountPage() {
   }, [discountBundleId, shopify]);
 
   // On clicking the create discount button, set the form state to active and submit the form
-  const createDiscountBundle = () => {
+  const discountBundleAction = () => {
     const formData = {
       ...formState,
       active: true,
-      intent: discountBundleId !== undefined ? 'update' : 'create'
+      intent: discountBundleId !== undefined ? 'update' : 'create',
+      selectedProducts: JSON.stringify(selectedProducts),
+      selectedCollections: JSON.stringify(selectedCollections),
+      excludedProducts: JSON.stringify(excludedProducts),
+      excludedCollections: JSON.stringify(excludedCollections)
     }
     
     fetcher.submit(formData, { method: "POST" })
@@ -118,7 +122,7 @@ export default function DiscountPage() {
           <Button 
             variant="primary"
             loading={isLoading}
-            onClick={createDiscountBundle}
+            onClick={discountBundleAction}
           >
               { discountBundleId ? 'Update' : 'Create' }
           </Button>
