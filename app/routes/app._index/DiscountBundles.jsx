@@ -7,28 +7,80 @@ import {
   IndexTable,
   Badge,
   Icon,
+  Box,
   LegacyCard,
 } from "@shopify/polaris";
 import {EditIcon, DuplicateIcon, DeleteIcon, SortIcon} from '@shopify/polaris-icons';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useFetcher } from "@remix-run/react";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
-export default function DiscountBundles({ bundles }) {
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import styles from './styles.module.css'
+import { getApplyToText } from "./utils/utils";
+
+export default function DiscountBundles({ discountBundles }) {
   const shopify = useAppBridge();
   const fetcher = useFetcher();
-  const [ bundleToDelete, setBundleToDelete ] = useState({});
+  const [bundleToDelete, setBundleToDelete] = useState({});
+  const [bundles, setBundles] = useState([]);
+  const [duplicatingId, setDuplicatingId] = useState(null);
 
+
+  const handleDuplicate = (bundle) => {
+    setDuplicatingId(bundle.id);
+    
+    fetcher.submit(
+      { bundleId: bundle.id },
+      {
+        method: "POST",
+        action: "/app/discount/duplicate",
+      }
+    );
+  };
+  
   const handleDelete = (bundle) => {
     setBundleToDelete(bundle);
     shopify.modal.show('delete-confirmation-modal');
   };
+  
+
+  const handleBundleToggle = (event, bundle) => {
+    // Update the state of the bundle
+    const updatedBundles = bundles.map(b => 
+      b.id === bundle.id ? { ...b, active: event.target.checked } : b
+    );
+    setBundles(updatedBundles);
+    
+    fetcher.submit(
+      { bundleId: bundle.id, active: event.target.checked },
+      {
+        method: "PUT",
+        action: "/app/discount/update",
+      }
+    );
+  };
+
+  useEffect(() => {
+    setBundles(discountBundles);
+  }, [discountBundles])
+
+  useEffect(() => {
+    if (fetcher.state === 'idle' && duplicatingId) {
+      setDuplicatingId(null);
+    }
+  }, [fetcher.state]);
 
   const renderRowActions = (bundle) => (
     <InlineStack gap="200">
       <Button icon={EditIcon} plain accessibilityLabel={`Edit discount ${bundle.id}`} />
-      <Button icon={DuplicateIcon} plain accessibilityLabel={`Duplicate discount ${bundle.id}`} />
+      <Button 
+        icon={DuplicateIcon} 
+        plain 
+        accessibilityLabel={`Duplicate discount ${bundle.id}`} 
+        loading={duplicatingId === bundle.id}
+        onClick={() => handleDuplicate(bundle)}
+      />
       <Button 
         icon={DeleteIcon} 
         plain 
@@ -70,31 +122,39 @@ export default function DiscountBundles({ bundles }) {
                 selectable={false}
               >
                 {bundles.map((bundle, index) => (
-                  <IndexTable.Row id={bundle.id} key={bundle.id} position={index}>
-                    <IndexTable.Cell>
+                  <tr id={bundle.id} key={bundle.id} position={index} className={styles.discounts_table_row}>
+                    <td className={styles.colSorticon}>
                       <Icon source={SortIcon} color="subdued" />
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
+                    </td>
+                    <td className={styles.colPriority}>
                       <Text variation="strong">{bundle.priority}</Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
+                    </td>
+                    <td className={styles.colBundleName}>
                       <Text>{bundle.name}</Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
+                    </td>
+                    <td className={styles.colBundleTyoe}>
                       { bundle.type === 'volume_bundle' ? 'Volume bundle' : 'Bulk pricing' }
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <Text as="p">{bundle.applyTo}</Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell>
-                      <Badge status={bundle.active ? 'success' : 'attention'} tone={bundle.active ? 'success': 'critical'}>
-                        {bundle.active ? 'Enabled' : 'Disabled'}
-                      </Badge>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell alignment="right">
+                    </td>
+                    <td className={styles.colAppliedTo}>
+                      {getApplyToText(bundle)}
+                    </td>
+                    <td className={styles.colStatus}>
+                      <div className={styles.toggle}>
+                        <input 
+                          type="checkbox" 
+                          id={`switch-${bundle.id}`}
+                          name={`preview-${bundle.id}`}
+                          value={bundle.active}
+                          checked={bundle.active}
+                          onChange={(event) => handleBundleToggle(event, bundle)}
+                        />
+                        <label htmlFor={`switch-${bundle.id}`}>Toggle</label>
+                      </div>
+                    </td>
+                    <td className={styles.colActions} alignment="right">
                       {renderRowActions(bundle)}
-                    </IndexTable.Cell>
-                  </IndexTable.Row>
+                    </td>
+                  </tr>
                 ))}
               </IndexTable>
             </LegacyCard>

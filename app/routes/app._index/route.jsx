@@ -75,7 +75,7 @@ import {
           { discountBundles.length > 0 && (
             <BlockStack gap="500">
               <DiscountStatistics statisticsData={statisticsData}/>
-              <DiscountBundles bundles={discountBundles} />
+              <DiscountBundles discountBundles={discountBundles} />
             </BlockStack>
           ) }
         </Box>
