@@ -3,6 +3,7 @@ import { Text, BlockStack, InlineStack, ButtonGroup, Button, RadioButton } from 
 export default function ProductSelectionSection({ 
   formState, 
   setFormState, 
+  selectedCollections, 
   shopify,
   buttonLabels 
 }) {
@@ -63,7 +64,9 @@ export default function ProductSelectionSection({
           <InlineStack>
             <ButtonGroup>
               <Button variant="primary" onClick={() => shopify.modal.show('select-collections-modal')}>{buttonLabels.selectedCollectionsBtnLabel()}</Button>
-              <Button variant="primary" onClick={() => shopify.modal.show('exclude-products-modal')}>{buttonLabels.excludeProductsBtnLabel()}</Button>
+              { selectedCollections.length > 0 && (
+                <Button variant="primary" onClick={() => shopify.modal.show('exclude-products-modal')}>{buttonLabels.excludeProductsBtnLabel()}</Button>
+              )}
             </ButtonGroup>
           </InlineStack>
       ) }

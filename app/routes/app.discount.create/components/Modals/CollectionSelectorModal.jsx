@@ -11,10 +11,10 @@ import {
   import { ImageIcon } from '@shopify/polaris-icons';
   import { useState, useEffect } from "react";
   
-  export default function CollectionExclusionsModal({ 
+  export default function CollectionSelectorModal({ 
     fetcher, 
-    excludedCollections, 
-    setExcludedCollections, 
+    selectedCollections, 
+    setSelectedCollections, 
   }) {
   
     const [ productSearchQuery, setProductSearchQuery ] = useState('');
@@ -81,19 +81,19 @@ import {
     }, [fetchedProducts])
   
     return (
-      <Modal id="exclude-collections-modal" variant="base" onShow={loadCollections}>
+      <Modal id="select-collections-modal" variant="base" onShow={loadCollections}>
         <TitleBar title="Select products"></TitleBar>
         <div style={{ maxHeight: '600px' }}>
           <ResourceList
             resourceName={resourceName}
             items={storeCollections}
             renderItem={renderItem}
-            selectedItems={excludedCollections.map(item => item.id)}
+            selectedItems={selectedCollections.map(item => item.id)}
             onSelectionChange={(selectedIds) => {
-              const selectedItems = storeCollections.filter(item =>
+              const selectedItems = storeCollections.filter(item => 
                 selectedIds.includes(item.id)
               );
-              setExcludedCollections(selectedItems);
+              setSelectedCollections(selectedItems);
             }}
             promotedBulkActions={promotedBulkActions}
             filterControl={
@@ -124,6 +124,12 @@ import {
           media={<Thumbnail size="small" alt={title} source={imageUrl ?? ImageIcon} />}
           accessibilityLabel={`View details for ${title}`}
           verticalAlignment="center"
+          onClick={id => {
+            const selectedItem = storeCollections.find(item => item.id === id);
+            if ( selectedItem ) {
+              setSelectedCollections([selectedItem]);
+            }
+          }}
         >
           <Text variant="bodyMd" as="h3">
             {title}

@@ -123,6 +123,12 @@ export default function ProductExclusionsModal({
         media={<Thumbnail size="small" alt={title} source={imageUrl ?? ImageIcon} />}
         accessibilityLabel={`View details for ${title}`}
         verticalAlignment="center"
+          onClick={id => {
+            const selectedItem = storeProducts.find(item => item.id === id);
+            if ( selectedItem ) {
+              setExcludedProducts([selectedItem]);
+            }
+          }}
       >
         <Text variant="bodyMd" as="h3">
           {title}

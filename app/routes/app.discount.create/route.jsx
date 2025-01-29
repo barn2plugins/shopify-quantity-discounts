@@ -25,10 +25,10 @@ import ProductSelectionSection from "./components/ProductSelectionSection";
 
 import { useButtonLabels } from "./hooks/useButtonLabels";
 
-import ProductSelectorModal from "./ProductSelectorModal";
-import CollectionSelectorModal from "./CollectionSelectorModal";
-import ProductExclusionsModal from "./ProductExclusionsModal";
-import CollectionExclusionsModal from "./CollectionExclusionsModal";
+import ProductSelectorModal from "./components/Modals/ProductSelectorModal";
+import CollectionSelectorModal from "./components/Modals/CollectionSelectorModal";
+import ProductExclusionsModal from "./components/Modals/ProductExclusionsModal";
+import CollectionExclusionsModal from "./components/Modals/CollectionExclusionsModal";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
@@ -133,6 +133,7 @@ export default function DiscountPage() {
                   <ProductSelectionSection 
                     formState={formState}
                     setFormState={setFormState}
+                    selectedCollections={selectedCollections}
                     shopify={shopify}
                     buttonLabels={buttonLabels}
                   />

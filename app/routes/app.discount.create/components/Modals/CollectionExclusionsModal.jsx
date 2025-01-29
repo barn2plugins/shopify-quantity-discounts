@@ -11,21 +11,21 @@ import {
   import { ImageIcon } from '@shopify/polaris-icons';
   import { useState, useEffect } from "react";
   
-  export default function ProductSelectorModal({ 
+  export default function CollectionExclusionsModal({ 
     fetcher, 
-    selectedProducts, 
-    setSelectedProducts, 
+    excludedCollections, 
+    setExcludedCollections, 
   }) {
   
     const [ productSearchQuery, setProductSearchQuery ] = useState('');
     const [ productsLoading, setProductsLoading ] = useState(false);
-    const [ storeProducts, setStoreProducts ] = useState([]);
+    const [ storeCollections, setStoreCollections ] = useState([]);
   
-    const fetchedProducts = fetcher.data?.products;
+    const fetchedProducts = fetcher.data?.collections;
   
     const resourceName = {
-      singular: 'product',
-      plural: 'products',
+      singular: 'collection',
+      plural: 'collections',
     };
   
     const promotedBulkActions = [
@@ -52,13 +52,13 @@ import {
       console.log('handleQueryValueRemove');
     };
   
-    const loadProducts = () => {
+    const loadCollections = () => {
       // Set the loader
       setProductsLoading(true);
   
       // Submit the form to load products
       fetcher.submit({
-        intent: 'loadProducts'
+        intent: 'loadCollections',
       }, { method: "POST" })
     }
   
@@ -71,28 +71,29 @@ import {
           id: node.id.match(/\d+$/)[0],
           title: node.title,
           handle: node.handle,
-          imageUrl: node.featuredMedia?.preview?.image?.url,
+          imageUrl: node.image?.url,
+          productsCount: node.productsCount.count,
           cursor,
         }))
   
-        setStoreProducts(formattedProducts);
+        setStoreCollections(formattedProducts);
       }
     }, [fetchedProducts])
   
     return (
-      <Modal id="select-products-modal" variant="base" onShow={loadProducts}>
+      <Modal id="exclude-collections-modal" variant="base" onShow={loadCollections}>
         <TitleBar title="Select products"></TitleBar>
         <div style={{ maxHeight: '600px' }}>
           <ResourceList
             resourceName={resourceName}
-            items={storeProducts}
+            items={storeCollections}
             renderItem={renderItem}
-            selectedItems={selectedProducts.map(item => item.id)}
+            selectedItems={excludedCollections.map(item => item.id)}
             onSelectionChange={(selectedIds) => {
-              const selectedItems = storeProducts.filter(item => 
+              const selectedItems = storeCollections.filter(item =>
                 selectedIds.includes(item.id)
               );
-              setSelectedProducts(selectedItems);
+              setExcludedCollections(selectedItems);
             }}
             promotedBulkActions={promotedBulkActions}
             filterControl={
@@ -114,7 +115,7 @@ import {
     )
   
     function renderItem(item) {
-      const {id, title, imageUrl } = item;
+      const {id, title, imageUrl, productsCount } = item;
       const productId = id.match(/\d+$/)[0];
       
       return (
@@ -123,9 +124,18 @@ import {
           media={<Thumbnail size="small" alt={title} source={imageUrl ?? ImageIcon} />}
           accessibilityLabel={`View details for ${title}`}
           verticalAlignment="center"
+          onClick={id => {
+            const selectedItem = storeCollections.find(item => item.id === id);
+            if ( selectedItem ) {
+              setExcludedCollections([selectedItem]);
+            }
+          }}
         >
           <Text variant="bodyMd" as="h3">
             {title}
+          </Text>
+          <Text variant="bodyMd" as="p" tone="subdued">
+            { productsCount === 1 ? productsCount + " product" : productsCount + " products"}
           </Text>
         </ResourceItem>
       );
