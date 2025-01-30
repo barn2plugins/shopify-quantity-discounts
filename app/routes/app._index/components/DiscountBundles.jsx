@@ -5,9 +5,7 @@ import {
   Button,
   InlineStack,
   IndexTable,
-  Badge,
   Icon,
-  Box,
   LegacyCard,
 } from "@shopify/polaris";
 import {EditIcon, DuplicateIcon, DeleteIcon, SortIcon} from '@shopify/polaris-icons';
@@ -15,9 +13,9 @@ import { useState, useEffect } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useFetcher } from "@remix-run/react";
 
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
-import styles from './styles.module.css'
-import { getApplyToText } from "./utils/utils";
+import DeleteConfirmationModal from "./Modals/DeleteConfirmationModal";
+import styles from '../styles.module.css'
+import { getApplyToText } from "../utils/utils";
 
 export default function DiscountBundles({ discountBundles }) {
   const shopify = useAppBridge();
@@ -25,7 +23,6 @@ export default function DiscountBundles({ discountBundles }) {
   const [bundleToDelete, setBundleToDelete] = useState({});
   const [bundles, setBundles] = useState([]);
   const [duplicatingId, setDuplicatingId] = useState(null);
-
 
   const handleDuplicate = (bundle) => {
     setDuplicatingId(bundle.id);
@@ -43,7 +40,6 @@ export default function DiscountBundles({ discountBundles }) {
     setBundleToDelete(bundle);
     shopify.modal.show('delete-confirmation-modal');
   };
-  
 
   const handleBundleToggle = (event, bundle) => {
     // Update the state of the bundle
@@ -69,7 +65,7 @@ export default function DiscountBundles({ discountBundles }) {
     if (fetcher.state === 'idle' && duplicatingId) {
       setDuplicatingId(null);
     }
-  }, [fetcher.state]);
+  }, [duplicatingId, fetcher.state]);
 
   const renderRowActions = (bundle) => (
     <InlineStack gap="200">

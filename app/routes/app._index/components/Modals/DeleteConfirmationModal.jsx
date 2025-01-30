@@ -7,6 +7,8 @@ export default function DeleteConfirmationModal({ bundleToDelete, fetcher }) {
   const deleteBundleRe = fetcher.data?.deleteBundle;
 
   const confirmDelete = () => {
+    shopify.modal.hide('delete-confirmation-modal');
+
     fetcher.submit(
       { discountId: bundleToDelete.id },
       { 
@@ -19,7 +21,6 @@ export default function DeleteConfirmationModal({ bundleToDelete, fetcher }) {
   useEffect(() => {
     if ( deleteBundleRe ) {
       shopify.toast.show("Discount bundle has been deleted");
-      shopify.modal.hide('delete-confirmation-modal');
     }
   }, [deleteBundleRe, shopify]);
 

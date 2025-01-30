@@ -1,17 +1,15 @@
 import {
     Page,
-    EmptyState,
-    Card,
     BlockStack,
-    Layout,
     Box
   } from "@shopify/polaris";
   import { authenticate } from "../../shopify.server";
   import { useLoaderData } from "@remix-run/react";
   
   // Internal components and libraries
-  import DiscountStatistics from "./DiscountStatistics";
-  import DiscountBundles from "./DiscountBundles";
+  import DiscountStatistics from "./components/DiscountStatistics";
+  import DiscountBundles from "./components/DiscountBundles";
+  import EmptyStateComponent from "./components/EmptyStateComponent";
   import prisma from "../../db.server";
   
   export const loader = async ({ request }) => {
@@ -54,22 +52,7 @@ import {
       <Page fullWidth={discountBundles.length > 0 ? true : false}>
         <Box style={{ paddingBottom: '40px' }}>
           { discountBundles.length === 0 && (
-            <Layout>
-              <Layout.Section variant="oneHalf">
-                <Card>
-                  <EmptyState
-                    heading="Create your first discount"
-                    action={{
-                      content: 'Create new discount', 
-                      url: "/app/discount/create"
-                    }}
-                    image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-                  >
-                    <p>Add flexible quantity discounts and display them in your store.</p>
-                  </EmptyState>
-                </Card>
-              </Layout.Section>
-            </Layout>
+            <EmptyStateComponent />
           ) }
     
           { discountBundles.length > 0 && (
