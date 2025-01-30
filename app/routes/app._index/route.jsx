@@ -8,7 +8,7 @@ import {
   
   // Internal components and libraries
   import DiscountStatistics from "./components/DiscountStatistics";
-  import DiscountBundles from "./components/DiscountBundles";
+  import DiscountBundlesTable from "./components/DiscountBundlesTable";
   import EmptyStateComponent from "./components/EmptyStateComponent";
   import prisma from "../../db.server";
   
@@ -58,7 +58,7 @@ import {
           { discountBundles.length > 0 && (
             <BlockStack gap="500">
               <DiscountStatistics statisticsData={statisticsData}/>
-              <DiscountBundles discountBundles={discountBundles} />
+              <DiscountBundlesTable discountBundles={discountBundles} />
             </BlockStack>
           ) }
         </Box>

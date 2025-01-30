@@ -70,3 +70,83 @@ export const getApplyToText = (bundle) => {
       return 'All products';
   }
 };
+
+export const currencyCodeToSymbol = (code) => {
+  switch (code) {
+    case 'USD':
+      return '$';
+    case 'EUR':
+      return '€';
+    case 'GBP':
+      return '£';
+    case 'JPY':
+      return '¥';
+    case 'CNY':
+      return '¥';
+    case 'KRW':
+      return '₩';
+    case 'INR':
+      return '₹';
+    case 'RUB':
+      return '₽';
+    case 'BRL':
+      return 'R$';
+    case 'ZAR':
+      return 'R';
+    case 'AUD':
+      return 'A$';
+    case 'CAD':
+      return 'C$';
+    case 'NZD':
+      return 'NZ$';
+    case 'CHF':
+      return 'Fr';
+    case 'HKD':
+      return 'HK$';
+    case 'SGD':
+      return 'S$';
+    case 'SEK':
+      return 'kr';
+    case 'NOK':
+      return 'kr';
+    case 'DKK':
+      return 'kr';
+    case 'PLN':
+      return 'zł';
+    case 'THB':
+      return '฿';
+    case 'MXN':
+      return 'Mex$';
+    default:
+      return code;
+  }
+}
+
+export const getDefaultBundleDiscountTypes = () => {
+  return [
+    {
+      quantity: 1,
+      discount: '',
+      discount_type: 'percentage',
+      description: '',
+      label: '',
+      highlighted: false,
+    },
+    {
+      quantity: 2,
+      discount: '',
+      discount_type: 'percentage',
+      description: 'Buy 2 & save',
+      label: '',
+      highlighted: false,
+    },
+    {
+      quantity: 3,
+      discount: '',
+      discount_type: 'percentage',
+      description: 'Buy 3 & save',
+      label: '',
+      highlighted: true,
+    }
+  ];
+}

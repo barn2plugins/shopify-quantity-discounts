@@ -21,7 +21,9 @@ export const actions = {
         selectedProducts: fetcherData.selectedProducts,
         selectedCollections: fetcherData.selectedCollections,
         excludedProducts: fetcherData.excludedProducts,
-        excludedCollections: fetcherData.excludedCollections
+        excludedCollections: fetcherData.excludedCollections,
+        volumeBundles: fetcherData.volumeBundles,
+        pricingTiers: fetcherData.pricingTiers
       }
     });
     return { success: true, discountBundle };
@@ -39,7 +41,9 @@ export const actions = {
         selectedProducts: fetcherData.selectedProducts,
         selectedCollections: fetcherData.selectedCollections,
         excludedProducts: fetcherData.excludedProducts,
-        excludedCollections: fetcherData.excludedCollections
+        excludedCollections: fetcherData.excludedCollections,
+        volumeBundles: fetcherData.volumeBundles,
+        pricingTiers: fetcherData.pricingTiers
       }
     });
     return { success: true, discountBundle };
@@ -106,4 +110,19 @@ const fetchCollections = async (admin) => {
   
   const responseJson = await response.json();
   return responseJson;
+}
+
+export const getStoreCurrency = ({ prisma, session }) => {
+  try {
+    return prisma.session.findFirst({
+      where: {
+        id: session.id
+      },
+      select: {
+        currency: true
+      }
+    });
+  } catch {
+    return null;
+  }
 }

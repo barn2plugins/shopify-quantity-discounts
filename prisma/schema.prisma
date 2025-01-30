@@ -69,6 +69,8 @@ model DiscountBundle {
   selectedCollections   String?
   excludedProducts      String?
   excludedCollections   String?
+  volumeBundles         String?
+  pricingTiers          String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }

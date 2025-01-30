@@ -14,14 +14,15 @@ import { useLoaderData, useFetcher } from "@remix-run/react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal libraries and components
-import styles from "./styles.module.css";
+import styles from "./styles.module.scss";
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
-import { actions } from "./actions.js";
+import { actions, getStoreCurrency } from "./actions.js";
 
 import DiscountNameSection from "./components/Sections/DiscountNameSection.jsx";
 import DiscountTypeSection from "./components/Sections/DiscountTypeSection.jsx";
 import ProductSelectionSection from "./components/Sections/ProductSelectionSection.jsx";
+import VolumeBundleSection from "./components/Sections/VolumeBundleSection.jsx";
 
 import { useButtonLabels } from "./hooks/useButtonLabels";
 
@@ -31,7 +32,9 @@ import ProductExclusionsModal from "./components/Modals/ProductExclusionsModal";
 import CollectionExclusionsModal from "./components/Modals/CollectionExclusionsModal";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
+  const { currency } = await getStoreCurrency({prisma, session});
+  
   
   let settings = {
     discountBundleId: null,
@@ -39,7 +42,8 @@ export const loader = async ({ request }) => {
     discountType: 'volume_bundle',
     whichProducts: 'all_products',
     preview: true,
-    active: false
+    active: false,
+    currencyCode: currency?? '$',
   }
   return settings
 };
@@ -76,6 +80,8 @@ export default function DiscountPage() {
   const [ selectedCollections, setSelectedCollections ] = useState([]);
   const [ excludedProducts, setExcludedProducts ] = useState([]);
   const [ excludedCollections, setExcludedCollections ] = useState([]);
+  const [ volumeBundles, setVolumeBundles ] = useState([]);
+  const [ pricingTiers, setPricingTiers ] = useState([]);
 
   const buttonLabels = useButtonLabels(
     selectedProducts, 
@@ -106,7 +112,9 @@ export default function DiscountPage() {
       selectedProducts: JSON.stringify(selectedProducts),
       selectedCollections: JSON.stringify(selectedCollections),
       excludedProducts: JSON.stringify(excludedProducts),
-      excludedCollections: JSON.stringify(excludedCollections)
+      excludedCollections: JSON.stringify(excludedCollections),
+      volumeBundles: JSON.stringify(volumeBundles),
+      pricingTiers: JSON.stringify(pricingTiers)
     }
     
     fetcher.submit(formData, { method: "POST" })
@@ -130,19 +138,33 @@ export default function DiscountPage() {
       >
         <Layout>
           <Layout.Section>
-            <Card>
-              <BlockStack gap={600}>
-                  <DiscountNameSection formState={formState} setFormState={setFormState} />
-                  <DiscountTypeSection formState={formState} setFormState={setFormState} />
-                  <ProductSelectionSection 
-                    formState={formState}
-                    setFormState={setFormState}
-                    selectedCollections={selectedCollections}
-                    shopify={shopify}
-                    buttonLabels={buttonLabels}
-                  />
-              </BlockStack>
-            </Card>
+            <BlockStack gap={600}>
+              <Card>
+                <BlockStack gap={600}>
+                    <DiscountNameSection formState={formState} setFormState={setFormState} />
+                    <DiscountTypeSection formState={formState} setFormState={setFormState} />
+                    <ProductSelectionSection 
+                      formState={formState}
+                      setFormState={setFormState}
+                      selectedCollections={selectedCollections}
+                      shopify={shopify}
+                      buttonLabels={buttonLabels}
+                    />
+                </BlockStack>
+              </Card>
+
+              <Card>
+                { formState.discountType === 'volume_bundle' && (
+                  <BlockStack gap={600}>
+                    <VolumeBundleSection 
+                      currencyCode={formState.currencyCode}
+                      volumeBundles={volumeBundles}
+                      setVolumeBundles={setVolumeBundles}
+                    />
+                  </BlockStack>
+                ) }
+              </Card>
+            </BlockStack>
           </Layout.Section>
           <Layout.Section variant="oneThird">
             <Card>

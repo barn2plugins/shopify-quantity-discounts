@@ -14,10 +14,10 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { useFetcher } from "@remix-run/react";
 
 import DeleteConfirmationModal from "./Modals/DeleteConfirmationModal";
-import styles from '../styles.module.css'
-import { getApplyToText } from "../utils/utils";
+import styles from '../styles.module.scss'
+import { getApplyToText } from "../../../utils/utils";
 
-export default function DiscountBundles({ discountBundles }) {
+export default function DiscountBundlesTable({ discountBundles }) {
   const shopify = useAppBridge();
   const fetcher = useFetcher();
   const [bundleToDelete, setBundleToDelete] = useState({});
