@@ -1,13 +1,24 @@
 import { Text, BlockStack } from "@shopify/polaris";
 
-export const getApplyToText = (bundle) => {
-  const {
-    whichProducts,
-    selectedProducts,
-    selectedCollections,
-    excludedProducts,
-    excludedCollections
-  } = bundle;
+/**
+ * Generates a formatted text display for bundle product selection rules.
+ * 
+ * @param {Object} bundle - The discount bundle object
+ * @param {string} bundle.whichProducts - The product selection type ('all_products', 'all_products_except_selected', 'selected_products', 'selected_collections')
+ * @param {string} bundle.selectedProducts - JSON string of selected products array
+ * @param {string} bundle.selectedCollections - JSON string of selected collections array
+ * @param {string} bundle.excludedProducts - JSON string of excluded products array
+ * @param {string} bundle.excludedCollections - JSON string of excluded collections array
+ * 
+ * @returns {string|JSX.Element} A text string or JSX element describing the product selection rules
+ */
+export const getApplyToText = ({
+  whichProducts,
+  selectedProducts,
+  selectedCollections,
+  excludedProducts,
+  excludedCollections
+}) => {
 
   // Parse JSON strings into arrays
   const selectedProductsArray = JSON.parse(selectedProducts || '[]');
@@ -71,6 +82,17 @@ export const getApplyToText = (bundle) => {
   }
 };
 
+/**
+ * Converts a currency code to its corresponding symbol.
+ * 
+ * @param {string} code - The ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP')
+ * @returns {string} The currency symbol (e.g., '$', '€', '£') or the original code if no symbol is found
+ * 
+ * @example
+ * currencyCodeToSymbol('USD') // returns '$'
+ * currencyCodeToSymbol('EUR') // returns '€'
+ * currencyCodeToSymbol('ABC') // returns 'ABC'
+ */
 export const currencyCodeToSymbol = (code) => {
   switch (code) {
     case 'USD':
@@ -122,6 +144,24 @@ export const currencyCodeToSymbol = (code) => {
   }
 }
 
+/**
+ * Returns an array of default bundle discount configurations.
+ * 
+ * @returns {Array<{
+ *   quantity: number,
+ *   discount: string,
+ *   discount_type: 'percentage',
+ *   description: string,
+ *   label: string,
+ *   highlighted: boolean
+ * }>} An array of bundle discount objects with the following properties:
+ * - quantity: The number of items required for this discount tier
+ * - discount: The discount amount (empty string by default)
+ * - discount_type: The type of discount (percentage by default)
+ * - description: A descriptive text for the discount tier
+ * - label: An optional label for the tier (empty string by default)
+ * - highlighted: Whether this tier should be visually highlighted
+ */
 export const getDefaultBundleDiscountTypes = () => {
   return [
     {

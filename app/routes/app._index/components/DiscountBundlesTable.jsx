@@ -24,6 +24,14 @@ export default function DiscountBundlesTable({ discountBundles }) {
   const [bundles, setBundles] = useState([]);
   const [duplicatingId, setDuplicatingId] = useState(null);
 
+  /**
+   * Handles the duplication of a discount bundle.
+   * Sets the duplicating state for loading indicator and submits the duplication request to the 'app/discount/duplicate' route
+   * 
+   * @param {Object} bundle - The discount bundle to duplicate
+   * @param {number} bundle.id - The unique identifier of the bundle
+   *
+   */
   const handleDuplicate = (bundle) => {
     setDuplicatingId(bundle.id);
     
@@ -41,6 +49,15 @@ export default function DiscountBundlesTable({ discountBundles }) {
     shopify.modal.show('delete-confirmation-modal');
   };
 
+  /**
+   * Handles the toggle state of a discount bundle's active status.
+   * Updates the local state immediately and submits the change to the server.
+   * 
+   * @param {Event} event - The change event from the toggle input
+   * @param {Object} bundle - The discount bundle to update
+   * @param {number} bundle.id - The unique identifier of the bundle
+   * @param {boolean} bundle.active - The current active state of the bundle
+   */
   const handleBundleToggle = (event, bundle) => {
     // Update the state of the bundle
     const updatedBundles = bundles.map(b => 

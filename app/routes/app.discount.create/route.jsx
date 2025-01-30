@@ -35,7 +35,6 @@ export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const { currency } = await getStoreCurrency({prisma, session});
   
-  
   let settings = {
     discountBundleId: null,
     discountName: 'Bundle',
