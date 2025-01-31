@@ -21,8 +21,11 @@
     padding: 10px 5px;
   }
 
+  .text_select_combined_width {
+    width: 150px;
+  }
+
   .combined_text_select_field {
-    width: 130px;
     display: grid;
     grid-template-columns: 50% 50%;
 

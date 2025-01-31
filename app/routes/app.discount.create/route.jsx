@@ -23,6 +23,7 @@ import DiscountNameSection from "./components/Sections/DiscountNameSection.jsx";
 import DiscountTypeSection from "./components/Sections/DiscountTypeSection.jsx";
 import ProductSelectionSection from "./components/Sections/ProductSelectionSection.jsx";
 import VolumeBundleSection from "./components/Sections/VolumeBundleSection.jsx";
+import BulkPricingTiers from "./components/Sections/BulkPricingTiers.jsx";
 
 import { useButtonLabels } from "./hooks/useButtonLabels";
 
@@ -112,8 +113,8 @@ export default function DiscountPage() {
       selectedCollections: JSON.stringify(selectedCollections),
       excludedProducts: JSON.stringify(excludedProducts),
       excludedCollections: JSON.stringify(excludedCollections),
-      volumeBundles: JSON.stringify(volumeBundles),
-      pricingTiers: JSON.stringify(pricingTiers)
+      volumeBundles: formState.discountType === 'volume_bundle' ? JSON.stringify(volumeBundles) : '',
+      pricingTiers: formState.discountType === 'bulk_pricing' ? JSON.stringify(pricingTiers) : ''
     }
     
     fetcher.submit(formData, { method: "POST" })
@@ -159,6 +160,16 @@ export default function DiscountPage() {
                       currencyCode={formState.currencyCode}
                       volumeBundles={volumeBundles}
                       setVolumeBundles={setVolumeBundles}
+                    />
+                  </BlockStack>
+                ) }
+                
+                { formState.discountType === 'bulk_pricing' && (
+                  <BlockStack gap={600}>
+                    <BulkPricingTiers 
+                      currencyCode={formState.currencyCode}
+                      pricingTiers={pricingTiers}
+                      setPricingTiers={setPricingTiers}
                     />
                   </BlockStack>
                 ) }

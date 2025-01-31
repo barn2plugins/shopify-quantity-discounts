@@ -190,3 +190,40 @@ export const getDefaultBundleDiscountTypes = () => {
     }
   ];
 }
+
+/**
+ * Returns an array of default pricing tier configurations.
+ * 
+ * @returns {Array<{
+ *   min_quantity: number,
+ *   max_quantity: number,
+ *   discount: string,
+ *   discount_type: string
+ * }>} An array of pricing tier objects with the following properties:
+ * - min_quantity: The minimum quantity required for this pricing tier
+ * - max_quantity: The maximum quantity for this pricing tier
+ * - discount: The discount amount (empty string by default)
+ * - discount_type: The discount type (either percentage or amount)
+ */
+export const getDefaultPricingTiers = () => {
+  return [
+    {
+      min_quantity: 1,
+      max_quantity: 10,
+      discount: '',
+      discount_type: 'percentage'
+    },
+    {
+      min_quantity: 11,
+      max_quantity: 21,
+      discount: '',
+      discount_type: 'percentage'
+    },
+    {
+      min_quantity: 21,
+      max_quantity: 31,
+      discount: '',
+      discount_type: 'percentage'
+    },
+  ];
+}

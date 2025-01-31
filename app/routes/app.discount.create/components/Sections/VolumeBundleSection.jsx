@@ -124,7 +124,7 @@ export default function VolumeBundleSection({
               </div>
             </td>
             <td className={styles.cell_discount}>
-                <div className={styles.combined_text_select_field}>
+                <div className={`${styles.combined_text_select_field} ${styles.text_select_combined_width}`}>
                   <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
                     const value = event.target.value;
                     if (value === '') {
