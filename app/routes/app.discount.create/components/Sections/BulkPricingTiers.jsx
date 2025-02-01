@@ -6,23 +6,43 @@ import {
   Button, 
   TextField, 
   Icon, 
-  Checkbox, 
-  InlineStack
+  ChoiceList, 
+  InlineStack,
+  Tooltip,
+  Grid,
+  Card,
+  Checkbox
 } from '@shopify/polaris';
-import { PlusIcon, DeleteIcon } from '@shopify/polaris-icons';
-import { useEffect } from 'react';
+import { PlusIcon, DeleteIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
+import { useState } from 'react';
 
 // Internal components
 import styles from '../../styles.module.scss';
-import { currencyCodeToSymbol, getDefaultPricingTiers } from '../../../../utils/utils';
+import { currencyCodeToSymbol } from '../../../../utils/utils';
+import DateRangePicker from '../Fields/DateRangePicker';
 
 export default function BulkPricingTiers({ 
-  currencyCode, 
+  formState,
+  setFormState,
   pricingTiers,
   setPricingTiers,
+  timezone = 'EST',
 }) {
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [selectedDates, setSelectedDates] = useState(() => {
+    const now = new Date();
+    const userDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    const endDate = new Date(userDate);
+    endDate.setDate(userDate.getDate() + 6);
+    
+    return {
+      start: userDate,
+      end: endDate
+    };
+  });
 
-  const currencySymbol = currencyCodeToSymbol(currencyCode);
+  const currencySymbol = currencyCodeToSymbol(formState.currencyCode);
 
   const volumeBundleDiscountTypes = [
     {
@@ -84,89 +104,200 @@ export default function BulkPricingTiers({
     setPricingTiers([...pricingTiers, newTier]);
   };
 
-  useEffect(() => {
-    setPricingTiers(getDefaultPricingTiers())
-  }, []);
+  if (pricingTiers.length <= 1) {
+    return null;
+  }
 
   return (
-    <BlockStack gap={200}>
-      <Text as="p" variant="bodyLg" fontWeight="medium">Bulk Pricing</Text>
-      <IndexTable
-        itemCount={pricingTiers.length}
-        headings={[
-          {title: 'Minimum Quantity'},
-          {title: 'Maximum Quantity'},
-          {title: 'Discount'},
-          {title: ''},
-        ]}
-        selectable={false}
-      >
-        {pricingTiers.map((bundle, index) => (
-          <tr id={index} key={index} position={index} className={styles.volumn_bundle_table_row}>
-            <td className={styles.cell_quantity}>
-                <TextField
-                  type="number"
-                  min="1"
-                  value={bundle.min_quantity.toString()}
-                  onChange={(value) => {
-                    const numericValue = Math.max(1, parseInt(value) || 1);
-                    handleVolumeChange(index, 'min_quantity', numericValue);
-                  }}
-                  autoComplete="off"
-                />
-            </td>
-            <td className={styles.cell_quantity}>
-                <TextField
-                  type="number"
-                  min="1"
-                  value={bundle.max_quantity.toString()}
-                  onChange={(value) => {
-                    const numericValue = Math.max(1, parseInt(value) || 1);
-                    handleVolumeChange(index, 'max_quantity', numericValue);
-                  }}
-                  autoComplete="off"
-                />
-            </td>
-            <td className={styles.cell_discount}>
-                <div className={styles.combined_text_select_field}>
-                  <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
-                    const value = event.target.value;
-                    if (value === '') {
-                      handleVolumeChange(index, 'discount', '');
-                    } else {
-                      const numericValue = parseFloat(value);
-                      if (!isNaN(numericValue)) {
-                        handleVolumeChange(index, 'discount', numericValue);
-                      }
-                    }
-                  }}/>
-                  <select
-                    value={bundle.discount_type}
-                    onChange={(event) => {
-                      const selectedValue = event.target.value;
-                      handleVolumeChange(index, 'discount_type', selectedValue);
-                    }}
-                  >
-                    { volumeBundleDiscountTypes.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </div>
-            </td>
-            <td className={styles.cell_action}>
-              {index !== 0 && (
-                <span onClick={() => handleDeletePricingTier(index)}>
-                  <Icon source={DeleteIcon} />
-                </span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </IndexTable>
+    <>
+      <Card>
+        <BlockStack gap={1000}>
+          <BlockStack gap={300}>
+            <Text as="p" variant="bodyLg" fontWeight="medium">Bulk Pricing</Text>
+            <IndexTable
+              itemCount={pricingTiers.length}
+              headings={[
+                {title: 'Minimum Quantity'},
+                {title: 'Maximum Quantity'},
+                {title: 'Discount'},
+                {title: ''},
+              ]}
+              selectable={false}
+            >
+              {pricingTiers.map((bundle, index) => (
+                <tr id={index} key={index} position={index} className={styles.volumn_bundle_table_row}>
+                  <td className={styles.cell_quantity}>
+                      <TextField
+                        type="number"
+                        min="1"
+                        value={bundle.min_quantity.toString()}
+                        onChange={(value) => {
+                          const numericValue = Math.max(1, parseInt(value) || 1);
+                          handleVolumeChange(index, 'min_quantity', numericValue);
+                        }}
+                        autoComplete="off"
+                      />
+                  </td>
+                  <td className={styles.cell_quantity}>
+                      <TextField
+                        type="number"
+                        min="1"
+                        value={bundle.max_quantity.toString()}
+                        onChange={(value) => {
+                          const numericValue = Math.max(1, parseInt(value) || 1);
+                          handleVolumeChange(index, 'max_quantity', numericValue);
+                        }}
+                        autoComplete="off"
+                      />
+                  </td>
+                  <td className={styles.cell_discount}>
+                      <div className={styles.combined_text_select_field}>
+                        <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
+                          const value = event.target.value;
+                          if (value === '') {
+                            handleVolumeChange(index, 'discount', '');
+                          } else {
+                            const numericValue = parseFloat(value);
+                            if (!isNaN(numericValue)) {
+                              handleVolumeChange(index, 'discount', numericValue);
+                            }
+                          }
+                        }}/>
+                        <select
+                          value={bundle.discount_type}
+                          onChange={(event) => {
+                            const selectedValue = event.target.value;
+                            handleVolumeChange(index, 'discount_type', selectedValue);
+                          }}
+                        >
+                          { volumeBundleDiscountTypes.map((option) => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                  </td>
+                  <td className={styles.cell_action}>
+                    {index !== 0 && (
+                      <span onClick={() => handleDeletePricingTier(index)}>
+                        <Icon source={DeleteIcon} />
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </IndexTable> 
 
-      <InlineStack>
-        <Button icon={PlusIcon} variant="primary" onClick={addNewPricingTier}>Add tier</Button>
-      </InlineStack>
-    </BlockStack>
+            <InlineStack>
+              <Button icon={PlusIcon} variant="primary" onClick={addNewPricingTier}>Add tier</Button>
+            </InlineStack>
+          </BlockStack>
+
+          <BlockStack gap={300}>
+            <Grid>
+              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
+                <InlineStack>
+                  <Text as="p" variant="bodyLg" fontWeight="medium">Discount calculation</Text>
+                    <Tooltip
+                      content={
+                        <InlineStack gap="200">
+                          Choose whether to calculate the discount based on the combined cart total of all products selected above, or separately for each individual product?
+                        </InlineStack>
+                      }
+                    >
+                    <Icon source={QuestionCircleIcon}></Icon>
+                  </Tooltip>
+                </InlineStack>
+              </Grid.Cell>
+
+              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 8, xl: 8}}>
+                <ChoiceList
+                  choices={[
+                    {label: 'Individual products', value: 'individual_products'},
+                    {label: 'Entire cart', value: 'entire_cart'},
+                  ]}
+                  selected={formState.discountCalculation}
+                  onChange={(value) => {
+                    setFormState({...formState, discountCalculation: value[0]})
+                  }}
+                />
+              </Grid.Cell>
+            </Grid>
+            <Grid>
+              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
+                <Text as="p" variant="bodyLg" fontWeight="medium">Active dates</Text>
+              </Grid.Cell>
+
+              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 8, xl: 8}}>
+                <BlockStack gap="200">
+                  <ChoiceList
+                    choices={[
+                      {label: 'Always available', value: 'always_available'},
+                      {label: 'Specific dates', value: 'specific_dates'},
+                    ]}
+                    selected={formState.activeDates}
+                    onChange={(value) => {
+                      setFormState({...formState, activeDates: value[0]})
+                      setDatePickerVisible(value[0] === 'specific_dates');
+                    }}
+                  />
+                  {datePickerVisible && (
+                    <DateRangePicker
+                      selectedDates={selectedDates}
+                      setSelectedDates={setSelectedDates}
+                      visible={visible}
+                      setVisible={setVisible}
+                    />
+                  )}
+                </BlockStack>
+              </Grid.Cell>
+            </Grid>
+            <Grid>
+              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
+                <InlineStack>
+                  <Text as="p" variant="bodyLg" fontWeight="medium">Store display</Text>
+                </InlineStack>
+              </Grid.Cell>
+
+              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 8, xl: 8}}>
+                <BlockStack>
+                  <Checkbox
+                    label={
+                      <InlineStack>
+                        <Text as="p" variant="bodyLg">Display badges on catalog pages</Text>
+                          <Tooltip
+                            content={
+                              <InlineStack gap="200">
+                                Optionally add a short text label which will appear over the images of products that have discounts available.
+                              </InlineStack>
+                            }
+                          >
+                          <Icon source={QuestionCircleIcon}></Icon>
+                        </Tooltip>
+                      </InlineStack>
+                    }
+                  />
+                  <Checkbox
+                    label={
+                      <InlineStack>
+                        <Text as="p" variant="bodyLg">Cart notice</Text>
+                          <Tooltip
+                            content={
+                              <InlineStack gap="200">
+                                Optionally add a notice which will be displayed above the cart when the discount is applied
+                              </InlineStack>
+                            }
+                          >
+                          <Icon source={QuestionCircleIcon}></Icon>
+                        </Tooltip>
+                      </InlineStack>
+                    }
+                  />
+                </BlockStack>
+              </Grid.Cell>
+            </Grid>
+          </BlockStack>
+        </BlockStack>
+      </Card>
+    </>
   )
 }

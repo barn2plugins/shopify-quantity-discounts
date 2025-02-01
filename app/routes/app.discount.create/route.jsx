@@ -17,7 +17,10 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import styles from "./styles.module.scss";
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
-import { actions, getStoreCurrency } from "./actions.js";
+import { actions } from "./actions.js";
+import { StoreService } from "../../services/store.service";
+
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
 
 import DiscountNameSection from "./components/Sections/DiscountNameSection.jsx";
 import DiscountTypeSection from "./components/Sections/DiscountTypeSection.jsx";
@@ -34,7 +37,8 @@ import CollectionExclusionsModal from "./components/Modals/CollectionExclusionsM
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-  const { currency } = await getStoreCurrency({prisma, session});
+  const storeDetails = await StoreService.getStoreDetails(session.id);
+  const { currency, timezone } = storeDetails || {};
   
   let settings = {
     discountBundleId: null,
@@ -44,6 +48,9 @@ export const loader = async ({ request }) => {
     preview: true,
     active: false,
     currencyCode: currency?? '$',
+    discountCalculation: 'individual_products',
+    activeDates: 'always_available',
+    timezone: timezone || 'UTC'
   }
   return settings
 };
@@ -103,6 +110,11 @@ export default function DiscountPage() {
     }
   }, [discountBundleId, shopify]);
 
+  useEffect(() => {
+    setVolumeBundles(getDefaultBundleDiscountTypes())
+    setPricingTiers(getDefaultPricingTiers())
+  }, []);
+
   // On clicking the create discount button, set the form state to active and submit the form
   const discountBundleAction = () => {
     const formData = {
@@ -153,27 +165,25 @@ export default function DiscountPage() {
                 </BlockStack>
               </Card>
 
-              <Card>
-                { formState.discountType === 'volume_bundle' && (
-                  <BlockStack gap={600}>
-                    <VolumeBundleSection 
-                      currencyCode={formState.currencyCode}
-                      volumeBundles={volumeBundles}
-                      setVolumeBundles={setVolumeBundles}
-                    />
-                  </BlockStack>
-                ) }
-                
-                { formState.discountType === 'bulk_pricing' && (
-                  <BlockStack gap={600}>
-                    <BulkPricingTiers 
-                      currencyCode={formState.currencyCode}
-                      pricingTiers={pricingTiers}
-                      setPricingTiers={setPricingTiers}
-                    />
-                  </BlockStack>
-                ) }
-              </Card>
+              { formState.discountType === 'volume_bundle' && (
+                <Card>
+                  <VolumeBundleSection 
+                    currencyCode={formState.currencyCode}
+                    volumeBundles={volumeBundles}
+                    setVolumeBundles={setVolumeBundles}
+                  />
+                </Card>
+              ) }
+              
+              { formState.discountType === 'bulk_pricing' && (
+                <BulkPricingTiers 
+                  formState={formState}
+                  setFormState={setFormState}
+                  pricingTiers={pricingTiers}
+                  setPricingTiers={setPricingTiers}
+                  timezone={settings.timezone}
+                />
+              ) }
             </BlockStack>
           </Layout.Section>
           <Layout.Section variant="oneThird">

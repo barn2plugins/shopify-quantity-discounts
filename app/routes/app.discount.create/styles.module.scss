@@ -17,8 +17,14 @@
 }
 
 .volumn_bundle_table_row {
+  &:not(:last-child) {
+    td {
+      border-bottom: 1px solid var(--p-color-bg-surface-secondary-active);
+    }
+  }
+
   td {
-    padding: 10px 5px;
+    padding: 13px 5px;
   }
 
   .text_select_combined_width {

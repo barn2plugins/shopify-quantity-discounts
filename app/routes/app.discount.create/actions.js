@@ -183,28 +183,3 @@ const fetchCollections = async (admin) => {
   const responseJson = await response.json();
   return responseJson;
 }
-
-/**
- * Retrieves the currency setting for a store from the session
- * 
- * @param {Object} params - The parameters object
- * @param {Object} params.prisma - Prisma client instance
- * @param {Object} params.session - Session object containing store information
- * @param {string} params.session.id - Unique identifier of the session
- * @returns {Promise<Object|null>} Object containing currency information or null if query fails
- * @property {string} currency - The store's currency code
- */
-export const getStoreCurrency = ({ prisma, session }) => {
-  try {
-    return prisma.session.findFirst({
-      where: {
-        id: session.id
-      },
-      select: {
-        currency: true
-      }
-    });
-  } catch {
-    return null;
-  }
-}
