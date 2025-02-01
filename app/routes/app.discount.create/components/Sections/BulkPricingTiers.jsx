@@ -14,7 +14,7 @@ import {
   Checkbox
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Internal components
 import styles from '../../styles.module.scss';
@@ -41,6 +41,13 @@ export default function BulkPricingTiers({
       end: endDate
     };
   });
+
+  useEffect(() => {
+    setFormState({
+      ...formState,
+      specificDates: JSON.stringify(selectedDates)
+    })    
+  }, [selectedDates])
 
   const currencySymbol = currencyCodeToSymbol(formState.currencyCode);
 
@@ -261,36 +268,42 @@ export default function BulkPricingTiers({
               <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 8, xl: 8}}>
                 <BlockStack>
                   <Checkbox
-                    label={
-                      <InlineStack>
-                        <Text as="p" variant="bodyLg">Display badges on catalog pages</Text>
-                          <Tooltip
-                            content={
-                              <InlineStack gap="200">
-                                Optionally add a short text label which will appear over the images of products that have discounts available.
-                              </InlineStack>
-                            }
-                          >
-                          <Icon source={QuestionCircleIcon}></Icon>
-                        </Tooltip>
-                      </InlineStack>
-                    }
+                    label={<InlineStack>
+                      <Text as="p" variant="bodyLg">Display badges on catalog pages</Text>
+                      <Tooltip content={<InlineStack gap="200">Optionally add a short text label which will appear over the images of products that have discounts available.</InlineStack>}>
+                        <Icon source={QuestionCircleIcon}></Icon>
+                      </Tooltip>
+                    </InlineStack>}
+                    name="displayBadges"
+                    checked={formState.storeDisplay?.displayBadges || false}
+                    onChange={(checked) => {
+                      setFormState({
+                        ...formState,
+                        storeDisplay: {
+                          ...formState.storeDisplay,
+                          displayBadges: checked
+                        }
+                      });
+                    }}
                   />
                   <Checkbox
-                    label={
-                      <InlineStack>
-                        <Text as="p" variant="bodyLg">Cart notice</Text>
-                          <Tooltip
-                            content={
-                              <InlineStack gap="200">
-                                Optionally add a notice which will be displayed above the cart when the discount is applied
-                              </InlineStack>
-                            }
-                          >
-                          <Icon source={QuestionCircleIcon}></Icon>
-                        </Tooltip>
-                      </InlineStack>
-                    }
+                    label={<InlineStack>
+                      <Text as="p" variant="bodyLg">Cart notice</Text>
+                      <Tooltip content={<InlineStack gap="200">Optionally add a notice which will be displayed above the cart when the discount is applied</InlineStack>}>
+                        <Icon source={QuestionCircleIcon}></Icon>
+                      </Tooltip>
+                    </InlineStack>}
+                    name="cartNotice"
+                    checked={formState.storeDisplay?.cartNotice || false}
+                    onChange={(checked) => {
+                      setFormState({
+                        ...formState,
+                        storeDisplay: {
+                          ...formState.storeDisplay,
+                          cartNotice: checked
+                        }
+                      });
+                    }}
                   />
                 </BlockStack>
               </Grid.Cell>

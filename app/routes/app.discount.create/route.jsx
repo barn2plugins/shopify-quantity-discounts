@@ -126,7 +126,8 @@ export default function DiscountPage() {
       excludedProducts: JSON.stringify(excludedProducts),
       excludedCollections: JSON.stringify(excludedCollections),
       volumeBundles: formState.discountType === 'volume_bundle' ? JSON.stringify(volumeBundles) : '',
-      pricingTiers: formState.discountType === 'bulk_pricing' ? JSON.stringify(pricingTiers) : ''
+      pricingTiers: formState.discountType === 'bulk_pricing' ? JSON.stringify(pricingTiers) : '',
+      storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : ''
     }
     
     fetcher.submit(formData, { method: "POST" })

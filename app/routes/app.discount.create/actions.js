@@ -55,7 +55,12 @@ export const actions = {
         excludedProducts: fetcherData.excludedProducts,
         excludedCollections: fetcherData.excludedCollections,
         volumeBundles: fetcherData.volumeBundles,
-        pricingTiers: fetcherData.pricingTiers
+        pricingTiers: fetcherData.pricingTiers,
+        discountCalculation: fetcherData.discountCalculation,
+        activeDates: fetcherData.activeDates,
+        specificDates: fetcherData.specificDates,
+        storeDisplay: JSON.stringify(fetcherData.storeDisplay),
+        design: fetcherData.design,
       }
     });
     return { success: true, discountBundle };
@@ -94,7 +99,12 @@ export const actions = {
         excludedProducts: fetcherData.excludedProducts,
         excludedCollections: fetcherData.excludedCollections,
         volumeBundles: fetcherData.volumeBundles,
-        pricingTiers: fetcherData.pricingTiers
+        pricingTiers: fetcherData.pricingTiers,
+        discountCalculation: fetcherData.discountCalculation,
+        activeDates: fetcherData.activeDates,
+        specificDates: fetcherData.specificDates,
+        storeDisplay: JSON.stringify(fetcherData.storeDisplay),
+        design: fetcherData.design,
       }
     });
     return { success: true, discountBundle };
