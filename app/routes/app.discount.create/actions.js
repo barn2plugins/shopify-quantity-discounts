@@ -60,7 +60,8 @@ export const actions = {
         activeDates: fetcherData.activeDates,
         specificDates: fetcherData.specificDates,
         storeDisplay: JSON.stringify(fetcherData.storeDisplay),
-        design: fetcherData.design,
+        designOptions: fetcherData.designOptions,
+        customDesigns: fetcherData.customDesigns,
       }
     });
     return { success: true, discountBundle };
@@ -104,7 +105,8 @@ export const actions = {
         activeDates: fetcherData.activeDates,
         specificDates: fetcherData.specificDates,
         storeDisplay: JSON.stringify(fetcherData.storeDisplay),
-        design: fetcherData.design,
+        designOptions: fetcherData.designOptions,
+        customDesigns: fetcherData.customDesigns,
       }
     });
     return { success: true, discountBundle };

@@ -168,7 +168,7 @@ export const getDefaultBundleDiscountTypes = () => {
       quantity: 1,
       discount: '',
       discount_type: 'percentage',
-      description: '',
+      description: 'Buy 1',
       label: '',
       highlighted: false,
     },
@@ -227,3 +227,124 @@ export const getDefaultPricingTiers = () => {
     },
   ];
 }
+
+/**
+ * Converts a hex color string to RGBA object
+ * @param {string} hex - The hex color string (e.g., '#ff0000')
+ * @returns {Object|null} An object with r, g, b, a values or null if invalid
+ */
+export const hexToRgba = (hex) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16),
+    a: 1
+  } : null;
+};
+
+/**
+ * Converts RGB values to HSB color space
+ * @param {number} r - Red value (0-255)
+ * @param {number} g - Green value (0-255)
+ * @param {number} b - Blue value (0-255)
+ * @returns {Object} An object with hue, saturation, and brightness values
+ */
+export const rgbaToHsb = (r, g, b) => {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  
+  let h;
+  const s = max === 0 ? 0 : d / max;
+  const v = max;
+
+  if (max === min) {
+    h = 0;
+  } else {
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return {
+    hue: Math.round(h * 360),
+    saturation: s,
+    brightness: v
+  };
+};
+
+/**
+ * Parses an RGBA color string into an object
+ * @param {string} rgba - The RGBA color string (e.g., 'rgba(255, 0, 0, 1)')
+ * @returns {Object|null} An object with r, g, b, a values or null if invalid
+ */
+export const parseRgba = (rgba) => {
+  const match = rgba.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/i);
+  if (match) {
+    return {
+      r: parseInt(match[1]),
+      g: parseInt(match[2]),
+      b: parseInt(match[3]),
+      a: match[4] ? parseFloat(match[4]) : 1
+    };
+  }
+  return null;
+};
+
+/**
+ * Converts HSB color values to RGBA
+ * @param {number} h - Hue value (0-360)
+ * @param {number} s - Saturation value (0-1)
+ * @param {number} b - Brightness value (0-1)
+ * @returns {Object} An object with r, g, b, a values
+ */
+export const hsbToRgba = (h, s, b) => {
+  h = h / 360;
+  let i = Math.floor(h * 6);
+  let f = h * 6 - i;
+  let p = b * (1 - s);
+  let q = b * (1 - f * s);
+  let t = b * (1 - (1 - f) * s);
+  let r, g, b_;
+  switch (i % 6) {
+    case 0: r = b; g = t; b_ = p; break;
+    case 1: r = q; g = b; b_ = p; break;
+    case 2: r = p; g = b; b_ = t; break;
+    case 3: r = p; g = q; b_ = b; break;
+    case 4: r = t; g = p; b_ = b; break;
+    case 5: r = b; g = p; b_ = q; break;
+  }
+  return {
+    r: Math.round(r * 255),
+    g: Math.round(g * 255),
+    b: Math.round(b_ * 255),
+    a: 1
+  };
+};
+
+/**
+ * Converts RGBA values to hex color string
+ * @param {Object} param0 - Object containing r, g, b, a values
+ * @returns {string} Hex color string
+ */
+export const rgbaToHex = ({ r, g, b, a }) => {
+  const toHex = (n) => {
+    const hex = Math.round(n).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};

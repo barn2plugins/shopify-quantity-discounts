@@ -27,6 +27,7 @@ import DiscountTypeSection from "./components/Sections/DiscountTypeSection.jsx";
 import ProductSelectionSection from "./components/Sections/ProductSelectionSection.jsx";
 import VolumeBundleSection from "./components/Sections/VolumeBundleSection.jsx";
 import BulkPricingTiers from "./components/Sections/BulkPricingTiers.jsx";
+import DesignOptions from "./components/Sections/DesignOptions.jsx";
 
 import { useButtonLabels } from "./hooks/useButtonLabels";
 
@@ -50,7 +51,18 @@ export const loader = async ({ request }) => {
     currencyCode: currency?? '$',
     discountCalculation: 'individual_products',
     activeDates: 'always_available',
-    timezone: timezone || 'UTC'
+    timezone: timezone || 'UTC',
+    designOptions: 'theme_default',
+    customDesigns: {
+      backgroundColor: '#cf8383',
+      selectedBackgroundColor: '#2cc473',
+      badgeColor: '#60a3d9',
+      labelColor: '#c2c050',
+      textColor: '#a3115f',
+      cartNoticeBackground: '#60a3d9',
+      cartNoticeText: '#59178b',
+      cornerRadius: 'square'
+    }
   }
   return settings
 };
@@ -127,7 +139,8 @@ export default function DiscountPage() {
       excludedCollections: JSON.stringify(excludedCollections),
       volumeBundles: formState.discountType === 'volume_bundle' ? JSON.stringify(volumeBundles) : '',
       pricingTiers: formState.discountType === 'bulk_pricing' ? JSON.stringify(pricingTiers) : '',
-      storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : ''
+      storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : '',
+      customDesigns: formState.customDesigns ? JSON.stringify(formState.customDesigns) : ''
     }
     
     fetcher.submit(formData, { method: "POST" })
@@ -185,6 +198,10 @@ export default function DiscountPage() {
                   timezone={settings.timezone}
                 />
               ) }
+              <DesignOptions
+                formState={formState}
+                setFormState={setFormState}
+              />
             </BlockStack>
           </Layout.Section>
           <Layout.Section variant="oneThird">

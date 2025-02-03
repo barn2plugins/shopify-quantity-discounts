@@ -75,7 +75,8 @@ model DiscountBundle {
   activeDates           String?
   specificDates         String?
   storeDisplay          String?
-  design                String?
+  designOptions         String?
+  customDesigns         String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }
