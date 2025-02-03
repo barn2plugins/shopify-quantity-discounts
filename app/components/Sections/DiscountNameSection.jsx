@@ -7,9 +7,9 @@ export default function DiscountNameSection({ formState, setFormState }) {
       <TextField
         label="Discount name"
         labelHidden
-        name="discountName"
-        value={formState?.discountName}
-        onChange={(value) => setFormState({...formState, discountName: value})}
+        name="name"
+        value={formState?.name}
+        onChange={(value) => setFormState({...formState, name: value})}
         autoComplete="off"
       />
     </BlockStack>

@@ -2,6 +2,7 @@ import { vitePlugin as remix } from "@remix-run/dev";
 import { installGlobals } from "@remix-run/node";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { resolve } from "path";
 
 installGlobals({ nativeFetch: true });
 
@@ -63,4 +64,17 @@ export default defineConfig({
   build: {
     assetsInlineLimit: 0,
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: ``,
+        includePaths: ['./app/styles']
+      }
+    }
+  },
+  resolve: {
+    alias: {
+      '~': resolve(__dirname, 'app')
+    }
+  }
 });

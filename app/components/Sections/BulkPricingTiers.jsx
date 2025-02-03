@@ -17,8 +17,7 @@ import { PlusIcon, DeleteIcon, QuestionCircleIcon } from '@shopify/polaris-icons
 import { useEffect, useState } from 'react';
 
 // Internal components
-import styles from '../../styles.module.scss';
-import { currencyCodeToSymbol } from '../../../../utils/utils';
+import { currencyCodeToSymbol } from '../../utils/utils';
 import DateRangePicker from '../Fields/DateRangePicker';
 
 export default function BulkPricingTiers({ 
@@ -132,8 +131,8 @@ export default function BulkPricingTiers({
               selectable={false}
             >
               {pricingTiers.map((bundle, index) => (
-                <tr id={index} key={index} position={index} className={styles.volumn_bundle_table_row}>
-                  <td className={styles.cell_quantity}>
+                <tr id={index} key={index} position={index} className="volumn_bundle_table_row">
+                  <td className="cell_quantity">
                       <TextField
                         type="number"
                         min="1"
@@ -145,7 +144,7 @@ export default function BulkPricingTiers({
                         autoComplete="off"
                       />
                   </td>
-                  <td className={styles.cell_quantity}>
+                  <td className="cell_quantity">
                       <TextField
                         type="number"
                         min="1"
@@ -157,8 +156,8 @@ export default function BulkPricingTiers({
                         autoComplete="off"
                       />
                   </td>
-                  <td className={styles.cell_discount}>
-                      <div className={styles.combined_text_select_field}>
+                  <td className="cell_discount">
+                      <div className="combined_text_select_field">
                         <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
                           const value = event.target.value;
                           if (value === '') {
@@ -183,7 +182,7 @@ export default function BulkPricingTiers({
                         </select>
                       </div>
                   </td>
-                  <td className={styles.cell_action}>
+                  <td className="cell_action">
                     {index !== 0 && (
                       <span onClick={() => handleDeletePricingTier(index)}>
                         <Icon source={DeleteIcon} />
@@ -222,7 +221,7 @@ export default function BulkPricingTiers({
                     {label: 'Individual products', value: 'individual_products'},
                     {label: 'Entire cart', value: 'entire_cart'},
                   ]}
-                  selected={formState.discountCalculation}
+                  selected={formState?.discountCalculation}
                   onChange={(value) => {
                     setFormState({...formState, discountCalculation: value[0]})
                   }}
@@ -241,7 +240,7 @@ export default function BulkPricingTiers({
                       {label: 'Always available', value: 'always_available'},
                       {label: 'Specific dates', value: 'specific_dates'},
                     ]}
-                    selected={formState.activeDates}
+                    selected={formState?.activeDates}
                     onChange={(value) => {
                       setFormState({...formState, activeDates: value[0]})
                       setDatePickerVisible(value[0] === 'specific_dates');

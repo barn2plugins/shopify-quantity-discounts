@@ -6,7 +6,7 @@ import {
   TextField
 } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
-import { hexToRgba, rgbaToHsb, parseRgba, hsbToRgba, rgbaToHex } from '../../../../utils/utils';
+import { hexToRgba, rgbaToHsb, parseRgba, hsbToRgba, rgbaToHex } from '../../utils/utils';
 
 export default function ColorField({ onChange, value, field }) {
   const [visible, setVisible] = useState(false);

@@ -17,7 +17,6 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
 import { actions } from "../../actions/discount.actions";
-import { BundleService } from "../../services/bundle.service";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
 
@@ -35,12 +34,22 @@ import CollectionSelectorModal from "../../components/Modals/CollectionSelectorM
 import ProductExclusionsModal from "../../components/Modals/ProductExclusionsModal.jsx";
 import CollectionExclusionsModal from "../../components/Modals/CollectionExclusionsModal.jsx";
 
-export const loader = async ({ request }) => {
+export const loader = async ({ request, params }) => {
   const { session } = await authenticate.admin(request);
-  const defaultBundle = await BundleService.getDefaultBundle(session.id);
 
-  return defaultBundle
-};
+  const discountBundle = await prisma.discountBundle.findUnique({
+    where: {
+      id: parseInt(params.discountId),
+      sessionId: session.id
+    }
+  });
+
+  if (!discountBundle) {
+    throw new Error('Discount bundle not found');
+  }
+
+  return { discountBundle };
+}
 
 export const action = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -50,6 +59,7 @@ export const action = async ({ request }) => {
 
   try {
     const actionFn = actions[fetcherData.intent];
+    console.log(actionFn);
     if (!actionFn) return null;
     
     return await actionFn(
@@ -67,9 +77,9 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const settings = useLoaderData();
-  
-  const [ formState, setFormState ] = useState(settings);
+  const { discountBundle } = useLoaderData();
+
+  const [ formState, setFormState ] = useState(discountBundle);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
   const [ selectedCollections, setSelectedCollections ] = useState([]);
   const [ excludedProducts, setExcludedProducts ] = useState([]);
@@ -84,22 +94,15 @@ export default function DiscountPage() {
     excludedCollections
   );
 
-  const isLoading = ["loading", "submitting"].includes(fetcher.state) 
-    && fetcher.formMethod === "POST" 
-    && (fetcher.formData?.get("intent") === "create" || fetcher.formData?.get("intent") === "update");
-
-  const discountBundleId = fetcher.data?.discountBundle?.id;
-
-  useEffect(() => {
-    if ( discountBundleId ) {
-      shopify.toast.show("Discount bundle has been created");
-      setFormState({...formState, discountBundleId: discountBundleId});
-    }
-  }, [discountBundleId, shopify]);
+  const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
 
   useEffect(() => {
     setVolumeBundles(getDefaultBundleDiscountTypes())
     setPricingTiers(getDefaultPricingTiers())
+    setSelectedProducts(JSON.parse(discountBundle.selectedProducts))
+    setSelectedCollections(JSON.parse(discountBundle.selectedCollections))
+    setExcludedProducts(JSON.parse(discountBundle.excludedProducts))
+    setExcludedCollections(JSON.parse(discountBundle.excludedCollections))
   }, []);
 
   // On clicking the create discount button, set the form state to active and submit the form
@@ -107,7 +110,7 @@ export default function DiscountPage() {
     const formData = {
       ...formState,
       active: true,
-      intent: discountBundleId !== undefined ? 'update' : 'create',
+      intent: 'update',
       selectedProducts: JSON.stringify(selectedProducts),
       selectedCollections: JSON.stringify(selectedCollections),
       excludedProducts: JSON.stringify(excludedProducts),
@@ -117,7 +120,7 @@ export default function DiscountPage() {
       storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : '',
       customDesigns: formState.customDesigns ? JSON.stringify(formState.customDesigns) : ''
     }
-    
+
     fetcher.submit(formData, { method: "POST" })
   };
 
@@ -126,14 +129,14 @@ export default function DiscountPage() {
       <Page
         fullWidth={true}
         backAction={{content: 'Home', url: '/app'}}
-        title={ discountBundleId ? 'Update discount' : 'Create discount' }
+        title='Update discount'
         primaryAction={
           <Button 
             variant="primary"
             loading={isLoading}
             onClick={discountBundleAction}
           >
-              { discountBundleId ? 'Update' : 'Create' }
+            Update
           </Button>
         }
       >
@@ -163,16 +166,17 @@ export default function DiscountPage() {
                   />
                 </Card>
               ) }
-              
+
               { formState.type === 'bulk_pricing' && (
                 <BulkPricingTiers 
                   formState={formState}
                   setFormState={setFormState}
                   pricingTiers={pricingTiers}
                   setPricingTiers={setPricingTiers}
-                  timezone={settings.timezone}
+                  timezone={formState.timezone}
                 />
               ) }
+
               <DesignOptions
                 formState={formState}
                 setFormState={setFormState}

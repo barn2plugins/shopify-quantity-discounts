@@ -11,6 +11,7 @@ import {
 import PartnerDevelopment from "./components/Notice/PartnerDevelopment";
 import prisma from "./db.server";
 import { authenticate } from "./shopify.server";
+import './styles/app.scss';
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -40,7 +41,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <div>
+        <div className="barn2-app-root">
           { user.isPartnerDevelopment && <PartnerDevelopment/> }
           <Outlet />
         </div>

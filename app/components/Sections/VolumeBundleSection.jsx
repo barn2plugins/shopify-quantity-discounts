@@ -12,8 +12,7 @@ import {
 import { PlusIcon, DeleteIcon } from '@shopify/polaris-icons';
 
 // Internal components
-import styles from '../../styles.module.scss';
-import { currencyCodeToSymbol } from '../../../../utils/utils';
+import { currencyCodeToSymbol } from '../../utils/utils';
 
 export default function VolumeBundleSection({ 
   currencyCode, 
@@ -105,8 +104,8 @@ export default function VolumeBundleSection({
             selectable={false}
           >
             {volumeBundles.map((bundle, index) => (
-              <tr id={index} key={index} position={index} className={styles.volumn_bundle_table_row}>
-                <td className={styles.cell_quantity}>
+              <tr id={index} key={index} position={index} className="volumn_bundle_table_row">
+                <td className="cell_quantity">
                   <div style={{width: '70px'}}>
                     <TextField
                       type="number"
@@ -120,8 +119,8 @@ export default function VolumeBundleSection({
                     />
                   </div>
                 </td>
-                <td className={styles.cell_discount}>
-                    <div className={`${styles.combined_text_select_field} ${styles.text_select_combined_width}`}>
+                <td className="cell_discount">
+                    <div className="combined_text_select_field text_select_combined_width">
                       <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
                         const value = event.target.value;
                         if (value === '') {
@@ -146,14 +145,14 @@ export default function VolumeBundleSection({
                       </select>
                     </div>
                 </td>
-                <td className={styles.cell_description}>
+                <td className="cell_description">
                   <TextField
                     type="text"
                     value={bundle.description.toString()}
                     onChange={(value) => handleVolumeChange(index, 'description', value)}
                   />
                 </td>
-                <td className={styles.cell_label}>
+                <td className="cell_label">
                   <TextField
                     type="text"
                     placeholder='Popular'
@@ -161,7 +160,7 @@ export default function VolumeBundleSection({
                     onChange={(value) => handleVolumeChange(index, 'label', value)}
                   />
                 </td>
-                <td className={styles.cell_highlighted}>
+                <td className="cell_highlighted">
                   <InlineStack align="center">
                     <Checkbox
                       checked={bundle.highlighted}
@@ -169,7 +168,7 @@ export default function VolumeBundleSection({
                     />
                   </InlineStack>
                 </td>
-                <td className={styles.cell_action}>
+                <td className="cell_action">
                   {index !== 0 && (
                     <span onClick={() => handleDeleteVolume(index)}>
                       <Icon source={DeleteIcon} />

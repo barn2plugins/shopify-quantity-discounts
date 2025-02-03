@@ -1,6 +1,5 @@
 import { BlockStack, InlineStack, Text, Tooltip, Icon, Grid, Card, Box } from "@shopify/polaris";
 import { BookIcon, CashPoundIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
-import styles from "../../styles.module.scss";
 
 export default function DiscountTypeSection({ formState, setFormState }) {
   return (
@@ -19,17 +18,17 @@ export default function DiscountTypeSection({ formState, setFormState }) {
       </InlineStack>
       <Grid>
         <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
-          <div className={styles.checkboxWrapper}>
+          <div className="checkbox-wrapper">
             <input 
               type="radio" 
-              name="discountType"
+              name="type"
               id="volumeBundleType" 
               value="volume_bundle"
-              checked={formState?.discountType === 'volume_bundle' ? true : false}
-              onChange={(value) => setFormState({...formState, discountType: value.target.defaultValue})}
+              checked={formState?.type === 'volume_bundle' ? true : false}
+              onChange={(value) => setFormState({...formState, type: value.target.defaultValue})}
             />
             <label htmlFor="volumeBundleType">
-              <Card background={ formState.discountType === 'volume_bundle' ? 'bg-surface-secondary' : '' }>
+              <Card background={ formState.type === 'volume_bundle' ? 'bg-surface-secondary' : '' }>
                 <Box minHeight="90px">
                   <BlockStack gap="200">
                     <InlineStack align="start" gap={200}>
@@ -44,17 +43,17 @@ export default function DiscountTypeSection({ formState, setFormState }) {
           </div>
         </Grid.Cell>
         <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
-          <div className={styles.checkboxWrapper}>
+          <div className="checkbox-wrapper">
             <input 
               type="radio" 
-              name="discountType" 
+              name="type" 
               id="bulkPricingType" 
               value="bulk_pricing"
-              checked={formState?.discountType === 'bulk_pricing' ? true : false}
-              onChange={(value) => setFormState({...formState, discountType: value.target.defaultValue})}
+              checked={formState?.type === 'bulk_pricing' ? true : false}
+              onChange={(value) => setFormState({...formState, type: value.target.defaultValue})}
             />
             <label htmlFor="bulkPricingType">
-              <Card background={ formState.discountType === 'bulk_pricing' ? 'bg-surface-secondary' : '' }>
+              <Card background={ formState.type === 'bulk_pricing' ? 'bg-surface-secondary' : '' }>
                 <Box minHeight="90px">
                   <BlockStack gap="200">
                     <InlineStack align="start" gap={200}>

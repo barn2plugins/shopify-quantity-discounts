@@ -30,6 +30,14 @@ export const action = async ({ request }) => {
                 active: false,
                 sessionId: originalBundle.sessionId,
                 previewEnabled: false,
+                volumeBundles: originalBundle.volumeBundles,
+                pricingTiers: originalBundle.pricingTiers,
+                discountCalculation: originalBundle.discountCalculation,
+                activeDates: originalBundle.activeDates,
+                specificDates: originalBundle.specificDates,
+                storeDisplay: originalBundle.storeDisplay,
+                designOptions: originalBundle.designOptions,
+                customDesigns: originalBundle.customDesigns,
             },
         });
 

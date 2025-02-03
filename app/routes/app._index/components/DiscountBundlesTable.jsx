@@ -14,7 +14,6 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { useFetcher } from "@remix-run/react";
 
 import DeleteConfirmationModal from "./Modals/DeleteConfirmationModal";
-import styles from '../styles.module.scss'
 import { getApplyToText } from "../../../utils/utils";
 
 export default function DiscountBundlesTable({ discountBundles }) {
@@ -86,7 +85,12 @@ export default function DiscountBundlesTable({ discountBundles }) {
 
   const renderRowActions = (bundle) => (
     <InlineStack gap="200">
-      <Button icon={EditIcon} plain accessibilityLabel={`Edit discount ${bundle.id}`} />
+      <Button 
+        icon={EditIcon} 
+        plain 
+        accessibilityLabel={`Edit discount ${bundle.id}`} 
+        url={`/app/discount/edit/${bundle.id}`}
+      />
       <Button 
         icon={DuplicateIcon} 
         plain 
@@ -135,24 +139,24 @@ export default function DiscountBundlesTable({ discountBundles }) {
                 selectable={false}
               >
                 {bundles.map((bundle, index) => (
-                  <tr id={bundle.id} key={bundle.id} position={index} className={styles.discounts_table_row}>
-                    <td className={styles.colSorticon}>
+                  <tr id={bundle.id} key={bundle.id} position={index} className="discounts_table_row">
+                    <td className="col-sort-icon">
                       <Icon source={SortIcon} color="subdued" />
                     </td>
-                    <td className={styles.colPriority}>
+                    <td className="col-priority">
                       <Text variation="strong">{bundle.priority}</Text>
                     </td>
-                    <td className={styles.colBundleName}>
+                    <td className="col-bundle-name">
                       <Text>{bundle.name}</Text>
                     </td>
-                    <td className={styles.colBundleTyoe}>
+                    <td className="col-bundle-type">
                       { bundle.type === 'volume_bundle' ? 'Volume bundle' : 'Bulk pricing' }
                     </td>
-                    <td className={styles.colAppliedTo}>
+                    <td className="colp-applied-to">
                       {getApplyToText(bundle)}
                     </td>
-                    <td className={styles.colStatus}>
-                      <div className={styles.toggle}>
+                    <td className="col-status">
+                      <div className="toggle-switcher">
                         <input 
                           type="checkbox" 
                           id={`switch-${bundle.id}`}
@@ -164,7 +168,7 @@ export default function DiscountBundlesTable({ discountBundles }) {
                         <label htmlFor={`switch-${bundle.id}`}>Toggle</label>
                       </div>
                     </td>
-                    <td className={styles.colActions} alignment="right">
+                    <td className="col-actions" alignment="right">
                       {renderRowActions(bundle)}
                     </td>
                   </tr>

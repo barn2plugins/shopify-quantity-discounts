@@ -28,7 +28,6 @@ export default function DesignOptions({ formState, setFormState }) {
         [value.field]: value.color
       }
     }));
-    console.log(formState.customDesigns);
   };
 
   return (

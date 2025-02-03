@@ -29,19 +29,21 @@ export default function Index() {
   const { statisticsData, discountBundles } = useLoaderData();
 
   return (
-    <Page fullWidth={discountBundles.length > 0 ? true : false}>
-      <Box style={{ paddingBottom: '40px' }}>
-        { discountBundles.length === 0 && (
-          <EmptyStateComponent />
-        ) }
-  
-        { discountBundles.length > 0 && (
-          <BlockStack gap="500">
-            <DiscountStatistics statisticsData={statisticsData}/>
-            <DiscountBundlesTable discountBundles={discountBundles} />
-          </BlockStack>
-        ) }
-      </Box>
-    </Page>
+    <div className="barn2-app-home">
+      <Page fullWidth={discountBundles.length > 0 ? true : false}>
+        <Box style={{ paddingBottom: '40px' }}>
+          { discountBundles.length === 0 && (
+            <EmptyStateComponent />
+          ) }
+    
+          { discountBundles.length > 0 && (
+            <BlockStack gap="500">
+              <DiscountStatistics statisticsData={statisticsData}/>
+              <DiscountBundlesTable discountBundles={discountBundles} />
+            </BlockStack>
+          ) }
+        </Box>
+      </Page>
+    </div>
   );
 }
