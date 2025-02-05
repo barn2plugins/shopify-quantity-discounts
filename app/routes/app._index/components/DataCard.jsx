@@ -6,13 +6,15 @@ BlockStack,
 function DataCard({data}) {
   return (
     <BlockStack gap="200">
-      <Text as="p" variant="bodySm" tone="subdued">{data.title}</Text>
-      <Text variant="headingLg" as="h4" fontWeight="medium">
+      <p style={{color: 'var(--p-color-text-secondary)'}}>
+        <Text as="span" variant="bodySm">{data.title}</Text>
+      </p>
+      <Text variant="headingXl" as="h4" fontWeight="bold">
         ${data.amount}
       </Text>
-      <Text as="p" variant="bodySm" tone="subdued" fontWeight="medium">
-      ${data.subdued}
-      </Text>
+      <p style={{color: 'var(--p-color-text-secondary)'}}>
+        <Text as="span" variant="bodySm">${data.subdued}</Text>
+      </p>
     </BlockStack>
   )
 }

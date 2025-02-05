@@ -18,20 +18,26 @@ export default function DiscountStatistics({statisticsData}) {
           <Grid>
             <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
               <Card>
-                <BlockStack gap="500">
-                  <InlineStack align="space-between">
+                <Grid>
+                  <Grid.Cell columnSpan={{xs: 6, sm: 7, md: 7, lg: 7, xl: 7}}>
                     <DataCard data={statisticsData.discountedMonthlyOrders} />
+                  </Grid.Cell>
+                  <Grid.Cell columnSpan={{xs: 6, sm: 5, md: 5, lg: 5, xl: 5}}>
                     <DataCard data={statisticsData.discountedAllTimeOrders} />
-                  </InlineStack>
-                </BlockStack>
+                  </Grid.Cell>
+                </Grid>
               </Card>
             </Grid.Cell>
             <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
               <Card>
-                <InlineStack align="space-between">
+                <Grid>
+                  <Grid.Cell columnSpan={{xs: 6, sm: 7, md: 7, lg: 7, xl: 7}}>
                     <DataCard data={statisticsData.discountedMonthlyRevenue} />
+                  </Grid.Cell>
+                  <Grid.Cell columnSpan={{xs: 6, sm: 5, md: 5, lg: 5, xl: 5}}>
                     <DataCard data={statisticsData.discountedAllTimeRevenue} />
-                </InlineStack>
+                  </Grid.Cell>
+                </Grid>
               </Card>
             </Grid.Cell>
           </Grid>

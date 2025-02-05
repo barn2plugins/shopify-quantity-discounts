@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useFetcher } from "@remix-run/react";
 
-import DeleteConfirmationModal from "./Modals/DeleteConfirmationModal";
+import DeleteConfirmationModal from "../../../components/Modals/DeleteConfirmationModal";
 import { getApplyToText } from "../../../utils/utils";
 
 export default function DiscountBundlesTable({ discountBundles }) {

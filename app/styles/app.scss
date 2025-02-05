@@ -158,6 +158,10 @@
         transform: translateX(-100%);
       }
     }
+
+    &:active label:after {
+      width: 130px;
+    }
   }
 
   label {
@@ -180,10 +184,6 @@
       background: #fff;
       border-radius: 90px;
       transition: 0.3s;
-    }
-
-    &:active:after {
-      width: 130px;
     }
   }
 }
