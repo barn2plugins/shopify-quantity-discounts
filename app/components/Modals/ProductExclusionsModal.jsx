@@ -81,7 +81,7 @@ export default function ProductExclusionsModal({
 
   return (
     <Modal id="exclude-products-modal" variant="base" onShow={loadProducts}>
-      <TitleBar title="Select products"></TitleBar>
+      <TitleBar title="Exclude products"></TitleBar>
       <div style={{ maxHeight: '600px' }}>
         <ResourceList
           resourceName={resourceName}

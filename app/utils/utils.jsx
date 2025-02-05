@@ -348,3 +348,23 @@ export const rgbaToHex = ({ r, g, b, a }) => {
   };
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
+
+/**
+ * Parses JSON strings in a discount bundle object into their corresponding JavaScript objects.
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.discountBundle - The discount bundle object to parse
+ * @param {string} params.discountBundle.storeDisplay - JSON string containing store display settings
+ * @param {string} params.discountBundle.customDesigns - JSON string containing custom design settings
+ * @returns {Promise<Object>} The discount bundle object with parsed storeDisplay and customDesigns properties
+ */
+export const parseBundleObject = async ( {discountBundle} ) => {
+  if (discountBundle.storeDisplay ) {
+    discountBundle.storeDisplay = JSON.parse(discountBundle.storeDisplay);
+  }
+  if (discountBundle.customDesigns) {
+    discountBundle.customDesigns = JSON.parse(discountBundle.customDesigns);
+  }
+
+  return discountBundle;
+}

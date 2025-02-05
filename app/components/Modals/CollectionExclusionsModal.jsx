@@ -82,7 +82,7 @@ import {
   
     return (
       <Modal id="exclude-collections-modal" variant="base" onShow={loadCollections}>
-        <TitleBar title="Select products"></TitleBar>
+        <TitleBar title="Exclude collections"></TitleBar>
         <div style={{ maxHeight: '600px' }}>
           <ResourceList
             resourceName={resourceName}

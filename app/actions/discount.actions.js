@@ -2,6 +2,20 @@
  * Collection of actions for managing discount bundles and related data
  */
 export const actions = {
+
+    /**
+     * Fetches a specific discount bundle for the current session
+     * @param {Object} params - The parameters object
+     * @param {Object} params.session - Session object containing user session data
+     * @param {string} params.session.id - ID of the current user session
+     * @param {Object} params.params - URL parameters object
+     * @param {string|number} params.params.discountId - ID of the discount bundle to fetch
+     * @returns {Promise<Object|null>} Discount bundle object if found, null otherwise
+     */
+    getDiscountBundle: async ({session, params}) => {
+      return await fetchDiscount(session.id, params.discountId);
+    },
+
     /**
      * Fetches products from Shopify Admin API
      * @param {Object} admin - Shopify Admin API client
@@ -30,7 +44,8 @@ export const actions = {
      * @param {string} params.fetcherData.name - Name of the discount
      * @param {string} params.fetcherData.type - Type of discount (volume_bundle or bulk_pricing)
      * @param {string} params.fetcherData.whichProducts - Product selection type
-     * @param {boolean} params.fetcherData.preview - Preview enabled status
+     * @param {string} params.fetcherData.layout - Discount bundle layout
+     * @param {boolean} params.fetcherData.previewEnabled - Preview enabled status
      * @param {boolean} params.fetcherData.active - Active status
      * @param {string} params.fetcherData.selectedProducts - JSON string of selected products
      * @param {string} params.fetcherData.selectedCollections - JSON string of selected collections
@@ -47,7 +62,8 @@ export const actions = {
           name: fetcherData.name,
           type: fetcherData.type,
           whichProducts: fetcherData.whichProducts,
-          previewEnabled: fetcherData.preview ? true : false,
+          layout: fetcherData.layout,
+          previewEnabled: fetcherData.previewEnabled ? true : false,
           active: fetcherData.active ? true : false,
           session: { connect: { id: session.id } },
           selectedProducts: fetcherData.selectedProducts,
@@ -59,7 +75,7 @@ export const actions = {
           discountCalculation: fetcherData.discountCalculation,
           activeDates: fetcherData.activeDates,
           specificDates: fetcherData.specificDates,
-          storeDisplay: JSON.stringify(fetcherData.storeDisplay),
+          storeDisplay: fetcherData.storeDisplay,
           designOptions: fetcherData.designOptions,
           customDesigns: fetcherData.customDesigns,
         }
@@ -76,7 +92,8 @@ export const actions = {
      * @param {string} params.fetcherData.name - Updated name of the discount
      * @param {string} params.fetcherData.type - Updated type of discount
      * @param {string} params.fetcherData.whichProducts - Updated product selection type
-     * @param {boolean} params.fetcherData.preview - Updated preview enabled status
+     * @param {string} params.fetcherData.layout - Discount bundle layout
+     * @param {boolean} params.fetcherData.previewEnabled - Updated preview enabled status
      * @param {boolean} params.fetcherData.active - Updated active status
      * @param {string} params.fetcherData.selectedProducts - Updated JSON string of selected products
      * @param {string} params.fetcherData.selectedCollections - Updated JSON string of selected collections
@@ -93,7 +110,8 @@ export const actions = {
           type: fetcherData.type,
           name: fetcherData.name,
           whichProducts: fetcherData.whichProducts,
-          previewEnabled: fetcherData.preview ? true : false,
+          layout: fetcherData.layout,
+          previewEnabled: fetcherData.previewEnabled ? true : false,
           active: fetcherData.active ? true : false,
           selectedProducts: fetcherData.selectedProducts,
           selectedCollections: fetcherData.selectedCollections,
@@ -104,7 +122,7 @@ export const actions = {
           discountCalculation: fetcherData.discountCalculation,
           activeDates: fetcherData.activeDates,
           specificDates: fetcherData.specificDates,
-          storeDisplay: JSON.stringify(fetcherData.storeDisplay),
+          storeDisplay: fetcherData.storeDisplay,
           designOptions: fetcherData.designOptions,
           customDesigns: fetcherData.customDesigns,
         }
@@ -194,4 +212,27 @@ export const actions = {
     
     const responseJson = await response.json();
     return responseJson;
+  }
+
+  /**
+   * Fetches a discount bundle from the database
+   * 
+   * @param {string} sessionId - Session ID for the current user
+   * @param {string|number} discountId - ID of the discount bundle to fetch
+   * @returns {Promise<Object|null>} Discount bundle object or null if not found
+   */
+  const fetchDiscount = async (sessionId, discountId) => {
+    try {
+      const bundle = await prisma.discountBundle.findUnique({
+        where: {
+          id: parseInt(discountId),
+          sessionId: sessionId
+        }
+      });
+      
+      return bundle;
+    } catch (error) {
+      console.error('Error fetching or parsing discount bundle:', error);
+      return null;
+    }
   }

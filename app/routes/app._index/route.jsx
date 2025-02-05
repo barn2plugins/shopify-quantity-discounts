@@ -32,7 +32,7 @@ export default function Index() {
     <div className="barn2-app-home">
       <Page fullWidth={discountBundles.length > 0 ? true : false}>
         <Box style={{ paddingBottom: '40px' }}>
-          { discountBundles.length === 0 && (
+          { discountBundles.length <= 0 && (
             <EmptyStateComponent />
           ) }
     

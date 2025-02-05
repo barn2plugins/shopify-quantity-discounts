@@ -82,7 +82,7 @@ import {
   
     return (
       <Modal id="select-collections-modal" variant="base" onShow={loadCollections}>
-        <TitleBar title="Select products"></TitleBar>
+        <TitleBar title="Select collections"></TitleBar>
         <div style={{ maxHeight: '600px' }}>
           <ResourceList
             resourceName={resourceName}

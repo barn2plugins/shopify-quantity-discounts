@@ -3,10 +3,6 @@ import {
   Page,
   Button,
   Layout,
-  Card,
-  Text,
-  BlockStack,
-  InlineStack,
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
@@ -18,37 +14,26 @@ import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
 import { actions } from "../../actions/discount.actions";
 
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils";
 
-import DiscountNameSection from "../../components/Sections/DiscountNameSection.jsx";
-import DiscountTypeSection from "../../components/Sections/DiscountTypeSection.jsx";
-import ProductSelectionSection from "../../components/Sections/ProductSelectionSection.jsx";
-import VolumeBundleSection from "../../components/Sections/VolumeBundleSection.jsx";
-import BulkPricingTiers from "../../components/Sections/BulkPricingTiers.jsx";
-import DesignOptions from "../../components/Sections/DesignOptions.jsx";
+import Content from "../../components/Layouts/Discount/Content.jsx";
+import Sidebar from "../../components/Layouts/Discount/Sidebar.jsx";
 
-import { useButtonLabels } from "../../hooks/useButtonLabels.js";
-
-import ProductSelectorModal from "../../components/Modals/ProductSelectorModal.jsx";
-import CollectionSelectorModal from "../../components/Modals/CollectionSelectorModal.jsx";
-import ProductExclusionsModal from "../../components/Modals/ProductExclusionsModal.jsx";
-import CollectionExclusionsModal from "../../components/Modals/CollectionExclusionsModal.jsx";
+import DiscountModals from "../../components/Modals/DiscountModals.jsx";
 
 export const loader = async ({ request, params }) => {
   const { session } = await authenticate.admin(request);
-
-  const discountBundle = await prisma.discountBundle.findUnique({
-    where: {
-      id: parseInt(params.discountId),
-      sessionId: session.id
-    }
-  });
-
-  if (!discountBundle) {
-    throw new Error('Discount bundle not found');
+  const discountBundle = await actions.getDiscountBundle({session, params});
+  const parsedDiscountBundle = await parseBundleObject({discountBundle});
+  
+  if (!parsedDiscountBundle) {
+    throw new Response("Discount bundle not found", {
+      status: 404,
+      statusText: "Not Found"
+    });
   }
 
-  return { discountBundle };
+  return { discountBundle: parsedDiscountBundle };
 }
 
 export const action = async ({ request }) => {
@@ -59,7 +44,6 @@ export const action = async ({ request }) => {
 
   try {
     const actionFn = actions[fetcherData.intent];
-    console.log(actionFn);
     if (!actionFn) return null;
     
     return await actionFn(
@@ -87,18 +71,11 @@ export default function DiscountPage() {
   const [ volumeBundles, setVolumeBundles ] = useState([]);
   const [ pricingTiers, setPricingTiers ] = useState([]);
 
-  const buttonLabels = useButtonLabels(
-    selectedProducts, 
-    selectedCollections, 
-    excludedProducts, 
-    excludedCollections
-  );
-
   const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
 
   useEffect(() => {
-    setVolumeBundles(getDefaultBundleDiscountTypes())
-    setPricingTiers(getDefaultPricingTiers())
+    setVolumeBundles(discountBundle.volumeBundles ? JSON.parse(discountBundle.volumeBundles) : getDefaultBundleDiscountTypes())
+    setPricingTiers(discountBundle.pricingTiers ? JSON.parse(discountBundle.pricingTiers) : getDefaultPricingTiers())
     setSelectedProducts(JSON.parse(discountBundle.selectedProducts))
     setSelectedCollections(JSON.parse(discountBundle.selectedCollections))
     setExcludedProducts(JSON.parse(discountBundle.excludedProducts))
@@ -142,87 +119,38 @@ export default function DiscountPage() {
       >
         <Layout>
           <Layout.Section>
-            <BlockStack gap={600}>
-              <Card>
-                <BlockStack gap={600}>
-                    <DiscountNameSection formState={formState} setFormState={setFormState} />
-                    <DiscountTypeSection formState={formState} setFormState={setFormState} />
-                    <ProductSelectionSection 
-                      formState={formState}
-                      setFormState={setFormState}
-                      selectedCollections={selectedCollections}
-                      shopify={shopify}
-                      buttonLabels={buttonLabels}
-                    />
-                </BlockStack>
-              </Card>
-
-              { formState.type === 'volume_bundle' && (
-                <Card>
-                  <VolumeBundleSection 
-                    currencyCode={formState.currencyCode}
-                    volumeBundles={volumeBundles}
-                    setVolumeBundles={setVolumeBundles}
-                  />
-                </Card>
-              ) }
-
-              { formState.type === 'bulk_pricing' && (
-                <BulkPricingTiers 
-                  formState={formState}
-                  setFormState={setFormState}
-                  pricingTiers={pricingTiers}
-                  setPricingTiers={setPricingTiers}
-                  timezone={formState.timezone}
-                />
-              ) }
-
-              <DesignOptions
-                formState={formState}
-                setFormState={setFormState}
-              />
-            </BlockStack>
+            <Content
+              formState={formState}
+              setFormState={setFormState}
+              selectedProducts={selectedProducts}
+              selectedCollections={selectedCollections}
+              excludedProducts={excludedProducts}
+              excludedCollections={excludedCollections}
+              volumeBundles={volumeBundles}
+              setVolumeBundles={setVolumeBundles}
+              pricingTiers={pricingTiers}
+              setPricingTiers={setPricingTiers}
+              discountBundle={discountBundle}
+              shopify={shopify}
+            />
           </Layout.Section>
           <Layout.Section variant="oneThird">
-            <Card>
-              <InlineStack gap={150} blockAlign="center">
-                <Text as="p" variant="bodyLg" fontWeight="medium">Preview</Text>
-                <div className="toggle-switcher">
-                  <input 
-                    type="checkbox" 
-                    id="switch" 
-                    name="preview" 
-                    value={formState.preview}
-                    checked={formState.preview}
-                    onChange={(event) => {
-                      setFormState({...formState, preview: event.target.checked})
-                    }}
-                  />
-                  <label htmlFor="switch">Toggle</label>
-                </div>
-              </InlineStack>
-            </Card>
+            <Sidebar
+              formState={formState}
+              setFormState={setFormState}
+            />
           </Layout.Section>
         </Layout>
       </Page>
 
-      <ProductSelectorModal
+      <DiscountModals
         selectedProducts={selectedProducts}
-        setSelectedProducts={setSelectedProducts}
-        fetcher={fetcher}
-      />
-      <CollectionSelectorModal
         selectedCollections={selectedCollections}
-        setSelectedCollections={setSelectedCollections}
-        fetcher={fetcher}
-      />
-      <ProductExclusionsModal
         excludedProducts={excludedProducts}
-        setExcludedProducts={setExcludedProducts}
-        fetcher={fetcher}
-      />
-      <CollectionExclusionsModal
         excludedCollections={excludedCollections}
+        setSelectedProducts={setSelectedProducts}
+        setSelectedCollections={setSelectedCollections}
+        setExcludedProducts={setExcludedProducts}
         setExcludedCollections={setExcludedCollections}
         fetcher={fetcher}
       />

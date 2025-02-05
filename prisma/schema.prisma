@@ -58,9 +58,10 @@ model Session {
 model DiscountBundle {
   id                    Int       @id @default(autoincrement())
   name                  String
-  type                  String
-  previewEnabled        Boolean
-  whichProducts         String
+  type                  String?
+  previewEnabled        Boolean?
+  whichProducts         String?
+  layout                String?
   priority              Int       @default(0)
   active                Boolean
   sessionId             String

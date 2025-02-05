@@ -19,7 +19,7 @@ export class BundleService {
       name: 'Bundle',
       type: 'volume_bundle',
       whichProducts: 'all_products',
-      preview: true,
+      previewEnabled: true,
       active: false,
       currencyCode: currency || '$',
       discountCalculation: 'individual_products',

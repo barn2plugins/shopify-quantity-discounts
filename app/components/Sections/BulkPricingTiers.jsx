@@ -110,7 +110,13 @@ export default function BulkPricingTiers({
     setPricingTiers([...pricingTiers, newTier]);
   };
 
-  if (pricingTiers.length <= 1) {
+  useEffect(() => {
+    if (formState.activeDates === 'specific_dates') {
+      setDatePickerVisible(true);
+    }
+  }, [])
+
+  if (pricingTiers.length <= 0) {
     return null;
   }
 
