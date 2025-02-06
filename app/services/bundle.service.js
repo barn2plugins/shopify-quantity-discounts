@@ -35,6 +35,12 @@ export class BundleService {
         cartNoticeBackground: '#60a3d9',
         cartNoticeText: '#59178b',
         cornerRadius: 'square'
+      },
+      previewOptions: {
+        title: '',
+        description: '',
+        showOriginalPrice: true,
+        amountSaved: true
       }
     }
   }

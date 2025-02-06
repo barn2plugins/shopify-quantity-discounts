@@ -358,13 +358,19 @@ export const rgbaToHex = ({ r, g, b, a }) => {
  * @param {string} params.discountBundle.customDesigns - JSON string containing custom design settings
  * @returns {Promise<Object>} The discount bundle object with parsed storeDisplay and customDesigns properties
  */
-export const parseBundleObject = async ( {discountBundle} ) => {
+export const parseBundleObject = async ( {discountBundle, store} ) => {
   if (discountBundle.storeDisplay ) {
     discountBundle.storeDisplay = JSON.parse(discountBundle.storeDisplay);
   }
   if (discountBundle.customDesigns) {
     discountBundle.customDesigns = JSON.parse(discountBundle.customDesigns);
   }
+  if (discountBundle.previewOptions) {
+    discountBundle.previewOptions = JSON.parse(discountBundle.previewOptions);
+  }
+
+  discountBundle.currencyCode = discountBundle.currencyCode ? currency : '$';
+  discountBundle.timezone = discountBundle.timezone? timezone : 'UTC';
 
   return discountBundle;
 }

@@ -1,31 +1,42 @@
+// External libraries and components
 import {
+  BlockStack,
   Card,
-  InlineStack,
-  Text
 } from '@shopify/polaris';
+
+// Internal libraries and components
+import PreviewToggle from '../../Sections/PreviewToggle';
+import BundlePreview from '../../Sections/BundlePreview';
+import PreviewOptions from '../../Sections/PreviewOptions';
 
 export default function Sidebar({
   formState,
   setFormState,
+  volumeBundles
 }) {
   return (
     <Card>
-      <InlineStack gap={150} blockAlign="center">
-        <Text as="p" variant="bodyLg" fontWeight="medium">Preview</Text>
-        <div className="toggle-switcher">
-          <input 
-            type="checkbox" 
-            id="switch" 
-            name="previewEnabled" 
-            value={formState.previewEnabled}
-            checked={formState.previewEnabled}
-            onChange={(event) => {
-              setFormState({...formState, previewEnabled: event.target.checked})
-            }}
+      <BlockStack gap={1000}>
+        <BlockStack gap={500}>
+          <PreviewToggle
+            formState={formState}
+            setFormState={setFormState}
           />
-          <label htmlFor="switch">Toggle</label>
-        </div>
-      </InlineStack>
+
+          <BundlePreview
+            formState={formState}
+            setFormState={setFormState}
+            volumeBundles={volumeBundles}
+          />
+        </BlockStack>
+
+        <BlockStack gap={500}>
+          <PreviewOptions 
+            formState={formState}
+            setFormState={setFormState}
+          />
+        </BlockStack>
+      </BlockStack>
     </Card>
   )
 }

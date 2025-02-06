@@ -13,6 +13,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
 import { actions } from "../../actions/discount.actions";
+import { StoreService } from "../../services/store.service";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils";
 
@@ -23,8 +24,10 @@ import DiscountModals from "../../components/Modals/DiscountModals.jsx";
 
 export const loader = async ({ request, params }) => {
   const { session } = await authenticate.admin(request);
+  const store = await StoreService.getStoreDetails(session.id);
   const discountBundle = await actions.getDiscountBundle({session, params});
-  const parsedDiscountBundle = await parseBundleObject({discountBundle});
+  const { currency, timezone } = store || {};
+  const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency, timezone });
   
   if (!parsedDiscountBundle) {
     throw new Response("Discount bundle not found", {
@@ -82,7 +85,7 @@ export default function DiscountPage() {
     setExcludedCollections(JSON.parse(discountBundle.excludedCollections))
   }, []);
 
-  // On clicking the create discount button, set the form state to active and submit the form
+  // On clicking the update discount button, set the form state to active and submit the form
   const discountBundleAction = () => {
     const formData = {
       ...formState,
@@ -95,7 +98,8 @@ export default function DiscountPage() {
       volumeBundles: formState.type === 'volume_bundle' ? JSON.stringify(volumeBundles) : '',
       pricingTiers: formState.type === 'bulk_pricing' ? JSON.stringify(pricingTiers) : '',
       storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : '',
-      customDesigns: formState.customDesigns ? JSON.stringify(formState.customDesigns) : ''
+      customDesigns: formState.customDesigns ? JSON.stringify(formState.customDesigns) : '',
+      previewOptions: formState.previewOptions ? JSON.stringify(formState.previewOptions) : ''
     }
 
     fetcher.submit(formData, { method: "POST" })
@@ -117,8 +121,8 @@ export default function DiscountPage() {
           </Button>
         }
       >
-        <Layout>
-          <Layout.Section>
+        <div className="discount-layout">
+          <div className="discount-content">
             <Content
               formState={formState}
               setFormState={setFormState}
@@ -133,14 +137,15 @@ export default function DiscountPage() {
               discountBundle={discountBundle}
               shopify={shopify}
             />
-          </Layout.Section>
-          <Layout.Section variant="oneThird">
+          </div>
+          <div className="discount-sidebar">
             <Sidebar
               formState={formState}
               setFormState={setFormState}
+              volumeBundles={volumeBundles}
             />
-          </Layout.Section>
-        </Layout>
+          </div>
+        </div>
       </Page>
 
       <DiscountModals

@@ -78,6 +78,7 @@ export const actions = {
           storeDisplay: fetcherData.storeDisplay,
           designOptions: fetcherData.designOptions,
           customDesigns: fetcherData.customDesigns,
+          previewOptions: fetcherData.previewOptions
         }
       });
       return { success: true, discountBundle };
@@ -125,6 +126,7 @@ export const actions = {
           storeDisplay: fetcherData.storeDisplay,
           designOptions: fetcherData.designOptions,
           customDesigns: fetcherData.customDesigns,
+          previewOptions: fetcherData.previewOptions,
         }
       });
       return { success: true, discountBundle };

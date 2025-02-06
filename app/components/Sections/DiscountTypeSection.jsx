@@ -35,7 +35,7 @@ export default function DiscountTypeSection({ formState, setFormState }) {
                       <Box><Icon source={BookIcon} color="subdued" /></Box>
                       <Text as="p" variant="bodyLg" fontWeight="medium">Volume bundle</Text>
                     </InlineStack>
-                    <Text as="p" variant="body" tone="subdued">Display eye-catching discounts for buying up to 5 of the same product</Text>
+                    <Text as="p" variant="body" tone="subdued">Displaying eye-catching discounts for buying fixed quantities of the same product.</Text>
                   </BlockStack>
                 </Box>
               </Card>

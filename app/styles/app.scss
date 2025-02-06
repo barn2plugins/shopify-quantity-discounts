@@ -2,6 +2,18 @@
  
 }
 
+.discount-layout {
+  display: flex;
+  gap: 20px;
+
+  .discount-content {
+    flex: 0 0 60%;
+  }
+  .discount-sidebar {
+    flex: 0 0 40%;
+  }
+}
+
 // App Home Page
 .barn2-app-home {
   .discounts_table_row {
@@ -135,6 +147,117 @@
   }
   input[type=radio] {
     display: none;
+  }
+}
+
+// Bundle Preview
+.bundle-preview {
+  .main-title {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background-color: #000;
+      top: 10px;
+    }
+
+    span {
+      font-size: var(--p-font-size-300);
+      text-align: center;
+      background: white;
+      padding: 0 15px;
+      z-index: 1;
+    }
+
+  }
+}
+.bundles-list {
+  .bundle-single {
+    border: 1px solid var(--p-color-border-inverse);
+    border-radius: var(--p-border-radius-200);
+    padding: var(--p-space-600) var(--p-space-400) var(--p-space-400);
+    display: flex;
+    gap: var(--p-space-500);
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+
+
+    .bundle-title {
+      font-size: var(--p-font-size-325);
+      line-height: 15px;
+      font-weight: var(--p-font-weight-medium);
+    }
+
+    .bundle-subtitle {
+      font-size: var(--p-font-size-200);
+      line-height: 14px;
+    }
+
+    .input-field {
+      margin-bottom: 10px;
+      input {
+        display: none;
+      }
+
+      .input-circle {
+        width: 10px;
+        height: 10px;
+        border-radius: 100px;
+        border: 1px solid var(--p-color-border-hover);
+        display: inline-block;
+      }
+    }
+
+
+    &.highlighted {
+      background-color: var(--p-color-bg-surface-success);
+      border-color: var(--p-color-icon-success);
+
+      .input-field {
+        .input-circle {
+          border-color: var(--p-color-icon-success);
+          border-width: 2px;
+        }
+      }
+    }
+
+    .highlightedText {
+      position: absolute;
+      background-color: var(--p-color-icon-success);
+      color: white;
+      top: 0;
+      border-radius: 0 0 10px 10px;
+      padding: 0px 5px;
+      font-size: 9px;
+      width: 70px;
+      right: calc(50% - 35px);
+      line-height: 2;
+    }
+
+  }
+
+  &.layout-horizontal {
+    .bundle-single {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: var(--p-space-300) var(--p-space-400);
+
+      .input-field {
+        margin-bottom: 0px;
+        margin-right: 10px;
+      }
+
+      .highlightedText {
+        right: 65px;
+      }
+    }
   }
 }
 

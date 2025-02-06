@@ -103,6 +103,7 @@ export default function DiscountPage() {
       pricingTiers: JSON.stringify(pricingTiers),
       storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : '',
       customDesigns: formState.customDesigns ? JSON.stringify(formState.customDesigns) : '',
+      previewOptions: formState.previewOptions ? JSON.stringify(formState.previewOptions) : ''
     }
     
     fetcher.submit(formData, { method: "POST" })
@@ -124,8 +125,8 @@ export default function DiscountPage() {
           </Button>
         }
       >
-        <Layout>
-          <Layout.Section>
+        <div className="discount-layout">
+          <div className="discount-content">
             <Content
               formState={formState}
               setFormState={setFormState}
@@ -140,14 +141,15 @@ export default function DiscountPage() {
               discountBundle={discountBundle}
               shopify={shopify}
             />
-          </Layout.Section>
-          <Layout.Section variant="oneThird">
+          </div>
+          <div className="discount-sidebar">
             <Sidebar
               formState={formState}
               setFormState={setFormState}
+              volumeBundles={volumeBundles}
             />
-          </Layout.Section>
-        </Layout>
+          </div>
+        </div>
       </Page>
 
       <DiscountModals
