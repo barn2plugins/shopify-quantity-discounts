@@ -1,0 +1,147 @@
+:root {
+  --p-color-border-inverse: rgb(97 97 97);
+  --p-color-border-hover: rgb(204 204 204);
+  --p-color-icon-success: rgb(41 132 90);
+  --p-color-bg-surface-success: rgb(205 254 225);
+  --p-border-radius-100: 0.25rem;
+  --p-border-radius-200: 0.5rem;
+  --p-space-400: 1rem;
+  --p-space-500: 1.25rem;
+  --p-space-600: 1.5rem;
+  --p-space-700: 1.75rem;
+  --p-space-800: 2rem;
+}
+
+#barn2_discounts {
+  .barn2-db-main-title {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+
+    span {
+      font-size: 12px;
+      text-align: center;
+      background: white;
+      padding: 0 15px;
+      z-index: 1;
+    }
+
+    &:after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background-color: #000;
+      top: 10px;
+      left: 0px;
+    }
+  }
+  .barn2-discounts-list {
+    display: flex;
+    gap: 10px;
+
+    .barn2-discount-bundle {
+      border: 1px solid var(--p-color-border-inverse);
+      border-radius: var(--p-border-radius-100);
+      padding: var(--p-space-800) var(--p-space-400) var(--p-space-600);
+      display: flex;
+      gap: var(--p-space-500);
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+
+      h4, p, span {
+        margin: 0px;
+        padding: 0px;
+      }
+
+      .barn2-input-circle {
+        width: 10px;
+        height: 10px;
+        border-radius: 100px;
+        border: 1px solid var(--p-color-border-hover);
+        display: inline-block;
+      }
+
+      .barn2-dbs-text-block {
+        margin-bottom: 15px;
+      }
+
+      .barn2-dbs-bundle-title,
+      .barn2-dbs-price {
+        font-size: 14px;
+        line-height: 15px;
+        font-weight: 550;
+        margin-bottom: 5px;
+      }
+      .barn2-dbs-bundle-price,
+      .barn2-dbs-regular-price {
+        font-size: 10px;
+        line-height: 13px;
+      }
+
+      .barn2-dbs-bottom {
+        display: flex;
+        flex-direction: column;
+      }
+
+      &.highlighted {
+        background-color: var(--p-color-bg-surface-success);
+        border-color: var(--p-color-icon-success);
+
+        .barn2-input-circle {
+          border-color: var(--p-color-icon-success);
+          border-width: 2px;
+        }
+
+        .barn2-highlighted-text {
+          position: absolute;
+          background-color: var(--p-color-icon-success);
+          color: white;
+          top: 0;
+          border-radius: 0 0 10px 10px;
+          padding: 0px 5px;
+          font-size: 9px;
+          width: 70px;
+          right: calc(50% - 35px);
+          line-height: 2;
+        }
+      }
+    }
+
+    &.barn2-dbs-layout-horizontal {
+      flex-direction: column;
+
+      .barn2-discount-bundle {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--p-space-400) var(--p-space-500);
+
+        .barn2-dbs-text-block {
+          margin-bottom: 0px;
+          display: flex;
+          flex-direction: column;
+          align-items: baseline;
+        }
+
+        .barn2-dbs-top {
+          display: flex;
+          align-items: flex-start;
+          gap: 7px;
+
+          .barn2-input-circle {
+            margin-top: 3px;
+          }
+        }
+
+        &.highlighted {
+          .barn2-highlighted-text {
+            right: 65px
+          }
+        }
+      }
+    }
+  }
+}

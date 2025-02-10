@@ -1,0 +1,17 @@
+<div id="barn2_discounts"></div>
+
+{% schema %}
+{
+  "name": "Barn2 Discounts",
+  "target": "section",
+  "settings": [
+    { "label": "Color", "id": "color", "type": "color", "default": "#000000" }
+  ],
+  "enabled_on": {
+    "templates": ["product", "collection", "page"]
+  },
+  "javascript": "barn2-discounts.js",
+  "stylesheet": "barn2-discounts.css"
+}
+{% endschema %}
+

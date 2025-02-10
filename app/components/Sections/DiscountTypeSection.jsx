@@ -60,7 +60,7 @@ export default function DiscountTypeSection({ formState, setFormState }) {
                       <Box><Icon source={CashPoundIcon} color="subdued" /></Box>
                       <Text as="p" variant="bodyLg" fontWeight="medium">Bulk pricing</Text>
                     </InlineStack>
-                    <Text as="p" variant="body" tone="subdued">Create pricing tiers for one or more products, e.g. “Buy 10+ t-shirts and save 25%</Text>
+                    <Text as="p" variant="body" tone="subdued">Create pricing tiers for one or more products, e.g. “Buy 10+ t-shirts and save 25%.</Text>
                   </BlockStack>
                 </Box>
               </Card>
