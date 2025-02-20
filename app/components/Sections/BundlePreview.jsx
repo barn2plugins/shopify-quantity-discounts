@@ -1,8 +1,32 @@
 import { InlineGrid, BlockStack, InlineStack, Text } from '@shopify/polaris';
 import {currencyCodeToSymbol} from '../../utils/utils';
-
+import { useEffect, useState } from 'react';
+import classNames from 'classnames/dedupe';
 
 export default function BundlePreview({ formState, volumeBundles }) {
+  const [currencyCode, setCurrencyCode] = useState('$');
+  const [selectedBundle, setSelectedBundle] = useState(0);
+
+  const demoProductPrice = 50;
+
+  const prefixCurrency = (value) => {
+    return `${currencyCode}${value}`;
+  }
+
+  const displayCalculatedPrice = ( bundle ) => {
+    if ( bundle.discount_type === 'amount' ) {
+      const price = bundle.quantity * demoProductPrice - bundle.discount
+      return prefixCurrency(price);
+    } else if ( bundle.discount_type === 'percentage' ) {
+      const totalPrice = bundle.quantity * demoProductPrice;
+      const discountAmount = (totalPrice * bundle.discount) / 100;
+      return prefixCurrency(totalPrice - discountAmount);
+    }
+  }
+
+  const displayOriginalPrice = ( bundle ) => {
+    return prefixCurrency(bundle.quantity * demoProductPrice)
+  }
   
   /**
    * Generates formatted discount text based on the bundle's discount type and value.
@@ -15,7 +39,7 @@ export default function BundlePreview({ formState, volumeBundles }) {
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <Text as='span' variant='bodyXs'>Save {currencyCodeToSymbol(formState.currencyCode)}{bundle.discount}</Text>
+      outputText = <Text as='span' variant='bodyXs'>Save {currencyCode}{bundle.discount}</Text>
     } else {
       outputText = <Text as='span' variant='bodyXs'>Save {bundle.discount}%</Text>
     }
@@ -26,6 +50,10 @@ export default function BundlePreview({ formState, volumeBundles }) {
 
     return outputText;
   }
+
+  useEffect(() => {
+    setCurrencyCode(currencyCodeToSymbol(formState.currencyCode));
+  }, [formState.currencyCode])
 
   if ( volumeBundles.length <= 0 || formState.previewEnabled === false ) {
     return null;
@@ -43,7 +71,17 @@ export default function BundlePreview({ formState, volumeBundles }) {
         <InlineGrid columns={formState?.layout === 'horizontal' ? '1' : volumeBundles.length} gap={300}>
           { volumeBundles.map((bundle, index) => {
             return (
-              <div key={index} className={`${bundle.highlighted ? 'highlighted' : ''} bundle-single`}>
+              <div 
+                key={index} 
+                className={classNames(
+                  'bundle-single',
+                  {
+                    'highlighted': bundle.highlighted,
+                    'selected': selectedBundle === index
+                  }
+                )}
+                onClick={(event) => setSelectedBundle(index)}
+              >
                 { bundle.highlighted && <span className="highlightedText">Most popular</span>}
                 <BlockStack 
                   style={{
@@ -65,8 +103,8 @@ export default function BundlePreview({ formState, volumeBundles }) {
                 </BlockStack>
 
                 <BlockStack >
-                  <Text variant='bodyLg' fontWeight='medium'>$150</Text>
-                  <Text as='span' variant='bodyXs' textDecorationLine="line-through">$500</Text>
+                  <Text variant='bodyLg' fontWeight='medium'>{displayCalculatedPrice(bundle)}</Text>
+                  <Text as='span' variant='bodyXs' textDecorationLine="line-through">{displayOriginalPrice(bundle)}</Text>
                 </BlockStack>
               </div>
             ) })}

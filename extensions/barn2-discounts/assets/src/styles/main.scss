@@ -3,6 +3,8 @@
   --p-color-border-hover: rgb(204 204 204);
   --p-color-icon-success: rgb(41 132 90);
   --p-color-bg-surface-success: rgb(205 254 225);
+  --p-color-icon-brand: rgba(26, 26, 26, 1);
+  --p-color-bg-fill-secondary: rgba(241, 241, 241, 1);
   --p-border-radius-100: 0.25rem;
   --p-border-radius-200: 0.5rem;
   --p-space-400: 1rem;
@@ -51,6 +53,10 @@
       text-align: center;
       position: relative;
 
+      &:hover {
+        cursor: pointer;
+      }
+
       h4, p, span {
         margin: 0px;
         padding: 0px;
@@ -60,7 +66,7 @@
         width: 10px;
         height: 10px;
         border-radius: 100px;
-        border: 1px solid var(--p-color-border-hover);
+        border: 1px solid var(--p-color-icon-brand);
         display: inline-block;
       }
 
@@ -86,18 +92,18 @@
         flex-direction: column;
       }
 
-      &.highlighted {
-        background-color: var(--p-color-bg-surface-success);
-        border-color: var(--p-color-icon-success);
-
+      &.selected {
+        background-color: var(--p-color-bg-fill-secondary);
         .barn2-input-circle {
-          border-color: var(--p-color-icon-success);
           border-width: 2px;
         }
+      }
+
+      &.highlighted {
 
         .barn2-highlighted-text {
           position: absolute;
-          background-color: var(--p-color-icon-success);
+          background-color: var(--p-color-icon-brand);
           color: white;
           top: 0;
           border-radius: 0 0 10px 10px;

@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { currencyCodeToSymbol } from './utils'
 
 export default function DiscountBundle({}) {
 
-  const storeCurrency = window.Shopify.currency.active;
+  const [selectedBundle, setSelectedBundle] = useState(1);
+  const [storeCurrency, setStoreCurrency] = useState('$');
 
   const discounts = {
     layout: 'horizontal',
@@ -48,17 +50,23 @@ export default function DiscountBundle({}) {
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <Text as='span' variant='bodyXs'>Save {currencyCodeToSymbol(storeCurrency)}{bundle.discount}</Text>
+      outputText = <span>Save {storeCurrency}{bundle.discount}</span>
     } else {
-      outputText = <Text as='span' variant='bodyXs'>Save {bundle.discount}%</Text>
+      outputText = <span>Save {bundle.discount}%</span>
     }
 
     if (!bundle.discount) {
-      outputText = <Text as='span' variant='bodyXs'>Regular price</Text>
+      outputText = <span>Regular price</span>
     }
 
     return outputText;
   }
+
+  useEffect(() => {
+    // Store store currency
+    const storeCurrency = window?.Shopify?.currency?.active;
+    setStoreCurrency(currencyCodeToSymbol(storeCurrency));
+  }, [])
 
   return (
     <div className="barn2-discount-bundles">
@@ -66,12 +74,17 @@ export default function DiscountBundle({}) {
       <div className={`barn2-discounts-list barn2-dbs-layout-${discounts.layout}`}>
         { discounts.bundles.map(bundle => {
           return (
-            <div key={bundle.id} className={`${bundle.highlighted ? 'highlighted' : ''} barn2-discount-bundle`}>
+            <div 
+              key={bundle.id} 
+              className={`${bundle.highlighted ? 'highlighted' : ''} ${selectedBundle === bundle.id ? 'selected' : ''} barn2-discount-bundle`}
+              onClick={() => setSelectedBundle(bundle.id)}
+            >
               { bundle.highlighted && <span className="barn2-highlighted-text">Most popular</span>}
               <div className="barn2-dbs-top">
                 <span className="barn2-input-circle"></span>
                 <div className="barn2-dbs-text-block">
                   <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
+                  <p>{discountText(bundle)}</p>
                 </div>
               </div>
               <div className="barn2-dbs-bottom">

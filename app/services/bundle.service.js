@@ -44,4 +44,59 @@ export class BundleService {
       }
     }
   }
+
+  /**
+   * Retrieves all bundles from the database
+   * 
+   * @param {string} sessionId - Session ID for the current user
+   * @returns {Promise<Array>} Array of bundle objects
+   */
+  static async getAllBundles(sessionId) {
+    try {
+      // Query database to get all bundles for the shop
+      const bundles = await prisma.DiscountBundle.findMany({
+        where: {
+          sessionId
+        },
+        orderBy: {
+          priority: 'desc'
+        }
+      });
+
+      return bundles;
+    } catch (error) {
+      console.error('Error fetching bundles:', error);
+      throw error;
+    }
+  }
+
+  static isProductEligibleForBundle = (discountBundles, productId) => {
+
+    discountBundles.forEach(bundle => {
+      const { 
+        whichProducts, 
+        selectedProducts, 
+        selectedCollections, 
+        excludedProducts, 
+        excludedCollections 
+      } = bundle;
+
+      if ( whichProducts === 'all_products' ) {
+        return true;
+      }
+      if ( whichProducts === 'all_products_except_selected' ) {
+        
+      }
+
+    });
+    
+    return;
+    if (whichProducts === 'specific_products') {
+      return productIds.includes(product.id);
+    }
+    if (whichProducts === 'specific_collections') { 
+      return collectionIds.includes(product.collectionId);
+    }
+    return false;
+  }
 }
