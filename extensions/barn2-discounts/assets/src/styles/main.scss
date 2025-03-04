@@ -82,7 +82,8 @@
         margin-bottom: 5px;
       }
       .barn2-dbs-bundle-price,
-      .barn2-dbs-regular-price {
+      .barn2-dbs-regular-price,
+      .barn2-dbs-text-block p {
         font-size: 10px;
         line-height: 13px;
       }
@@ -147,6 +148,41 @@
             right: 65px
           }
         }
+      }
+    }
+
+    &.barn2-dbs-layout-vertical {
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+
+      &.discount-columns-1 {
+        grid-template-columns: repeat(1, 1fr);
+      }
+      &.discount-columns-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      &.discount-columns-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      &.discount-columns-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      &.discount-columns-5 {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      &.discount-columns-6 {
+        grid-template-columns: repeat(6, 1fr);
+      }
+      &.discount-columns-7 {
+        grid-template-columns: repeat(7, 1fr);
+      }
+      &.discount-columns-8 {
+        grid-template-columns: repeat(8, 1fr);
+      }
+      &.discount-columns-9 {
+        grid-template-columns: repeat(9, 1fr);
       }
     }
   }

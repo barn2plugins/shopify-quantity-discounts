@@ -17,7 +17,12 @@ export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
   const discountBundles = await prisma.discountBundle.findMany({
-    where: { 'sessionId' : session.id },
+    where: { 
+      'sessionId' : session.id 
+    },
+    orderBy: {
+      priority: 'desc'
+    }
   });
 
   let statisticsData = await getAppStatisticsData();

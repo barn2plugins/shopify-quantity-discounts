@@ -5,6 +5,7 @@ import DiscountBundle from './DiscountBundle'
 export default function App() {
   const [currentProductId, setCurrentProductId] = useState(window?.ShopifyAnalytics?.meta?.product?.id);
   const [eligibleBundleDiscount, setEligibleBundleDiscount] = useState(null);
+  const [isInEditor, setIsInEditor] = useState(false);
 
   const fetchEligibleBundleDiscount = async (productId) => {
     try {
@@ -18,17 +19,37 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Fetch eligible bundle discount data
-    if (currentProductId) {
-      fetchEligibleBundleDiscount(currentProductId)
-        .then(data => {
-          setEligibleBundleDiscount(data);
-          console.log(data);
-        });
-    }
+    const checkEditorStatus = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const previewPath = urlParams.get('previewPath');
+      setIsInEditor(previewPath && previewPath.startsWith('/products/'));
+    };
+
+    checkEditorStatus();
+    // Optional: Listen for URL changes in the theme editor
+    window.addEventListener('popstate', checkEditorStatus);
+    return () => {
+      window.removeEventListener('popstate', checkEditorStatus);
+    };
   }, []);
 
+
+  useEffect(() => {
+    // Create an async function inside useEffect
+    const fetchData = async () => {
+      try {
+        const data = await fetchEligibleBundleDiscount(currentProductId);
+        setEligibleBundleDiscount(data.eligibleProductBundle);
+      } catch (error) {
+        console.error('Error in useEffect:', error);
+      }
+    };
+
+    // Call the async function
+    fetchData();
+  }, [currentProductId, isInEditor]);
+
   return (
-    <DiscountBundle bundleData={eligibleBundleDiscount}/>
+    eligibleBundleDiscount && eligibleBundleDiscount.type == 'volume_bundle' && <DiscountBundle bundleData={eligibleBundleDiscount}/>
   )
 }

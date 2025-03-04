@@ -70,33 +70,134 @@ export class BundleService {
     }
   }
 
-  static isProductEligibleForBundle = (discountBundles, productId) => {
+  static async getEligibleProductBundle({storefront, discountBundles, productId}) {
+    // Check if product is in excluded collections
+    const productCollections = await BundleService.getProductCollections({
+      storefront,
+      productId
+    });
 
-    discountBundles.forEach(bundle => {
+    // Iterate through the discount bundles
+    for (const bundle of discountBundles) {
       const { 
         whichProducts, 
         selectedProducts, 
         selectedCollections, 
         excludedProducts, 
-        excludedCollections 
+        excludedCollections,
+        active
       } = bundle;
 
-      if ( whichProducts === 'all_products' ) {
-        return true;
-      }
-      if ( whichProducts === 'all_products_except_selected' ) {
-        
+      if (!active) {
+        continue;
       }
 
-    });
+      if (whichProducts === 'all_products') {
+        return bundle;
+      }
+
+      if (whichProducts === 'all_products_except_selected') {
+        // Parse the JSON string if excludedProducts is a string
+        const excludedProductsList = typeof excludedProducts === 'string' 
+          ? JSON.parse(excludedProducts) 
+          : excludedProducts;
+
+        // Check if the current productId is in the excluded list
+        if (excludedProductsList?.some(product => product.id === productId)) {
+          return false;
+        }
+
+        // Parse the JSON string if excludedCollections is a string
+        const excludedCollectionsList = typeof excludedCollections === 'string'
+          ? JSON.parse(excludedCollections)
+          : excludedCollections;
+
+        if (excludedCollectionsList.length > 0) {
+          // Check if any of the product's collections are in the excluded list
+          const isInExcludedCollection = productCollections.some(collection => {
+            const { title } = collection.node;
+            return excludedCollectionsList.some(excludedCollection => excludedCollection.title === title);
+          });
+
+          if (isInExcludedCollection) {
+            return false;
+          }
+        }
+
+        return bundle;
+      }
+
+      if (whichProducts === 'selected_products') {
+        // Parse the JSON string if selectedProducts is a string
+        const selectedProductsList = typeof selectedProducts === 'string'
+          ? JSON.parse(selectedProducts)
+          : selectedProducts;
+        // Check if the current productId is in the selected list
+        if (selectedProductsList?.some(product => product.id === productId)) {
+          return bundle;
+        }
+      }
+
+      if (whichProducts === 'selected_collections') {
+        // Parse the JSON string if selectedCollections is a string
+        const selectedCollectionsList = typeof selectedCollections === 'string'
+          ? JSON.parse(selectedCollections)
+          : selectedCollections;
+
+        // Check if any of the product's collections are in the selected collections list
+        const isInSelectedCollection = productCollections.some(collection => {
+          const { title } = collection.node;
+          return selectedCollectionsList.some(selectedCollection => selectedCollection.title === title);
+        });
+        
+        if (!isInSelectedCollection) {
+          continue;
+        }
+
+        // Parse the JSON string if excludedProducts is a string
+        const excludedProductsList = typeof excludedProducts === 'string' 
+          ? JSON.parse(excludedProducts) 
+          : excludedProducts;
+
+        // Check if the current productId is in the excluded product list
+        if (excludedProductsList?.some(product => product.id === productId)) {
+          return false;
+        }
+
+        return bundle;
+      }
+    };
     
     return;
-    if (whichProducts === 'specific_products') {
-      return productIds.includes(product.id);
-    }
-    if (whichProducts === 'specific_collections') { 
-      return collectionIds.includes(product.collectionId);
-    }
-    return false;
+  }
+
+  static async getProductCollections({storefront, productId}) {
+    const productCollections = await storefront.graphql(
+      `#graphql
+        query getProductCollections($productId: ID!) {
+          product(id: $productId) {
+            collections(first: 10) {
+              edges {
+                node {
+                  id
+                  title
+                  handle
+                }
+              }
+            }
+          }
+        }
+      `,
+      {
+        variables: {
+          productId: `gid://shopify/Product/${productId}`
+        },
+      },
+    )
+
+    const response = await productCollections.json();
+    const collections = response?.data?.product?.collections?.edges;
+    
+    return collections ? collections : [];
   }
 }

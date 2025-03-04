@@ -1,43 +1,26 @@
 import { useEffect, useState } from "react";
 import { currencyCodeToSymbol } from './utils'
+import classNames from 'classnames/dedupe';
 
-export default function DiscountBundle({}) {
-
-  const [selectedBundle, setSelectedBundle] = useState(1);
+export default function DiscountBundle({bundleData}) {
+  const [selectedBundle, setSelectedBundle] = useState(null);
   const [storeCurrency, setStoreCurrency] = useState('$');
+  const [currentVariantPrice, setCurrentVariantPrice] = useState(null);
+  const [layout, setLayout] = useState('vertical');
+  const [volumeBundles, setVolumeBundles] = useState([]);
+  
+  const getFirstVariantPrice = () => {
+    const variants = window?.ShopifyAnalytics?.meta?.product?.variants || [];
+    if (variants.length > 0) {
+      // Shopify stores prices in cents, so divide by 100 to get dollars
+      return variants[0].price / 100;
+    }
+    return 0;
+  };
 
-  const discounts = {
-    layout: 'horizontal',
-    bundles: [
-      {
-        id: 1,
-        description: 'Buy one product',
-        highlighted: false,
-        price: 100,
-        discountedPrice: 80,
-        discount: 20,
-        discount_type: 'percentage'
-      },
-      {
-        id: 2,
-        description: 'Buy two products',
-        highlighted: true,
-        price: 300,
-        discountedPrice: 240,
-        discount: 20,
-        discount_type: 'amount'
-      },
-      {
-        id: 3,
-        description: 'Buy three products',
-        highlighted: false,
-        price: 500,
-        discountedPrice: 240,
-        discount: 20,
-        discount_type: 'percentage'
-      },
-    ]
-  }
+  useEffect(() => {
+    setVolumeBundles(JSON.parse(bundleData.volumeBundles));
+  }, [])
 
   /**
    * Generates formatted discount text based on the bundle's discount type and value.
@@ -68,16 +51,26 @@ export default function DiscountBundle({}) {
     setStoreCurrency(currencyCodeToSymbol(storeCurrency));
   }, [])
 
+  useEffect(() => {
+    setCurrentVariantPrice(getFirstVariantPrice());
+  }, []);
+
   return (
     <div className="barn2-discount-bundles">
       <div className="barn2-db-main-title"><span>Buy</span></div>
-      <div className={`barn2-discounts-list barn2-dbs-layout-${discounts.layout}`}>
-        { discounts.bundles.map(bundle => {
+      <div className={`barn2-discounts-list barn2-dbs-layout-${layout} discount-columns-${volumeBundles.length}`}>
+        { volumeBundles.map((bundle, index) => {
           return (
             <div 
-              key={bundle.id} 
-              className={`${bundle.highlighted ? 'highlighted' : ''} ${selectedBundle === bundle.id ? 'selected' : ''} barn2-discount-bundle`}
-              onClick={() => setSelectedBundle(bundle.id)}
+              key={index} 
+              className={classNames(
+                'barn2-discount-bundle',
+                {
+                  'highlighted': bundle.highlighted,
+                  'selected': selectedBundle === index,
+                }
+              )}
+              onClick={() => setSelectedBundle(index)}
             >
               { bundle.highlighted && <span className="barn2-highlighted-text">Most popular</span>}
               <div className="barn2-dbs-top">
@@ -88,8 +81,8 @@ export default function DiscountBundle({}) {
                 </div>
               </div>
               <div className="barn2-dbs-bottom">
-                <span className="barn2-dbs-price">$150</span>
-                <span className="barn2-dbs-regular-price">$450</span>
+                <span className="barn2-dbs-price">{storeCurrency}{currentVariantPrice}</span>
+                <span className="barn2-dbs-regular-price">{storeCurrency}{currentVariantPrice * bundle.quantity}</span>
               </div>
             </div>
           )
