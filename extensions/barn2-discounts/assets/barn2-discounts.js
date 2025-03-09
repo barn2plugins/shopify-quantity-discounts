@@ -21359,7 +21359,7 @@ function vD() {
   var S, Ze, Se;
   const [X, oe] = Yr.useState((Se = (Ze = (S = window == null ? void 0 : window.ShopifyAnalytics) == null ? void 0 : S.meta) == null ? void 0 : Ze.product) == null ? void 0 : Se.id), [A, Xe] = Yr.useState(null), [gt, ft] = Yr.useState(!1), lt = async (ne) => {
     try {
-      return await (await fetch(`/apps/barn2-quanti/discountbundle?productId=${ne}`)).json();
+      return await (await fetch(`/apps/barn2-discounts/discountbundle?productId=${ne}`)).json();
     } catch (se) {
       return console.error("Error fetching discount bundle:", se), null;
     }
