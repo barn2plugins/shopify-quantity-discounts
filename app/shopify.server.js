@@ -23,7 +23,7 @@ const shopify = shopifyApp({
         // Fetch store details using GraphQL
         const storeData = await fetchStoreDetails(admin);
         // Save store details to the database
-        await saveStoreDetails( session.id, storeData.data.shop );
+        await saveStoreDetails( session.id, storeData );
       } catch (error) {
       }
     },

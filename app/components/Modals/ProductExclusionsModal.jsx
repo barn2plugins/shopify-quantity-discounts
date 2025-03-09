@@ -68,7 +68,7 @@ export default function ProductExclusionsModal({
 
       // Format the object to be used in the ResourceList
       const formattedProducts = fetchedProducts.map(({ node, cursor }) => ({
-        id: node.id.match(/\d+$/)[0],
+        id: node.id,
         title: node.title,
         handle: node.handle,
         imageUrl: node.featuredMedia?.preview?.image?.url,
@@ -115,7 +115,7 @@ export default function ProductExclusionsModal({
 
   function renderItem(item) {
     const {id, title, imageUrl } = item;
-    const productId = id.match(/\d+$/)[0];
+    const productId = id;
     
     return (
       <ResourceItem

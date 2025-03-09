@@ -1,0 +1,24 @@
+query Input($selectedCollectionIds: [ID!], $excludedCollectionIds: [ID!]) {
+  cart {
+    lines {
+      id
+      quantity
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+          product {
+            id
+            inSelectedCollection: inAnyCollection(ids: $selectedCollectionIds)
+            inExcludedCollection: inAnyCollection(ids: $excludedCollectionIds)
+          }
+        }
+      }
+    }
+  }
+  discountNode {
+    metafield(namespace: "$app:barn2-volume-discount", key: "function-configuration") {
+      value
+    }
+  }
+}

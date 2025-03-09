@@ -11,8 +11,9 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal libraries and components
 import { authenticate } from "../../shopify.server"
+import { getDiscountFunctionIdFromSession } from "../../shopify.service"
 import prisma from "../../db.server";
-import { actions } from "../../actions/discount.actions";
+import { actions, createShopifyVolumeDiscount } from "../../actions/discount.actions";
 import { BundleService } from "../../services/bundle.service";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
@@ -36,17 +37,23 @@ export const action = async ({ request }) => {
   const fetcherData = Object.fromEntries(formData);
 
   try {
+    if (fetcherData.intent === 'create') {
+      const discountFunctionId = await getDiscountFunctionIdFromSession(session.id);
+      if (!discountFunctionId) return null;
+
+      const shopifyDiscountId = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId});
+
+      const createDiscount = actions[fetcherData.intent];
+      const actionData = await createDiscount({ prisma, fetcherData, session, shopifyDiscountId });
+      
+      // Once the discount bundle successfully created, redirect to the edit page
+      return redirect(`/app/discount/edit/${actionData.discountBundle.id}`);
+    }
+
     const actionFn = actions[fetcherData.intent];
     if (!actionFn) return null;
     
-    const actionData = await actionFn(
-      fetcherData.intent.startsWith('load') ? admin : { prisma, fetcherData, session }
-    );
-
-    // Once the discount bundle successfully created, redirect to the edit page
-    if ( fetcherData.intent === 'create' ) {
-      return redirect(`/app/discount/edit/${actionData.discountBundle.id}`);
-    }
+    const actionData = await actionFn(admin);
 
     return actionData;
   } catch (error) {

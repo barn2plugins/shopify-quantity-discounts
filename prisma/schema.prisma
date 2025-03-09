@@ -22,6 +22,7 @@ model Session {
   scope                           String?
   expires                         DateTime?
   accessToken                     String
+  volumeDiscountFunctionId        String?
 
   // User Information
   userId                          String?
@@ -64,6 +65,7 @@ model DiscountBundle {
   layout                String    @default("")
   priority              Int       @default(0)
   active                Boolean   @default(false)
+  shopifyDiscountId     String?
   sessionId             String
   session               Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   selectedProducts      String?

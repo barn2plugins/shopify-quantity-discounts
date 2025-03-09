@@ -26,6 +26,16 @@ export const fetchStoreDetails = async (admin) => {
             }
             checkoutApiSupported
         }
+        shopifyFunctions(first: 25) {
+          nodes {
+            app {
+              title
+            }
+            apiType
+            title
+            id
+          }
+        }
       }
     `;
     
@@ -37,8 +47,11 @@ export const fetchStoreDetails = async (admin) => {
 };
 
 // Save store details to the database
-export const saveStoreDetails = async (id, shop) => {
+export const saveStoreDetails = async (id, storedata) => {
   try {
+    const shop = storedata.data.shop;
+    const volumeDiscountFunctionId = getBarn2VolumeDiscountFunctionId(storedata);
+
     await prisma.session.update({
       where: { 
         id: id 
@@ -59,8 +72,32 @@ export const saveStoreDetails = async (id, shop) => {
         moneyWithCurrencyFormat: shop.currencyFormats.moneyWithCurrencyFormat,
         moneyWithCurrencyInEmailsFormat: shop.currencyFormats.moneyWithCurrencyInEmailsFormat,
         checkoutApiSupported: shop.checkoutApiSupported,
+        volumeDiscountFunctionId,
       },
     });
   } catch (error) {
   }
 };
+
+const getBarn2VolumeDiscountFunctionId = (storedata) => {
+  const shopifyFunctions = storedata.data.shopifyFunctions.nodes;
+  const barn2VolumeDiscountFunction = shopifyFunctions.find(
+    (func) => func.title === 'Barn2 Discounts Function' && func.apiType === 'product_discounts'
+  );
+  return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
+};
+
+export const getDiscountFunctionIdFromSession = async (id) => {
+  try {
+    const response = await prisma.session.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    return response ? response.volumeDiscountFunctionId : null;
+  } catch (error) {
+    console.error('Error fetching discount function ID:', error);
+    return null;
+  }
+}
