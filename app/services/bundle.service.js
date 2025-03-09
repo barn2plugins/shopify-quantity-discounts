@@ -11,7 +11,10 @@ export class BundleService {
    * @returns {Promise<Object>} Default bundle configuration object
    */
   static async getDefaultBundle(sessionId) {
-    const storeDetails = await StoreService.getStoreDetails(sessionId);
+    const storeDetails = await StoreService.getStoreDetails(sessionId, {
+      currency: true,
+      timezone: true
+    });
     const { currency, timezone } = storeDetails || {};
     
     return {

@@ -10,16 +10,13 @@ export class StoreService {
    * @param {string} sessionId - Session ID for the current user
    * @returns {Promise<Object>} Store details object containing currency and timezone
    */
-  static async getStoreDetails(sessionId) {
+  static async getStoreDetails(sessionId, params) {
     try {
       return await prisma.session.findFirst({
         where: {
           id: sessionId
         },
-        select: {
-          currency: true,
-          timezone: true
-        }
+        select: params
       });
     } catch (error) {
       console.error('Error fetching store details:', error);

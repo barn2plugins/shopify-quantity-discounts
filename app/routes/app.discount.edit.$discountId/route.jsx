@@ -2,7 +2,6 @@
 import {
   Page,
   Button,
-  Layout,
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
@@ -12,7 +11,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 // Internal libraries and components
 import { authenticate } from "../../shopify.server"
 import prisma from "../../db.server";
-import { actions } from "../../actions/discount.actions";
+import { actions, updateShopifyVolumeDiscount, getDiscountMetafieldId } from "../../actions/discount.actions";
 import { StoreService } from "../../services/store.service";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils";
@@ -24,11 +23,15 @@ import DiscountModals from "../../components/Modals/DiscountModals.jsx";
 
 export const loader = async ({ request, params }) => {
   const { session } = await authenticate.admin(request);
-  const store = await StoreService.getStoreDetails(session.id);
+  const store = await StoreService.getStoreDetails(session.id, {
+    currency: true,
+    timezone: true,
+    volumeDiscountFunctionId: true
+  });
   const discountBundle = await actions.getDiscountBundle({session, params});
   const { currency, timezone } = store || {};
   const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency, timezone });
-  
+
   if (!parsedDiscountBundle) {
     throw new Response("Discount bundle not found", {
       status: 404,
@@ -44,8 +47,18 @@ export const action = async ({ request }) => {
 
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
-
+  
   try {
+    if (fetcherData.intent === 'update') {
+      const shopifyDiscountId = fetcherData.shopifyDiscountId;
+      const metafieldId = await getDiscountMetafieldId({admin, shopifyDiscountId});
+      if (!metafieldId) return null;
+      await updateShopifyVolumeDiscount({admin, fetcherData, metafieldId});
+
+      const updateDiscount = actions[fetcherData.intent];
+      return await updateDiscount({ prisma, fetcherData });
+    }
+    
     const actionFn = actions[fetcherData.intent];
     if (!actionFn) return null;
     

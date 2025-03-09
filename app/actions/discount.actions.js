@@ -133,6 +133,21 @@ export const actions = {
   }
 };
 
+/**
+ * Creates a new Shopify automatic discount with volume discount configuration
+ * @param {Object} params - The parameters object
+ * @param {Object} params.admin - Shopify Admin API client instance
+ * @param {Object} params.fetcherData - Form data for the discount creation
+ * @param {string} params.fetcherData.name - Name of the discount
+ * @param {string} params.fetcherData.whichProducts - Product selection type
+ * @param {string} params.fetcherData.selectedProducts - JSON string of selected products
+ * @param {string} params.fetcherData.selectedCollections - JSON string of selected collections
+ * @param {string} params.fetcherData.excludedProducts - JSON string of excluded products
+ * @param {string} params.fetcherData.excludedCollections - JSON string of excluded collections
+ * @param {string} params.fetcherData.volumeBundles - JSON string of volume bundle configurations
+ * @param {string} params.discountFunctionId - ID of the discount function to use
+ * @returns {Promise<string|null>} Created discount ID or null if creation fails
+ */
 export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountFunctionId}) => {
   const metafieldsValue = {
     targetMode: fetcherData.whichProducts,
@@ -173,7 +188,7 @@ export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountF
     {
       variables: {
         automaticAppDiscount: {
-          title: `Barn2 Quantity Discounts - ${fetcherData.name}`,
+          title: `Barn2 Discounts - ${fetcherData.name}`,
           functionId: discountFunctionId,
           startsAt: "2025-03-04T00:00:00Z",
           endsAt: "2025-12-31T23:59:59Z",
@@ -203,6 +218,110 @@ export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountF
   }
 
   return discountId;
+}
+
+/**
+ * Updates an existing Shopify automatic discount with volume discount configuration
+ * @param {Object} params - The parameters object
+ * @param {Object} params.admin - Shopify Admin API client instance
+ * @param {Object} params.fetcherData - Form data for the discount update
+ * @param {string} params.fetcherData.name - Name of the discount
+ * @param {string} params.fetcherData.whichProducts - Product selection type
+ * @param {string} params.fetcherData.selectedProducts - JSON string of selected products
+ * @param {string} params.fetcherData.selectedCollections - JSON string of selected collections
+ * @param {string} params.fetcherData.excludedProducts - JSON string of excluded products
+ * @param {string} params.fetcherData.excludedCollections - JSON string of excluded collections
+ * @param {string} params.fetcherData.volumeBundles - JSON string of volume bundle configurations
+ * @param {string} params.fetcherData.shopifyDiscountId - ID of the Shopify discount to update
+ * @param {string} params.metafieldId - ID of the metafield to update
+ * @returns {Promise<Object|null>} Updated discount data or null if update fails
+ */
+export const updateShopifyVolumeDiscount = async ({admin, fetcherData, metafieldId}) => {
+  const metafieldsValue = {
+    targetMode: fetcherData.whichProducts,
+    selectedProductIds: JSON.parse(fetcherData.selectedProducts).map(p => p.id),
+    selectedCollectionIds: fetcherData.selectedCollections !== '[]' ? JSON.parse(fetcherData.selectedCollections).map(p => p.id) : [],
+    excludedProductIds: JSON.parse(fetcherData.excludedProducts).map(p => p.id),
+    excludedCollectionIds: fetcherData.excludedCollections !== '[]' ? JSON.parse(fetcherData.excludedCollections).map(p => p.id) : [],
+    discounts: getVolumeDiscounts(JSON.parse(fetcherData.volumeBundles)),
+    discountApplicationStrategy: 'MAXIMUM'
+  };
+
+  const response = await admin.graphql(
+    `#graphql
+    mutation discountAutomaticAppUpdate($automaticAppDiscount: DiscountAutomaticAppInput!, $id: ID!) {
+      discountAutomaticAppUpdate(automaticAppDiscount: $automaticAppDiscount, id: $id) {
+        userErrors {
+          field
+          message
+        }
+        automaticAppDiscount {
+          discountId
+          title
+          startsAt
+          endsAt
+          status
+          appDiscountType {
+            appKey
+            functionId
+          }
+          combinesWith {
+            orderDiscounts
+            productDiscounts
+            shippingDiscounts
+          }
+        }
+      }
+    }`,
+    {
+      variables: {
+        id: fetcherData.shopifyDiscountId,
+        automaticAppDiscount: {
+          title: `Barn2 Discounts - ${fetcherData.name}`,
+          startsAt: "2025-03-04T00:00:00Z",
+          endsAt: "2025-12-31T23:59:59Z",
+          metafields: [
+            {
+              id: metafieldId,
+              value: JSON.stringify(metafieldsValue)
+            }
+          ]
+        }
+      }
+    }
+  );
+
+  const responseJson = await response.json();
+  const discountData = responseJson.data.discountAutomaticAppUpdate.automaticAppDiscount;
+
+  if (responseJson.data.discountAutomaticAppUpdate.userErrors.length > 0) {
+    return null;
+  }
+
+  return discountData;
+}
+
+/**
+ * Retrieves the metafield ID for a given Shopify automatic discount node
+ * @param {Object} params - The parameters object
+ * @param {Object} params.admin - Shopify Admin API client instance
+ * @param {string} params.shopifyDiscountId - ID of the Shopify automatic discount
+ * @returns {Promise<string>} The metafield ID for the discount's function configuration
+ */
+export const getDiscountMetafieldId = async ({admin, shopifyDiscountId}) => {
+  const response = await admin.graphql(
+    `#graphql
+    query {
+      automaticDiscountNode(id: "${shopifyDiscountId}") {
+        metafield(namespace: "$app:barn2-volume-discount", key: "function-configuration") {
+          id
+        }
+      }
+    }`
+  );
+
+  const responseJson = await response.json();
+  return responseJson.data.automaticDiscountNode.metafield.id;
 }
 
 const getVolumeDiscounts = (volumeBundles) => {

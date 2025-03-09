@@ -53,9 +53,7 @@ export const action = async ({ request }) => {
     const actionFn = actions[fetcherData.intent];
     if (!actionFn) return null;
     
-    const actionData = await actionFn(admin);
-
-    return actionData;
+    return await actionFn(admin);
   } catch (error) {
     console.error(`Failed to execute ${fetcherData.intent}:`, error);
     return { 
