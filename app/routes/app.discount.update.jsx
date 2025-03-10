@@ -1,8 +1,9 @@
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { activateShopifyVolumeDiscount, deactivateShopifyVolumeDiscount } from "../actions/discount.actions.js";
 
 export const action = async ({ request }) => {
-    await authenticate.admin(request);
+    const {admin} = await authenticate.admin(request);
     const formData = await request.formData();
     const fetcherData = Object.fromEntries(formData);
     
@@ -12,6 +13,14 @@ export const action = async ({ request }) => {
     }
         
     try {
+        const discountStatus = fetcherData.active === 'true'
+            ? await activateShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId)
+            : await deactivateShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId);
+            
+        if (!discountStatus) {
+            return null;
+        }
+
         const updateBundle = await prisma.discountBundle.update({
             where: {
                 id: parseInt(fetcherData.bundleId),

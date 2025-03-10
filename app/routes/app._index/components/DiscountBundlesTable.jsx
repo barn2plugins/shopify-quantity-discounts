@@ -65,7 +65,7 @@ export default function DiscountBundlesTable({ discountBundles }) {
     setBundles(updatedBundles);
     
     fetcher.submit(
-      { bundleId: bundle.id, active: event.target.checked },
+      { bundleId: bundle.id, active: event.target.checked, shopifyDiscountId: bundle.shopifyDiscountId },
       {
         method: "PUT",
         action: "/app/discount/update",

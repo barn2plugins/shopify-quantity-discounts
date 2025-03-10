@@ -337,6 +337,90 @@ export const deleteShopifyVolumeDiscount = async (admin, shopifyDiscountId) => {
 }
 
 /**
+ * Activates a Shopify automatic discount
+ * @param {Object} admin - Shopify Admin API client instance
+ * @param {string} shopifyDiscountId - ID of the Shopify automatic discount to delete
+ * @returns {Promise<boolean>} Returns true if deletion was successful, false if there were errors
+ */
+export const activateShopifyVolumeDiscount = async (admin, shopifyDiscountId) => {
+  const response = await admin.graphql(
+    `#graphql
+    mutation discountAutomaticActivate($id: ID!) {
+      discountAutomaticActivate(id: $id) {
+        automaticDiscountNode {
+          automaticDiscount {
+            ... on DiscountAutomaticBxgy {
+              status
+              startsAt
+              endsAt
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`,
+    {
+      variables: {
+        id: shopifyDiscountId
+      }
+    }
+  );
+
+  const responseJson = await response.json();
+  const userErrors = responseJson.data.discountAutomaticActivate.userErrors;
+  if (userErrors.length > 0) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Deactivates a Shopify automatic discount
+ * @param {Object} admin - Shopify Admin API client instance
+ * @param {string} shopifyDiscountId - ID of the Shopify automatic discount to delete
+ * @returns {Promise<boolean>} Returns true if deletion was successful, false if there were errors
+ */
+export const deactivateShopifyVolumeDiscount = async (admin, shopifyDiscountId) => {
+  const response = await admin.graphql(
+    `#graphql
+    mutation discountAutomaticDeactivate($id: ID!) {
+      discountAutomaticDeactivate(id: $id) {
+        automaticDiscountNode {
+          automaticDiscount {
+            ... on DiscountAutomaticBxgy {
+              status
+              startsAt
+              endsAt
+            }
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`,
+    {
+      variables: {
+        id: shopifyDiscountId
+      }
+    }
+  );
+
+  const responseJson = await response.json();
+  const userErrors = responseJson.data.discountAutomaticDeactivate.userErrors;
+  if (userErrors.length > 0) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Retrieves the metafield ID for a given Shopify automatic discount node
  * @param {Object} params - The parameters object
  * @param {Object} params.admin - Shopify Admin API client instance
