@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "ace7b79ceed92aac89264663e13e2ed5"
-application_url = "https://up-chad-will-stack.trycloudflare.com"
+application_url = "https://zimbabwe-modem-astrology-skilled.trycloudflare.com"
 embedded = true
 name = "Barn2 Discounts"
 handle = "barn2-discounts"
@@ -27,10 +27,15 @@ scopes = "read_orders,read_products,unauthenticated_read_product_listings,write_
 
 [auth]
 redirect_urls = [
-  "https://up-chad-will-stack.trycloudflare.com/auth/callback",
-  "https://up-chad-will-stack.trycloudflare.com/auth/shopify/callback",
-  "https://up-chad-will-stack.trycloudflare.com/api/auth/callback"
+  "https://zimbabwe-modem-astrology-skilled.trycloudflare.com/auth/callback",
+  "https://zimbabwe-modem-astrology-skilled.trycloudflare.com/auth/shopify/callback",
+  "https://zimbabwe-modem-astrology-skilled.trycloudflare.com/api/auth/callback"
 ]
+
+[app_proxy]
+url = "https://zimbabwe-modem-astrology-skilled.trycloudflare.com/api"
+subpath = "barn2-discounts"
+prefix = "apps"
 
 [pos]
 embedded = false

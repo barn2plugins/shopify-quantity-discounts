@@ -29,6 +29,7 @@ export const action = async ({ request }) => {
                 priority: originalBundle.priority,
                 active: false,
                 sessionId: originalBundle.sessionId,
+                shopifyDiscountId: originalBundle.shopifyDiscountId,
                 previewEnabled: false,
                 volumeBundles: originalBundle.volumeBundles,
                 pricingTiers: originalBundle.pricingTiers,

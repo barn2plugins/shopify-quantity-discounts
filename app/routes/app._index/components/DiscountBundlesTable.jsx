@@ -89,7 +89,7 @@ export default function DiscountBundlesTable({ discountBundles }) {
         icon={EditIcon} 
         plain 
         accessibilityLabel={`Edit discount ${bundle.id}`} 
-        url={`/app/discount/edit/${bundle.id}`}
+        url={`/app/discount/${bundle.shopifyDiscountId.split('/').pop()}/edit`}
       />
       <Button 
         icon={DuplicateIcon} 

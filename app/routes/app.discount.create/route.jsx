@@ -41,13 +41,14 @@ export const action = async ({ request }) => {
       const discountFunctionId = await getDiscountFunctionIdFromSession(session.id);
       if (!discountFunctionId) return null;
 
-      const shopifyDiscountId = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId});
+      const shopifyDiscountGID = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId});
+      const shopifyDiscountid = shopifyDiscountGID.split('/').pop();
 
       const createDiscount = actions[fetcherData.intent];
-      const actionData = await createDiscount({ prisma, fetcherData, session, shopifyDiscountId });
+      const actionData = await createDiscount({ prisma, fetcherData, session, shopifyDiscountGID });
       
       // Once the discount bundle successfully created, redirect to the edit page
-      return redirect(`/app/discount/edit/${actionData.discountBundle.id}`);
+      return redirect(`/app/discount/${shopifyDiscountid}/edit`);
     }
 
     const actionFn = actions[fetcherData.intent];

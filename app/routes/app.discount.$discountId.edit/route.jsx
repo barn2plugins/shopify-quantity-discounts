@@ -9,12 +9,12 @@ import { useLoaderData, useFetcher } from "@remix-run/react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal libraries and components
-import { authenticate } from "../../shopify.server"
-import prisma from "../../db.server";
-import { actions, updateShopifyVolumeDiscount, getDiscountMetafieldId } from "../../actions/discount.actions";
-import { StoreService } from "../../services/store.service";
+import { authenticate } from "../../shopify.server.js"
+import prisma from "../../db.server.js";
+import { actions, updateShopifyVolumeDiscount, getDiscountMetafieldId } from "../../actions/discount.actions.js";
+import { StoreService } from "../../services/store.service.js";
 
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils";
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils.jsx";
 
 import Content from "../../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../../components/Layouts/Discount/Sidebar.jsx";

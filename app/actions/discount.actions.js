@@ -55,7 +55,7 @@ export const actions = {
    * @param {Object} params.session - Session object for the current user
    * @returns {Promise<{success: boolean, discountBundle: Object}>} Created discount bundle
    */
-  create: async ({ prisma, fetcherData, session, shopifyDiscountId }) => {
+  create: async ({ prisma, fetcherData, session, shopifyDiscountGID }) => {
     const discountBundle = await prisma.discountBundle.create({
       data: {
         name: fetcherData.name,
@@ -65,7 +65,7 @@ export const actions = {
         previewEnabled: fetcherData.previewEnabled ? true : false,
         active: fetcherData.active ? true : false,
         session: { connect: { id: session.id } },
-        shopifyDiscountId,
+        shopifyDiscountId: shopifyDiscountGID,
         selectedProducts: fetcherData.selectedProducts,
         selectedCollections: fetcherData.selectedCollections,
         excludedProducts: fetcherData.excludedProducts,
@@ -441,9 +441,9 @@ const fetchCollections = async (admin) => {
  */
 const fetchDiscount = async (sessionId, discountId) => {
   try {
-    const bundle = await prisma.discountBundle.findUnique({
+    const bundle = await prisma.discountBundle.findFirst({
       where: {
-        id: parseInt(discountId),
+        shopifyDiscountId: `gid://shopify/DiscountAutomaticNode/${discountId}`,
         sessionId: sessionId
       }
     });
