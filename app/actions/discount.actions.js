@@ -302,6 +302,41 @@ export const updateShopifyVolumeDiscount = async ({admin, fetcherData, metafield
 }
 
 /**
+ * Deletes a Shopify automatic discount
+ * @param {Object} admin - Shopify Admin API client instance
+ * @param {string} shopifyDiscountId - ID of the Shopify automatic discount to delete
+ * @returns {Promise<boolean>} Returns true if deletion was successful, false if there were errors
+ */
+export const deleteShopifyVolumeDiscount = async (admin, shopifyDiscountId) => {
+  const response = await admin.graphql(
+    `#graphql
+    mutation discountAutomaticDelete($id: ID!) {
+      discountAutomaticDelete(id: $id) {
+        deletedAutomaticDiscountId
+        userErrors {
+          field
+          code
+          message
+        }
+      }
+    }`,
+    {
+      variables: {
+        id: shopifyDiscountId
+      }
+    }
+  );
+
+  const responseJson = await response.json();
+  const userErrors = responseJson.data.discountAutomaticDelete.userErrors;
+  if (userErrors.length > 0) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Retrieves the metafield ID for a given Shopify automatic discount node
  * @param {Object} params - The parameters object
  * @param {Object} params.admin - Shopify Admin API client instance

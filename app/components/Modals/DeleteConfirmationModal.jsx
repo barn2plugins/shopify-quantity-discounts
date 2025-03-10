@@ -10,7 +10,7 @@ export default function DeleteConfirmationModal({ bundleToDelete, fetcher }) {
     shopify.modal.hide('delete-confirmation-modal');
 
     fetcher.submit(
-      { discountId: bundleToDelete.id },
+      { id: bundleToDelete.id, shopifyDiscountId: bundleToDelete.shopifyDiscountId },
       { 
         method: "DELETE", 
         action: "/app/discount/delete",
