@@ -2,25 +2,21 @@ import { useEffect, useState } from "react";
 import { currencyCodeToSymbol } from './utils'
 import classNames from 'classnames/dedupe';
 
-export default function DiscountBundle({bundleData}) {
+export default function DiscountBundle({bundleData, isInEditor}) {
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [storeCurrency, setStoreCurrency] = useState('$');
-  const [currentVariantPrice, setCurrentVariantPrice] = useState(null);
+  const [currentVariant, setCurrentVariant] = useState(null);
   const [layout, setLayout] = useState('vertical');
   const [volumeBundles, setVolumeBundles] = useState([]);
-  
-  const getFirstVariantPrice = () => {
+  const [loading, setLoading] = useState(false);
+
+  const getFirstVariant = () => {
     const variants = window?.ShopifyAnalytics?.meta?.product?.variants || [];
     if (variants.length > 0) {
-      // Shopify stores prices in cents, so divide by 100 to get dollars
-      return variants[0].price / 100;
+      return variants[0];
     }
     return 0;
   };
-
-  useEffect(() => {
-    setVolumeBundles(JSON.parse(bundleData.volumeBundles));
-  }, [])
 
   /**
    * Generates formatted discount text based on the bundle's discount type and value.
@@ -45,6 +41,106 @@ export default function DiscountBundle({bundleData}) {
     return outputText;
   }
 
+  const getPrice = (bundle) => {
+    const price = isInEditor ? window.b2ProductData.product.price : currentVariant.price;
+
+    return price / 100;
+  }
+  
+  /**
+   * Calculates the price for a bundle based on the current variant price and discount settings
+   * 
+   * @param {Object} bundle - The bundle object containing quantity and discount information
+   * @param {number} bundle.quantity - The quantity of items in the bundle
+   * @param {string} bundle.discount_type - The type of discount ('amount' or 'percentage')
+   * @param {number} bundle.discount - The discount value
+   * @param {string} [type='discounted'] - The type of price to calculate ('regular' or 'discounted')
+   * @returns {string} Formatted price string with currency symbol
+   */
+  const calculatePrice = (bundle, type = 'discounted') => {
+    const price = getPrice(bundle);
+    const totalPrice = price * bundle.quantity;
+    
+    if (type === 'regular') {
+      return formatPricing(totalPrice);
+    }
+
+    let finalPrice = totalPrice;
+    if (bundle.discount_type === 'percentage' && bundle.discount) {
+      const discount = (totalPrice * bundle.discount) / 100;
+      finalPrice = totalPrice - discount;
+    } else if (bundle.discount_type === 'amount' && bundle.discount) {
+      finalPrice = totalPrice - bundle.discount;
+    }
+
+    return formatPricing(finalPrice);
+  };
+
+  /**
+   * Formats a numeric price value with currency symbol and fixed decimal places
+   * 
+   * @param {number|string} price - The price value to format
+   * @returns {string} Formatted price string with currency symbol and two decimal places
+   */
+  const formatPricing = (price) => {
+    // Convert to number in case it's a string
+    const numericPrice = Number(price);
+    // Fix to 2 decimal places and ensure it's a number
+    const priceWithFixedDecimal = Number(numericPrice.toFixed(2));
+
+    return `${storeCurrency}${priceWithFixedDecimal}`;
+  }
+  
+  /**
+   * Adds the selected bundle to the cart and redirects to cart page
+   * Uses Shopify's cart API to add items and handles different cart redirect methods
+   * 
+   * @async
+   * @returns {Promise<void>}
+   * @throws {Error} When the cart API request fails
+   */
+  const addToCart = async () => {
+    if (selectedBundle === null) return;
+
+    setLoading(true);
+    
+    const bundle = volumeBundles[selectedBundle];
+    const formData = {
+      'items': [{
+        'id': currentVariant.id || '',
+        'quantity': bundle.quantity
+      }]
+    };
+
+    try {
+      const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        // Try different methods to redirect to cart
+        if (window.Shopify && window.Shopify.theme && window.Shopify.theme.cart) {
+          window.Shopify.theme.cart.open();
+        } else if (window.Shopify && window.Shopify.routes && window.Shopify.routes.cart) {
+          window.location.href = window.Shopify.routes.cart;
+        } else {
+          window.location.href = '/cart';
+        }
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+
+  useEffect(() => {
+    setVolumeBundles(JSON.parse(bundleData.volumeBundles));
+    setLayout(bundleData.layout);
+  }, [])
+
   useEffect(() => {
     // Store store currency
     const storeCurrency = window?.Shopify?.currency?.active;
@@ -52,8 +148,39 @@ export default function DiscountBundle({bundleData}) {
   }, [])
 
   useEffect(() => {
-    setCurrentVariantPrice(getFirstVariantPrice());
+    setCurrentVariant(getFirstVariant());
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+          if (mutation.type === "attributes" || mutation.type === "childList") {
+            const urlParams = new URLSearchParams(window.location.search);
+            const variantId = urlParams.get("variant");
+
+            if (variantId) {
+              const variants = window?.ShopifyAnalytics?.meta?.product?.variants || [];
+              const currentVariant = variants.find(v => v.id === Number(variantId));
+              
+              if (currentVariant) {
+                setCurrentVariant(currentVariant);
+              }
+            }
+          }
+      });
+    });
+
+    const targetNode = document.querySelector("form[action*='/cart/add']");
+    if (targetNode) {
+        observer.observe(targetNode, { attributes: true, childList: true, subtree: true });
+    }
   }, []);
+
+  useEffect(() => {
+    // Select highlighted bundle if exists
+    const highlightedIndex = volumeBundles.findIndex(bundle => bundle.highlighted);
+    if (highlightedIndex !== -1) {
+      setSelectedBundle(highlightedIndex);
+    }
+  }, [volumeBundles]);
 
   return (
     <div className="barn2-discount-bundles">
@@ -81,13 +208,24 @@ export default function DiscountBundle({bundleData}) {
                 </div>
               </div>
               <div className="barn2-dbs-bottom">
-                <span className="barn2-dbs-price">{storeCurrency}{currentVariantPrice}</span>
-                <span className="barn2-dbs-regular-price">{storeCurrency}{currentVariantPrice * bundle.quantity}</span>
+                <span className="barn2-dbs-price">{calculatePrice(bundle, 'discounted')}</span>
+                <span className="barn2-dbs-regular-price">{calculatePrice(bundle, 'regular')}</span>
               </div>
             </div>
           )
         })}
       </div>
+      <button 
+        className={classNames(
+          'barn2-add-to-cart',
+          {
+            'loading': loading
+          }
+        )}
+        onClick={addToCart}
+      >
+        Get this deal
+      </button>
     </div>
   )
 }

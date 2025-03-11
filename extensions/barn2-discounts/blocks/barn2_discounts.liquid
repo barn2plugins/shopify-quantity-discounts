@@ -1,3 +1,13 @@
+<script>
+  var b2ProductData = {
+    isDesignMode: Shopify.designMode,
+    product: {
+      id: {{ product.id }},
+      price: {{ product.price | json }},
+      compareAtPrice: {{ product.compare_at_price | json }}
+    }
+  };
+</script>
 {% # theme-check-disable AssetSizeJavaScript %}
 <script src="{{ 'barn2-discounts.js' | asset_url }}" defer></script>
 {% # theme-check-enable AssetSizeJavaScript %}
@@ -16,4 +26,3 @@
   "stylesheet": "barn2-discounts.css"
 }
 {% endschema %}
-

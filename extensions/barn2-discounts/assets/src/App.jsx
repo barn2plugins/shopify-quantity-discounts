@@ -5,7 +5,7 @@ import DiscountBundle from './DiscountBundle'
 export default function App() {
   const [currentProductId, setCurrentProductId] = useState(window?.ShopifyAnalytics?.meta?.product?.id);
   const [eligibleBundleDiscount, setEligibleBundleDiscount] = useState(null);
-  const [isInEditor, setIsInEditor] = useState(false);
+  const [isInEditor, setIsInEditor] = useState(window.b2ProductData.isDesignMode);
 
   const fetchEligibleBundleDiscount = async (productId) => {
     try {
@@ -17,22 +17,6 @@ export default function App() {
       return null;
     }
   };
-
-  useEffect(() => {
-    const checkEditorStatus = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const previewPath = urlParams.get('previewPath');
-      setIsInEditor(previewPath && previewPath.startsWith('/products/'));
-    };
-
-    checkEditorStatus();
-    // Optional: Listen for URL changes in the theme editor
-    window.addEventListener('popstate', checkEditorStatus);
-    return () => {
-      window.removeEventListener('popstate', checkEditorStatus);
-    };
-  }, []);
-
 
   useEffect(() => {
     // Create an async function inside useEffect
@@ -50,6 +34,8 @@ export default function App() {
   }, [currentProductId, isInEditor]);
 
   return (
-    eligibleBundleDiscount && eligibleBundleDiscount.type == 'volume_bundle' && <DiscountBundle bundleData={eligibleBundleDiscount}/>
+    eligibleBundleDiscount && 
+    eligibleBundleDiscount.type == 'volume_bundle' && 
+    <DiscountBundle bundleData={eligibleBundleDiscount} isInEditor={isInEditor} />
   )
 }
