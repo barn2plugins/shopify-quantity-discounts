@@ -4,8 +4,10 @@
     product: {
       id: {{ product.id }},
       price: {{ product.price | json }},
-      compareAtPrice: {{ product.compare_at_price | json }}
-    }
+      compareAtPrice: {{ product.compare_at_price | json }},
+      collection: {{ product.collections | json }}
+    },
+    volumeBundles: {{ shop.metafields.barn2_custom_discounts.product_discount.value | json }}
   };
 </script>
 {% # theme-check-disable AssetSizeJavaScript %}
