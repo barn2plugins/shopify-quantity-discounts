@@ -86,18 +86,3 @@ const getBarn2VolumeDiscountFunctionId = (storedata) => {
   );
   return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
 };
-
-export const getDiscountFunctionIdFromSession = async (id) => {
-  try {
-    const response = await prisma.session.findFirst({
-      where: {
-        id: id,
-      },
-    });
-
-    return response ? response.volumeDiscountFunctionId : null;
-  } catch (error) {
-    console.error('Error fetching discount function ID:', error);
-    return null;
-  }
-}

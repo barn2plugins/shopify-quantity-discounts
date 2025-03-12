@@ -23,6 +23,7 @@ model Session {
   expires                         DateTime?
   accessToken                     String
   volumeDiscountFunctionId        String?
+  storeDiscountMetaFieldId        String?
 
   // User Information
   userId                          String?

@@ -11,10 +11,10 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal libraries and components
 import { authenticate } from "../../shopify.server"
-import { getDiscountFunctionIdFromSession } from "../../shopify.service"
 import prisma from "../../db.server";
 import { actions, createShopifyVolumeDiscount } from "../../actions/discount.actions";
 import { BundleService } from "../../services/bundle.service";
+import { StoreService } from "../../services/store.service.js";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
 
@@ -27,7 +27,7 @@ export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const defaultBundle = await BundleService.getDefaultBundle(session.id);
 
-  return defaultBundle
+  return defaultBundle;
 };
 
 export const action = async ({ request }) => {
@@ -38,15 +38,23 @@ export const action = async ({ request }) => {
 
   try {
     if (fetcherData.intent === 'create') {
-      const discountFunctionId = await getDiscountFunctionIdFromSession(session.id);
-      if (!discountFunctionId) return null;
+      const store = await StoreService.getStoreDetails(session.id, {
+        volumeDiscountFunctionId: true,
+        userId: true
+      });
 
-      const shopifyDiscountGID = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId});
+      if (!store) return null;
+
+      const shopifyDiscountGID = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId: store.volumeDiscountFunctionId});
       const shopifyDiscountid = shopifyDiscountGID.split('/').pop();
 
       const createDiscount = actions[fetcherData.intent];
       const actionData = await createDiscount({ prisma, fetcherData, session, shopifyDiscountGID });
-      
+      if (!actionData) return null;
+
+      const allDiscounts = await BundleService.getAllBundles(session.id);
+      await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts});
+  
       // Once the discount bundle successfully created, redirect to the edit page
       return redirect(`/app/discount/${shopifyDiscountid}/edit`);
     }

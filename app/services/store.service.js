@@ -23,4 +23,48 @@ export class StoreService {
       return null;
     }
   }
+
+  static async updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId, allDiscounts}) {
+    const response = await admin.graphql(
+      `#graphql
+      mutation SetShopMetafield($ownerId: ID!, $value: String!) {
+        metafieldsSet(
+          metafields: [
+            {
+              namespace: "barn2_custom_discounts",
+              key: "product_discount",
+              ownerId: $ownerId,
+              type: "json",
+              value: $value
+            }
+          ]
+        ) {
+          metafields {
+            id
+            key
+            value
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }`,
+      {
+        variables: {
+          ownerId: shopifyShopId,
+          value: JSON.stringify(allDiscounts)
+        }
+      }
+    );
+  
+    const responseJson = await response.json();
+  
+    const userErrors = responseJson.data.metafieldsSet.userErrors;
+    if (userErrors.length > 0) {
+      return 'theres error';
+    }
+  
+    return responseJson.data.metafieldsSet.metafields[0].id;
+  }
 }

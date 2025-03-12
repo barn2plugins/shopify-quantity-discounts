@@ -9,6 +9,7 @@ CREATE TABLE "Session" (
     "expires" DATETIME,
     "accessToken" TEXT NOT NULL,
     "volumeDiscountFunctionId" TEXT,
+    "storeDiscountMetaFieldId" TEXT,
     "userId" TEXT,
     "firstName" TEXT,
     "lastName" TEXT,

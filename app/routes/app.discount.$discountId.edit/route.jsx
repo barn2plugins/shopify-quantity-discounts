@@ -50,13 +50,24 @@ export const action = async ({ request }) => {
   
   try {
     if (fetcherData.intent === 'update') {
+      const store = await StoreService.getStoreDetails(session.id, {
+        userId: true
+      });
+
+      if (!store) return null;
+      
       const shopifyDiscountId = fetcherData.shopifyDiscountId;
       const metafieldId = await getDiscountMetafieldId({admin, shopifyDiscountId});
       if (!metafieldId) return null;
       await updateShopifyVolumeDiscount({admin, fetcherData, metafieldId});
 
       const updateDiscount = actions[fetcherData.intent];
-      return await updateDiscount({ prisma, fetcherData });
+      const discountData = await updateDiscount({ prisma, fetcherData });
+
+      const allDiscounts = await BundleService.getAllBundles(session.id);
+      await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts});
+
+      return discountData;
     }
     
     const actionFn = actions[fetcherData.intent];
