@@ -185,7 +185,13 @@ export default function DiscountBundle({bundleData, isInEditor}) {
   return (
     <div className="barn2-discount-bundles">
       <div className="barn2-db-main-title"><span>Buy</span></div>
-      <div className={`barn2-discounts-list barn2-dbs-layout-${layout} discount-columns-${volumeBundles.length}`}>
+      <div 
+        className={classNames(
+          'barn2-discounts-list',
+          `barn2-dbs-layout-${layout}`,
+          `discount-columns-${volumeBundles.length}`
+        )}
+      >
         { volumeBundles.map((bundle, index) => {
           return (
             <div 

@@ -12,6 +12,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../../shopify.server.js"
 import prisma from "../../db.server.js";
 import { actions, updateShopifyVolumeDiscount, getDiscountMetafieldId } from "../../actions/discount.actions.js";
+import { BundleService } from "../../services/bundle.service.js";
 import { StoreService } from "../../services/store.service.js";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils.jsx";

@@ -151,6 +151,7 @@ export const actions = {
 export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountFunctionId}) => {
   const metafieldsValue = {
     targetMode: fetcherData.whichProducts,
+    campaignName: fetcherData.name,
     selectedProductIds: JSON.parse(fetcherData.selectedProducts).map(p => p.id),
     selectedCollectionIds: fetcherData.selectedCollections !== '[]' ? JSON.parse(fetcherData.selectedCollections).map(p => p.id) : [],
     excludedProductIds: JSON.parse(fetcherData.excludedProducts).map(p => p.id),
@@ -239,6 +240,7 @@ export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountF
 export const updateShopifyVolumeDiscount = async ({admin, fetcherData, metafieldId}) => {
   const metafieldsValue = {
     targetMode: fetcherData.whichProducts,
+    campaignName: fetcherData.name,
     selectedProductIds: JSON.parse(fetcherData.selectedProducts).map(p => p.id),
     selectedCollectionIds: fetcherData.selectedCollections !== '[]' ? JSON.parse(fetcherData.selectedCollections).map(p => p.id) : [],
     excludedProductIds: JSON.parse(fetcherData.excludedProducts).map(p => p.id),

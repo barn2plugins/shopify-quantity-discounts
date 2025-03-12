@@ -374,3 +374,31 @@ export const parseBundleObject = async ( {discountBundle, store} ) => {
 
   return discountBundle;
 }
+
+/**
+ * Simplifies discount data by extracting only the IDs from product and collection arrays
+ * 
+ * @param {Array<Object>} discounts - Array of discount objects
+ * @param {(Array<Object>|string)} discounts[].selectedProducts - Array of selected products or JSON string
+ * @param {(Array<Object>|string)} discounts[].selectedCollections - Array of selected collections or JSON string
+ * @param {(Array<Object>|string)} discounts[].excludedProducts - Array of excluded products or JSON string
+ * @param {(Array<Object>|string)} discounts[].excludedCollections - Array of excluded collections or JSON string
+ * @returns {Array<Object>} Array of discount objects with simplified arrays containing only IDs
+ */
+export const simplifyDiscountData = (discounts) => {
+  return discounts.map(discount => ({
+    ...discount,
+    selectedProducts: Array.isArray(discount.selectedProducts) 
+      ? discount.selectedProducts.map(item => item.id)
+      : JSON.parse(discount.selectedProducts || '[]').map(item => item.id),
+    selectedCollections: Array.isArray(discount.selectedCollections)
+      ? discount.selectedCollections.map(item => item.id)
+      : JSON.parse(discount.selectedCollections || '[]').map(item => item.id),
+    excludedProducts: Array.isArray(discount.excludedProducts)
+      ? discount.excludedProducts.map(item => item.id)
+      : JSON.parse(discount.excludedProducts || '[]').map(item => item.id),
+    excludedCollections: Array.isArray(discount.excludedCollections)
+      ? discount.excludedCollections.map(item => item.id)
+      : JSON.parse(discount.excludedCollections || '[]').map(item => item.id)
+  }));
+}

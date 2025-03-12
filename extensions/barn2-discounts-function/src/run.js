@@ -157,7 +157,7 @@ export function run(input) {
       discounts.push({
         targets,
         value: appliedDiscount.value,
-        // message: getDiscountMessage(appliedDiscount.value, group.totalQuantity)
+        message: configuration.campaignName || ''
       });
     }
   });
@@ -174,19 +174,4 @@ export function run(input) {
     discounts,
     discountApplicationStrategy: strategy,
   };
-}
-
-/**
- * Creates a friendly message for the discount
- * @param {Object} value - Discount value
- * @param {number} quantity - Product quantity
- * @returns {string} - Friendly message
- */
-function getDiscountMessage(value, quantity) {
-  if (value.percentage) {
-    return `${value.percentage.value}% off for buying ${quantity} items`;
-  } else if (value.fixedAmount) {
-    return `$${value.fixedAmount.amount} off for buying ${quantity} items`;
-  }
-  return `Volume discount for ${quantity} items`;
 }

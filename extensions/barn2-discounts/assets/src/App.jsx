@@ -5,7 +5,7 @@ import DiscountBundle from './DiscountBundle'
 export default function App() {
   const [currentProductId, setCurrentProductId] = useState(window?.ShopifyAnalytics?.meta?.product?.id);
   const [eligibleBundleDiscount, setEligibleBundleDiscount] = useState(null);
-  const [isInEditor, setIsInEditor] = useState(window.b2ProductData.isDesignMode);
+  const [isInEditor, setIsInEditor] = useState(window?.b2ProductData?.isDesignMode || false);
 
   const fetchEligibleBundleDiscount = async (productId) => {
     try {

@@ -9,7 +9,7 @@ export default function PartnerDevelopment() {
 
     return (
         <div style={styles}>
-            <p>This app is free for development stores. When your store goes live, all premium features will be hidden until you choose a plan and approve subscription.</p>
+            <p>This app is free for development stores. When your store goes live, all premium features will be hidden until you choose a Plan.</p>
         </div>
     )
 }

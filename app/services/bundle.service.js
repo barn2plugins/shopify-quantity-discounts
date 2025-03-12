@@ -22,6 +22,7 @@ export class BundleService {
       name: 'Bundle',
       type: 'volume_bundle',
       whichProducts: 'all_products',
+      layout: 'vertical',
       previewEnabled: true,
       active: false,
       currencyCode: currency || '$',

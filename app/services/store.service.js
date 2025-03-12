@@ -1,4 +1,5 @@
 import prisma from "../db.server";
+import { simplifyDiscountData } from "../utils/utils";
 
 /**
  * Service class for handling store-related operations
@@ -24,7 +25,19 @@ export class StoreService {
     }
   }
 
+  /**
+   * Updates the store metafield with discount data
+   * 
+   * @param {Object} params - The parameters object
+   * @param {Object} params.admin - Shopify admin API instance
+   * @param {string} params.shopifyShopId - The Shopify shop ID (format: gid://shopify/Shop/123)
+   * @param {Array<Object>} params.allDiscounts - Array of discount objects to be stored in metafield
+   * @returns {Promise<string|'theres error'>} Returns metafield ID if successful, or error message if failed
+   * @throws {Error} When GraphQL request fails
+   */
   static async updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId, allDiscounts}) {
+    const simplifiedDiscounts = simplifyDiscountData(allDiscounts);
+
     const response = await admin.graphql(
       `#graphql
       mutation SetShopMetafield($ownerId: ID!, $value: String!) {
@@ -53,7 +66,7 @@ export class StoreService {
       {
         variables: {
           ownerId: shopifyShopId,
-          value: JSON.stringify(allDiscounts)
+          value: JSON.stringify(simplifiedDiscounts)
         }
       }
     );
