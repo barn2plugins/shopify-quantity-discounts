@@ -7,7 +7,8 @@ import {
   TextField, 
   Icon, 
   Checkbox, 
-  InlineStack
+  InlineStack,
+  Box
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon } from '@shopify/polaris-icons';
 
@@ -90,7 +91,7 @@ export default function VolumeBundleSection({
     <BlockStack gap={300}>
       <Text as="p" variant="bodyLg" fontWeight="medium">Volume bundles</Text>
       { volumeBundles.length > 0 && 
-        <>
+        <Box className="app-bundles-table">
           <IndexTable
             itemCount={volumeBundles.length}
             headings={[
@@ -182,7 +183,7 @@ export default function VolumeBundleSection({
           <InlineStack>
             <Button icon={PlusIcon} variant="primary" onClick={addNewBundle}>Add tier</Button>
           </InlineStack>
-        </>
+        </Box>
       }
     </BlockStack>
   )

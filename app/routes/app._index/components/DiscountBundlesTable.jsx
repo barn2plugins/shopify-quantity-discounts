@@ -4,7 +4,6 @@ import {
   BlockStack,
   Button,
   InlineStack,
-  IndexTable,
   Icon,
   LegacyCard,
 } from "@shopify/polaris";
@@ -15,6 +14,7 @@ import { useFetcher } from "@remix-run/react";
 
 import DeleteConfirmationModal from "../../../components/Modals/DeleteConfirmationModal";
 import { getApplyToText } from "../../../utils/utils";
+import IndexTable from "../../../components/Fields/IndexTable";
 
 export default function DiscountBundlesTable({ discountBundles }) {
   const shopify = useAppBridge();
@@ -134,7 +134,7 @@ export default function DiscountBundlesTable({ discountBundles }) {
                   {title: 'Type'},
                   {title: 'Apply to'},
                   {title: 'Enabled'},
-                  {title: 'Actions', alignment: 'right'},
+                  {title: 'Actions', alignment: 'left'},
                 ]}
                 selectable={false}
               >

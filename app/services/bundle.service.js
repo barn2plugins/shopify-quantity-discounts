@@ -136,8 +136,9 @@ export class BundleService {
         const selectedProductsList = typeof selectedProducts === 'string'
           ? JSON.parse(selectedProducts)
           : selectedProducts;
+        const productGid = `gid://shopify/Product/${productId}`;
         // Check if the current productId is in the selected list
-        if (selectedProductsList?.some(product => product.id === productId)) {
+        if (selectedProductsList?.some(product => product.id === productGid)) {
           return bundle;
         }
       }

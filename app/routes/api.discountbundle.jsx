@@ -13,13 +13,19 @@ export async function loader({ request }) {
     
     const discountBundles = await BundleService.getAllBundles(session.id);
     if ( !discountBundles || discountBundles.length <= 0 ) {
-      return new Response();
+      return new Response(JSON.stringify({
+        response: 'no_discounts',
+        productId
+      }));
     }
 
     const eligibleProductBundle = await BundleService.getEligibleProductBundle({storefront, discountBundles, productId});
 
     if (!eligibleProductBundle) {
-      return new Response();
+      return new Response(JSON.stringify({
+        response: 'no_discounts',
+        productId
+      }));
     }
 
     return new Response(JSON.stringify({

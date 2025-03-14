@@ -156,7 +156,7 @@ export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountF
     selectedCollectionIds: fetcherData.selectedCollections !== '[]' ? JSON.parse(fetcherData.selectedCollections).map(p => p.id) : [],
     excludedProductIds: JSON.parse(fetcherData.excludedProducts).map(p => p.id),
     excludedCollectionIds: fetcherData.excludedCollections !== '[]' ? JSON.parse(fetcherData.excludedCollections).map(p => p.id) : [],
-    discounts: getVolumeDiscounts(JSON.parse(fetcherData.volumeBundles)),
+    discounts: structureDiscountData(fetcherData),
     discountApplicationStrategy: 'MAXIMUM'
   };
 
@@ -245,7 +245,7 @@ export const updateShopifyVolumeDiscount = async ({admin, fetcherData, metafield
     selectedCollectionIds: fetcherData.selectedCollections !== '[]' ? JSON.parse(fetcherData.selectedCollections).map(p => p.id) : [],
     excludedProductIds: JSON.parse(fetcherData.excludedProducts).map(p => p.id),
     excludedCollectionIds: fetcherData.excludedCollections !== '[]' ? JSON.parse(fetcherData.excludedCollections).map(p => p.id) : [],
-    discounts: getVolumeDiscounts(JSON.parse(fetcherData.volumeBundles)),
+    discounts: structureDiscountData(fetcherData),
     discountApplicationStrategy: 'MAXIMUM'
   };
 
@@ -445,29 +445,63 @@ export const getDiscountMetafieldId = async ({admin, shopifyDiscountId}) => {
   return responseJson.data.automaticDiscountNode.metafield.id;
 }
 
-const getVolumeDiscounts = (volumeBundles) => {
-  return volumeBundles
-          .filter(d => d.discount !== "")
-          .map(d => {
-              let discountValue;
-              
-              if (d.discount_type === "percentage") {
-                  discountValue = { percentage: { value: Number(d.discount) } };
-              } else if (d.discount_type === "amount") {
-                  discountValue = { fixedAmount: { amount: Number(d.discount) } };
-              }
+const structureDiscountData = (fetcherData) => {
+  let discountData = [];
+  if ( fetcherData.type === "volume_discount" ) {
+    const volumeBundles = JSON.parse(fetcherData.volume_discounts);
+    
+    discountData = volumeBundles
+    .filter(d => d.discount !== "")
+    .map(d => {
+        let discountValue;
+        
+        if (d.discount_type === "percentage") {
+            discountValue = { percentage: { value: Number(d.discount) } };
+        } else if (d.discount_type === "amount") {
+            discountValue = { fixedAmount: { amount: Number(d.discount) } };
+        }
 
-              return {
-                  value: discountValue,
-                  targets: [
-                      {
-                        productVariant: {
-                          quantity: { min: d.quantity, max: d.quantity }
-                        }
-                      }
-                  ]
-              };
-          });
+        return {
+            value: discountValue,
+            targets: [
+                {
+                  productVariant: {
+                    quantity: { min: d.quantity, max: d.quantity }
+                  }
+                }
+            ]
+        };
+    })
+  }
+
+  if ( fetcherData.type === "bulk_pricing" ) {
+    const bulkPricing = JSON.parse(fetcherData.pricingTiers);
+
+    discountData = bulkPricing
+    .filter(d => d.discount !== "")
+    .map(d => {
+        let discountValue;
+        
+        if (d.discount_type === "percentage") {
+            discountValue = { percentage: { value: Number(d.discount) } };
+        } else if (d.discount_type === "amount") {
+            discountValue = { fixedAmount: { amount: Number(d.discount) } };
+        }
+
+        return {
+            value: discountValue,
+            targets: [
+                {
+                  productVariant: {
+                    quantity: { min: d.min_quantity, max: d.max_quantity }
+                  }
+                }
+            ]
+        };
+    })
+  }
+
+  return discountData;
 }
   
 

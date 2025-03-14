@@ -11,7 +11,8 @@ import {
   Tooltip,
   Grid,
   Card,
-  Checkbox
+  Checkbox,
+  Box
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
 import { useEffect, useState } from 'react';
@@ -126,78 +127,80 @@ export default function BulkPricingTiers({
         <BlockStack gap={1000}>
           <BlockStack gap={300}>
             <Text as="p" variant="bodyLg" fontWeight="medium">Bulk Pricing</Text>
-            <IndexTable
-              itemCount={pricingTiers.length}
-              headings={[
-                {title: 'Minimum Quantity'},
-                {title: 'Maximum Quantity'},
-                {title: 'Discount'},
-                {title: ''},
-              ]}
-              selectable={false}
-            >
-              {pricingTiers.map((bundle, index) => (
-                <tr id={index} key={index} position={index} className="volumn_bundle_table_row">
-                  <td className="cell_quantity">
-                      <TextField
-                        type="number"
-                        min="1"
-                        value={bundle.min_quantity.toString()}
-                        onChange={(value) => {
-                          const numericValue = Math.max(1, parseInt(value) || 1);
-                          handleVolumeChange(index, 'min_quantity', numericValue);
-                        }}
-                        autoComplete="off"
-                      />
-                  </td>
-                  <td className="cell_quantity">
-                      <TextField
-                        type="number"
-                        min="1"
-                        value={bundle.max_quantity.toString()}
-                        onChange={(value) => {
-                          const numericValue = Math.max(1, parseInt(value) || 1);
-                          handleVolumeChange(index, 'max_quantity', numericValue);
-                        }}
-                        autoComplete="off"
-                      />
-                  </td>
-                  <td className="cell_discount">
-                      <div className="combined_text_select_field">
-                        <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
-                          const value = event.target.value;
-                          if (value === '') {
-                            handleVolumeChange(index, 'discount', '');
-                          } else {
-                            const numericValue = parseFloat(value);
-                            if (!isNaN(numericValue)) {
-                              handleVolumeChange(index, 'discount', numericValue);
-                            }
-                          }
-                        }}/>
-                        <select
-                          value={bundle.discount_type}
-                          onChange={(event) => {
-                            const selectedValue = event.target.value;
-                            handleVolumeChange(index, 'discount_type', selectedValue);
+            <Box className="app-bundles-table">
+              <IndexTable
+                itemCount={pricingTiers.length}
+                headings={[
+                  {title: 'Minimum Quantity'},
+                  {title: 'Maximum Quantity'},
+                  {title: 'Discount'},
+                  {title: ''},
+                ]}
+                selectable={false}
+              >
+                {pricingTiers.map((bundle, index) => (
+                  <tr id={index} key={index} position={index} className="volumn_bundle_table_row">
+                    <td className="cell_quantity">
+                        <TextField
+                          type="number"
+                          min="1"
+                          value={bundle.min_quantity.toString()}
+                          onChange={(value) => {
+                            const numericValue = Math.max(1, parseInt(value) || 1);
+                            handleVolumeChange(index, 'min_quantity', numericValue);
                           }}
-                        >
-                          { volumeBundleDiscountTypes.map((option) => (
-                            <option key={option.value} value={option.value}>{option.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                  </td>
-                  <td className="cell_action">
-                    {index !== 0 && (
-                      <span onClick={() => handleDeletePricingTier(index)}>
-                        <Icon source={DeleteIcon} />
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </IndexTable> 
+                          autoComplete="off"
+                        />
+                    </td>
+                    <td className="cell_quantity">
+                        <TextField
+                          type="number"
+                          min="1"
+                          value={bundle.max_quantity.toString()}
+                          onChange={(value) => {
+                            const numericValue = Math.max(1, parseInt(value) || 1);
+                            handleVolumeChange(index, 'max_quantity', numericValue);
+                          }}
+                          autoComplete="off"
+                        />
+                    </td>
+                    <td className="cell_discount">
+                        <div className="combined_text_select_field">
+                          <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
+                            const value = event.target.value;
+                            if (value === '') {
+                              handleVolumeChange(index, 'discount', '');
+                            } else {
+                              const numericValue = parseFloat(value);
+                              if (!isNaN(numericValue)) {
+                                handleVolumeChange(index, 'discount', numericValue);
+                              }
+                            }
+                          }}/>
+                          <select
+                            value={bundle.discount_type}
+                            onChange={(event) => {
+                              const selectedValue = event.target.value;
+                              handleVolumeChange(index, 'discount_type', selectedValue);
+                            }}
+                          >
+                            { volumeBundleDiscountTypes.map((option) => (
+                              <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                    </td>
+                    <td className="cell_action">
+                      {index !== 0 && (
+                        <span onClick={() => handleDeletePricingTier(index)}>
+                          <Icon source={DeleteIcon} />
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </IndexTable> 
+            </Box>
 
             <InlineStack>
               <Button icon={PlusIcon} variant="primary" onClick={addNewPricingTier}>Add tier</Button>
