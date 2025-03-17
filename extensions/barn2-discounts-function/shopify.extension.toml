@@ -1,8 +1,8 @@
 api_version = "2025-01"
 
 [[extensions]]
-name = "Barn2 Discounts Function"
-handle = "barn2-discounts-function"
+name = "BarBarn2 Bundles & Bulk Discounts Function"
+handle = "barn2-bundles-and-bulk-discounts-function"
 type = "function"
 
 [extensions.input.variables]

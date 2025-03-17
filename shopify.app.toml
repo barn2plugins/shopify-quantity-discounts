@@ -3,8 +3,8 @@
 client_id = "ace7b79ceed92aac89264663e13e2ed5"
 application_url = "https://marathon-gordon-mean-separate.trycloudflare.com"
 embedded = true
-name = "Barn2 Discounts"
-handle = "barn2-discounts"
+name = "Barn2 Bundles & Bulk Discounts"
+handle = "barn2-bundles-and-bulk-discounts"
 
 [build]
 automatically_update_urls_on_dev = true

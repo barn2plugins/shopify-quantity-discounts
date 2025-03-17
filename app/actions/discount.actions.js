@@ -189,7 +189,7 @@ export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountF
     {
       variables: {
         automaticAppDiscount: {
-          title: `Barn2 Discounts - ${fetcherData.name}`,
+          title: `Barn2 Bundles & Bulk Discounts - ${fetcherData.name}`,
           functionId: discountFunctionId,
           startsAt: "2025-03-04T00:00:00Z",
           endsAt: "2025-12-31T23:59:59Z",
@@ -279,7 +279,7 @@ export const updateShopifyVolumeDiscount = async ({admin, fetcherData, metafield
       variables: {
         id: fetcherData.shopifyDiscountId,
         automaticAppDiscount: {
-          title: `Barn2 Discounts - ${fetcherData.name}`,
+          title: `Barn2 Bundles & Bulk Discounts - ${fetcherData.name}`,
           startsAt: "2025-03-04T00:00:00Z",
           endsAt: "2025-12-31T23:59:59Z",
           metafields: [
