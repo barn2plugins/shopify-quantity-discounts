@@ -82,7 +82,7 @@ export const saveStoreDetails = async (id, storedata) => {
 const getBarn2VolumeDiscountFunctionId = (storedata) => {
   const shopifyFunctions = storedata.data.shopifyFunctions.nodes;
   const barn2VolumeDiscountFunction = shopifyFunctions.find(
-    (func) => func.title === 'Barn2 Bundles & Bulk Discounts Function' && func.apiType === 'product_discounts'
+    (func) => func.app.title === 'Barn2 Bundles & Bulk Discounts' && func.apiType === 'product_discounts'
   );
   return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
 };

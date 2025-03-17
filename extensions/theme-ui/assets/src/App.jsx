@@ -10,7 +10,7 @@ export default function App() {
 
   const fetchEligibleBundleDiscount = async (productId) => {
     try {
-      const response = await fetch(`/apps/barn2-discounts/discountbundle?productId=${productId}`);
+      const response = await fetch(`/apps/barn2-bundles-bulk-discounts/discountbundle?productId=${productId}`);
       const data = await response.json();
       return data;
     } catch (error) {

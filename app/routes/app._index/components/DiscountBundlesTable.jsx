@@ -152,7 +152,7 @@ export default function DiscountBundlesTable({ discountBundles }) {
                     <td className="col-bundle-type">
                       { bundle.type === 'volume_bundle' ? 'Volume bundle' : 'Bulk pricing' }
                     </td>
-                    <td className="colp-applied-to">
+                    <td className="col-applied-to">
                       {getApplyToText(bundle)}
                     </td>
                     <td className="col-status">

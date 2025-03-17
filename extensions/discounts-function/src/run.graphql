@@ -17,7 +17,7 @@ query Input($selectedCollectionIds: [ID!], $excludedCollectionIds: [ID!]) {
     }
   }
   discountNode {
-    metafield(namespace: "$app:barn2-volume-discount", key: "function-configuration") {
+    metafield(namespace: "$app:barn2-bundles-bulk-discount", key: "function-configuration") {
       value
     }
   }

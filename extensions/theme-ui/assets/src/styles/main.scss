@@ -16,7 +16,6 @@
 
 #barn2_discounts {
   .barn2-db-main-title {
-    margin-bottom: 15px;
     display: flex;
     justify-content: center;
     position: relative;
@@ -39,9 +38,72 @@
       left: 0px;
     }
   }
-  .barn2-discounts-list {
+
+  .barn2-db-main-description {
+    margin-top: 15px;
+    line-height: 20px;
+    text-align: center;
+
+    span {
+      font-size: 12px;
+      text-align: center;
+      background: white;
+      z-index: 1;
+    }
+  }
+
+  .barn2-bulk-table-container {
+    margin-top: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #0E54E1;
+    background-color: white;
+  }
+
+  .barn2-bulk-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    thead {
+      background-color: #0E54E1;
+      color: white;
+
+      th {
+        padding: 5px;
+        text-align: center;
+        font-size: 14.55px;
+        font-weight: bold;
+      }
+    }
+
+    tbody {
+      td {
+        padding: 8px 10px;
+        text-align: center;
+        font-size: 14px;
+        border-bottom: 1px solid #0E54E1;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .discount-pill {
+      background-color: #E0F0FF;
+      color: #002E6A;
+      border-radius: 20px;
+      padding: 1px 15px;
+      display: inline-block;
+    }
+  }
+
+  .barn2-discount-bundles-list {
     display: flex;
     gap: 10px;
+    margin-top: 20px;
 
     .barn2-discount-bundle {
       border: 1px solid var(--p-color-border-inverse);

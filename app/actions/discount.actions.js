@@ -200,7 +200,7 @@ export const createShopifyVolumeDiscount = async ({admin, fetcherData, discountF
           },
           metafields: [
             {
-              namespace: "$app:barn2-volume-discount",
+              namespace: "$app:barn2-bundles-bulk-discount",
               key: "function-configuration",
               type: "json",
               value: JSON.stringify(metafieldsValue)
@@ -434,7 +434,7 @@ export const getDiscountMetafieldId = async ({admin, shopifyDiscountId}) => {
     `#graphql
     query {
       automaticDiscountNode(id: "${shopifyDiscountId}") {
-        metafield(namespace: "$app:barn2-volume-discount", key: "function-configuration") {
+        metafield(namespace: "$app:barn2-bundles-bulk-discount", key: "function-configuration") {
           id
         }
       }
