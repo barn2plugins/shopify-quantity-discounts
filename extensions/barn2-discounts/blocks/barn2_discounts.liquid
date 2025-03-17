@@ -7,6 +7,7 @@
       compareAtPrice: {{ product.compare_at_price | json }},
       collection: {{ product.collections | json }}
     },
+    storeCurrency: {{ shop.currency | json }},
     volumeBundles: {{ shop.metafields.barn2_custom_discounts.product_discount.value | json }}
   };
 </script>

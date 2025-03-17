@@ -6,6 +6,7 @@ export default function App() {
   const [currentProductId, setCurrentProductId] = useState(window?.ShopifyAnalytics?.meta?.product?.id);
   const [eligibleBundleDiscount, setEligibleBundleDiscount] = useState(null);
   const [isInEditor, setIsInEditor] = useState(window?.b2ProductData?.isDesignMode || false);
+  const [storeDetails, setStoreDetails] = useState({});
 
   const fetchEligibleBundleDiscount = async (productId) => {
     try {
@@ -23,7 +24,9 @@ export default function App() {
     const fetchData = async () => {
       try {
         const data = await fetchEligibleBundleDiscount(currentProductId);
-        setEligibleBundleDiscount(data.eligibleProductBundle);
+        if ( data.response === 'no_discounts' ) return;
+        setEligibleBundleDiscount(data?.eligibleProductBundle);
+        setStoreDetails(data?.store);
       } catch (error) {
         console.error('Error in useEffect:', error);
       }
@@ -34,8 +37,6 @@ export default function App() {
   }, [currentProductId, isInEditor]);
 
   return (
-    eligibleBundleDiscount && 
-    eligibleBundleDiscount.type == 'volume_bundle' && 
-    <DiscountBundle bundleData={eligibleBundleDiscount} isInEditor={isInEditor} />
+    eligibleBundleDiscount && <DiscountBundle bundleData={eligibleBundleDiscount} isInEditor={isInEditor} storeDetails={storeDetails} />
   )
 }

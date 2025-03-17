@@ -1,5 +1,6 @@
 import { authenticate } from "../shopify.server";
 import { BundleService } from "../services/bundle.service";
+import { StoreService } from "../services/store.service.js";
 
 export async function loader({ request }) {
     const {storefront, session} = await authenticate.public.appProxy(request);
@@ -7,6 +8,11 @@ export async function loader({ request }) {
     if (!storefront) {
       return new Response();
     }
+    const store = await StoreService.getStoreDetails(session.id, {
+      moneyFormat: true,
+    });
+
+    if (!store) return null;
 
     const url = new URL(request.url);
     const productId = url.searchParams.get('productId');
@@ -30,6 +36,7 @@ export async function loader({ request }) {
 
     return new Response(JSON.stringify({
         eligibleProductBundle,
-        productId
+        productId,
+        store
     }));
 }
