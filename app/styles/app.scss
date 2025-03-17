@@ -2,35 +2,6 @@
  
 }
 
-// Index table
-.barn2-index-table {
-  border-collapse: collapse;
-  width: 100%;
-  th {
-    padding: var(--p-space-300) var(--p-space-200) var(--p-space-300) !important;
-    background: var(--p-color-bg-surface-secondary);
-    padding: var(--pc-index-table-heading-padding-y) var(--pc-index-table-heading-padding-x);
-    text-align: left;
-    font-weight: var(--p-font-weight-bold);
-    color: var(--p-color-text-secondary);
-    font-size: var(--p-font-size-300);
-    white-space: nowrap;
-    border: 0;
-  }
-}
-
-.discount-layout {
-  display: flex;
-  gap: 20px;
-
-  .discount-content {
-    flex: 0 0 60%;
-  }
-  .discount-sidebar {
-    flex: 0 0 40%;
-  }
-}
-
 // App Home Page
 .barn2-app-home {
   .discounts_table_row {
@@ -76,22 +47,52 @@
   }
 }
 
+.barn2-discounts-page-wrapper {
+  padding-bottom: 40px;
+
+  .discount-layout {
+    display: flex;
+    gap: 20px;
+
+    .discount-content {
+      flex: 0 0 calc(60% - 10px);
+    }
+    .discount-sidebar {
+      flex: 0 0 calc(40% - 10px);
+    }
+  }
+
+}
+
+// Index table
+.barn2-index-table {
+  border-collapse: collapse;
+  width: 100%;
+  th {
+    padding: var(--p-space-300) var(--p-space-200) var(--p-space-300) !important;
+    background: var(--p-color-bg-surface-secondary);
+    padding: var(--pc-index-table-heading-padding-y) var(--pc-index-table-heading-padding-x);
+    text-align: left;
+    font-weight: var(--p-font-weight-bold);
+    color: var(--p-color-text-secondary);
+    font-size: var(--p-font-size-300);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
 // Create Page
-@media screen and (min-width: 1200px) {
-  .create-page-wrapper {
-    padding:  0px 15em 3em;
+@media screen and (min-width: 30.625em) {
+  .barn2-discounts-page-wrapper .Polaris-Page {
+    max-width: 1080px;
   }
 }
 
-@media screen and (min-width: 1000px) and (max-width: 1199px) {
-  .create-page-wrapper {
-    padding:  0 6em 3em;
-  }
-}
-
-@media screen and (max-width: 999px) {
-  .create-page-wrapper {
-    padding: 0 0 3em;
+@media screen and (max-width: 55.625em) {
+  .barn2-discounts-page-wrapper .Polaris-Page {
+    .discount-layout {
+     flex-direction: column;
+    }
   }
 }
 
@@ -191,9 +192,9 @@
       padding: 0 15px;
       z-index: 1;
     }
-
   }
 }
+
 .bundles-list {
   .bundle-single {
     border: 1px solid var(--p-color-border-inverse);

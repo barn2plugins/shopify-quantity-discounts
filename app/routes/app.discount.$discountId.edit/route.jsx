@@ -131,9 +131,8 @@ export default function DiscountPage() {
   };
 
   return (
-    <div className="create-page-wrapper">
+    <div className="barn2-discounts-page-wrapper">
       <Page
-        fullWidth={true}
         backAction={{content: 'Home', url: '/app'}}
         title='Update discount'
         primaryAction={
