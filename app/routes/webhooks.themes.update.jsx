@@ -1,12 +1,29 @@
 import { authenticate } from "../shopify.server";
-import db from "../db.server";
+import { fetchStoreDetails } from "../shopify.service";
+import { getStoreActiveThemeGid } from "../utils/utils";
+import prisma from "../db.server.js";
 
 export const action = async ({ request }) => {
-  const { shop, session, topic } = await authenticate.webhook(request);
+  const { session, admin, topic } = await authenticate.webhook(request);
 
-  console.log(`Received ${topic} webhook for ${shop}`);
+  try {
+    // Fetch store details using GraphQL
+    const storeData = await fetchStoreDetails(admin);
+    const activeThemeGid = getStoreActiveThemeGid(storeData);
 
-  // Webhook requests can trigger multiple times and after an app has already been uninstalled.
+    // Update the active theme GID in the database
+    await prisma.session.update({
+      where: { 
+        id: session.id
+      },
+      data: {
+        activeThemeGid: activeThemeGid
+      },
+    });
+    return null;
+  } catch (error) {
+    console.log(error);
+  }
   
   return new Response();
 };

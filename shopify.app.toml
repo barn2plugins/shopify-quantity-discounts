@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "c5b403fd45b22d3c3f51fd4a9c1fc97d"
-application_url = "https://process-pdas-sms-experts.trycloudflare.com"
+application_url = "https://barn2-discounts.supersections.store"
 embedded = true
 name = "Barn2 Bundles & Bulk Discounts"
 handle = "barn2-bundles-bulk-discounts"
@@ -31,13 +31,13 @@ scopes = "read_orders,read_products,read_themes,write_discounts,write_orders,wri
 
 [auth]
 redirect_urls = [
-  "https://process-pdas-sms-experts.trycloudflare.com/auth/callback",
-  "https://process-pdas-sms-experts.trycloudflare.com/auth/shopify/callback",
-  "https://process-pdas-sms-experts.trycloudflare.com/api/auth/callback"
+  "https://barn2-discounts.supersections.store/auth/callback",
+  "https://barn2-discounts.supersections.store/auth/shopify/callback",
+  "https://barn2-discounts.supersections.store/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://process-pdas-sms-experts.trycloudflare.com/api"
+url = "https://barn2-discounts.supersections.store/api"
 subpath = "barn2-bundles-bulk-discounts"
 prefix = "apps"
 

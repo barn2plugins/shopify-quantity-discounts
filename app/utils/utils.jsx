@@ -358,7 +358,7 @@ export const rgbaToHex = ({ r, g, b, a }) => {
  * @param {string} params.discountBundle.customDesigns - JSON string containing custom design settings
  * @returns {Promise<Object>} The discount bundle object with parsed storeDisplay and customDesigns properties
  */
-export const parseBundleObject = async ( {discountBundle, store} ) => {
+export const parseBundleObject = async ( {discountBundle, currency, timezone} ) => {
   if (discountBundle.storeDisplay ) {
     discountBundle.storeDisplay = JSON.parse(discountBundle.storeDisplay);
   }
@@ -373,6 +373,35 @@ export const parseBundleObject = async ( {discountBundle, store} ) => {
   discountBundle.timezone = discountBundle.timezone? timezone : 'UTC';
 
   return discountBundle;
+}
+
+/**
+ * Checks if the Barn2 app embed block is disabled in the theme configuration
+ * 
+ * @param {string} themeConfig - The theme configuration JSON string containing block settings
+ * @returns {boolean|null} Returns true if the app embed block is disabled, false if enabled, or null if not found
+ */
+export const isBarn2AppEmbedDisabled = (themeConfig) => {
+  // Extract JSON part by removing the comment block
+  const jsonStartIndex = themeConfig.indexOf('{');
+  const jsonStr = themeConfig.slice(jsonStartIndex);
+  let isDisabled = null;
+
+  try {
+    const jsonData = JSON.parse(jsonStr);
+    const barn2AppEmbed = "shopify://apps/barn2-bundles-bulk-discounts/blocks/barn2-bundles-app-embed";
+    
+    Object.values(jsonData.current.blocks).forEach(block => {
+      if (block.type.startsWith(barn2AppEmbed)) {
+        isDisabled = block.disabled;
+      }
+    });
+    
+  } catch (error) {
+
+  }
+
+  return isDisabled;
 }
 
 /**
@@ -401,4 +430,48 @@ export const simplifyDiscountData = (discounts) => {
       ? discount.excludedCollections.map(item => item.id)
       : JSON.parse(discount.excludedCollections || '[]').map(item => item.id)
   }));
+}
+
+/**
+ * Extracts the last segment of a URL or path string after the last forward slash
+ * 
+ * @param {string} object - The URL or path string to parse
+ * @returns {string|null} The extracted ID or null if no match is found
+ */
+export const parseObjectId = (object) => {
+  const matches = object.match(/\/([^\/]+)$/);
+  return matches ? matches[1] : null;
+}
+
+/**
+ * Retrieves the ID of the Barn2 volume discount function from Shopify store data
+ * 
+ * @param {Object} storedata - The Shopify store data object
+ * @param {Object} storedata.data - The data object containing Shopify functions
+ * @param {Object} storedata.data.shopifyFunctions - The functions object containing nodes array
+ * @param {Array} storedata.data.shopifyFunctions.nodes - Array of function objects with app and apiType properties
+ * @returns {string|null} The ID of the Barn2 volume discount function or null if not found
+ */
+export const getBarn2VolumeDiscountFunctionId = (storedata) => {
+  const shopifyFunctions = storedata.data.shopifyFunctions.nodes;
+  const barn2VolumeDiscountFunction = shopifyFunctions.find(
+    (func) => func.app.title === 'Barn2 Bundles & Bulk Discounts' && func.apiType === 'product_discounts'
+  );
+  return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
+};
+
+/**
+ * Retrieves the ID of the active (main) theme from Shopify store data
+ * 
+ * @param {Object} storedata - The Shopify store data object
+ * @param {Object} storedata.data - The data object containing themes information
+ * @param {Object} storedata.data.themes - The themes object containing edges array
+ * @param {Array} storedata.data.themes.edges - Array of theme objects with node property
+ * @returns {string|null} The ID of the active theme or null if not found
+ * 
+ */ 
+export const getStoreActiveThemeGid = (storedata) => {
+  const themes = storedata.data.themes.edges;
+  const activeTheme = themes.find((theme) => theme.node.role === 'MAIN');
+  return activeTheme ? activeTheme.node.id : null;
 }

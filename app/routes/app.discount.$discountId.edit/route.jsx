@@ -2,6 +2,7 @@
 import {
   Page,
   Button,
+  BlockStack
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
@@ -17,18 +18,26 @@ import { StoreService } from "../../services/store.service.js";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils.jsx";
 
+import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 import Content from "../../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../../components/Layouts/Discount/Sidebar.jsx";
 
 import DiscountModals from "../../components/Modals/DiscountModals.jsx";
 
 export const loader = async ({ request, params }) => {
-  const { session } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
+  // Get the app embed block extension id
+  const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
+
   const store = await StoreService.getStoreDetails(session.id, {
     currency: true,
     timezone: true,
-    volumeDiscountFunctionId: true
+    volumeDiscountFunctionId: true,
+    activeThemeGid: true
   });
+
+  const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
+
   const discountBundle = await actions.getDiscountBundle({session, params});
   const { currency, timezone } = store || {};
   const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency, timezone });
@@ -40,7 +49,11 @@ export const loader = async ({ request, params }) => {
     });
   }
 
-  return { discountBundle: parsedDiscountBundle };
+  return { 
+    discountBundle: parsedDiscountBundle, 
+    appEmbedDisabled,
+    bundlesDiscountsExtensionId
+  };
 }
 
 export const action = async ({ request }) => {
@@ -89,9 +102,10 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const { discountBundle } = useLoaderData();
+  const { discountBundle, appEmbedDisabled, bundlesDiscountsExtensionId } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
+  const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
   const [ selectedCollections, setSelectedCollections ] = useState([]);
   const [ excludedProducts, setExcludedProducts ] = useState([]);
@@ -145,31 +159,34 @@ export default function DiscountPage() {
           </Button>
         }
       >
-        <div className="discount-layout">
-          <div className="discount-content">
-            <Content
-              formState={formState}
-              setFormState={setFormState}
-              selectedProducts={selectedProducts}
-              selectedCollections={selectedCollections}
-              excludedProducts={excludedProducts}
-              excludedCollections={excludedCollections}
-              volumeBundles={volumeBundles}
-              setVolumeBundles={setVolumeBundles}
-              pricingTiers={pricingTiers}
-              setPricingTiers={setPricingTiers}
-              discountBundle={discountBundle}
-              shopify={shopify}
-            />
+        <BlockStack gap="500">
+          { isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
+          <div className="discount-layout">
+            <div className="discount-content">
+              <Content
+                formState={formState}
+                setFormState={setFormState}
+                selectedProducts={selectedProducts}
+                selectedCollections={selectedCollections}
+                excludedProducts={excludedProducts}
+                excludedCollections={excludedCollections}
+                volumeBundles={volumeBundles}
+                setVolumeBundles={setVolumeBundles}
+                pricingTiers={pricingTiers}
+                setPricingTiers={setPricingTiers}
+                discountBundle={discountBundle}
+                shopify={shopify}
+              />
+            </div>
+            <div className="discount-sidebar">
+              <Sidebar
+                formState={formState}
+                setFormState={setFormState}
+                volumeBundles={volumeBundles}
+              />
+            </div>
           </div>
-          <div className="discount-sidebar">
-            <Sidebar
-              formState={formState}
-              setFormState={setFormState}
-              volumeBundles={volumeBundles}
-            />
-          </div>
-        </div>
+        </BlockStack>
       </Page>
 
       <DiscountModals

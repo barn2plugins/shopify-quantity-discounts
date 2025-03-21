@@ -1,4 +1,5 @@
 import prisma from "./db.server"; // Your Prisma instance
+import { getBarn2VolumeDiscountFunctionId, getStoreActiveThemeGid } from "./utils/utils"
 
 // Fetch store details
 export const fetchStoreDetails = async (admin) => {
@@ -89,17 +90,3 @@ export const saveStoreDetails = async (id, storedata) => {
   } catch (error) {
   }
 };
-
-const getBarn2VolumeDiscountFunctionId = (storedata) => {
-  const shopifyFunctions = storedata.data.shopifyFunctions.nodes;
-  const barn2VolumeDiscountFunction = shopifyFunctions.find(
-    (func) => func.app.title === 'Barn2 Bundles & Bulk Discounts' && func.apiType === 'product_discounts'
-  );
-  return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
-};
-
-const getStoreActiveThemeGid = (storedata) => {
-  const themes = storedata.data.themes.edges;
-  const activeTheme = themes.find((theme) => theme.node.role === 'MAIN');
-  return activeTheme ? activeTheme.node.id : null;
-}

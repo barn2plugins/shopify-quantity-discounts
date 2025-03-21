@@ -42,6 +42,7 @@ model Session {
   timezone                        String?
   planDisplayName                 String?
   activeThemeGid                  String?
+  appEmbedDisabled                Boolean?  @default(true)
   isPartnerDevelopment            Boolean?  @default(false)
   isShopifyPlus                   Boolean?  @default(false)
 
