@@ -1,14 +1,14 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "c5b403fd45b22d3c3f51fd4a9c1fc97d"
-application_url = "https://relying-sorted-hungarian-wolf.trycloudflare.com"
+application_url = "https://process-pdas-sms-experts.trycloudflare.com"
 embedded = true
 name = "Barn2 Bundles & Bulk Discounts"
 handle = "barn2-bundles-bulk-discounts"
 
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true
+include_config_on_deploy = true
 
 [webhooks]
 api_version = "2025-01"
@@ -21,19 +21,23 @@ api_version = "2025-01"
   topics = [ "app/uninstalled" ]
   uri = "/webhooks/app/uninstalled"
 
+  [[webhooks.subscriptions]]
+  topics = [ "themes/update" ]
+  uri = "/webhooks/themes/update"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,read_products,unauthenticated_read_product_listings,write_discounts,write_orders,write_products,write_script_tags"
+scopes = "read_orders,read_products,read_themes,write_discounts,write_orders,write_products,write_script_tags,unauthenticated_read_product_listings"
 
 [auth]
 redirect_urls = [
-  "https://relying-sorted-hungarian-wolf.trycloudflare.com/auth/callback",
-  "https://relying-sorted-hungarian-wolf.trycloudflare.com/auth/shopify/callback",
-  "https://relying-sorted-hungarian-wolf.trycloudflare.com/api/auth/callback"
+  "https://process-pdas-sms-experts.trycloudflare.com/auth/callback",
+  "https://process-pdas-sms-experts.trycloudflare.com/auth/shopify/callback",
+  "https://process-pdas-sms-experts.trycloudflare.com/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://relying-sorted-hungarian-wolf.trycloudflare.com/api"
+url = "https://process-pdas-sms-experts.trycloudflare.com/api"
 subpath = "barn2-bundles-bulk-discounts"
 prefix = "apps"
 

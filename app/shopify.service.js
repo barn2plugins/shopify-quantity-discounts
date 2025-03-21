@@ -36,6 +36,15 @@ export const fetchStoreDetails = async (admin) => {
             id
           }
         }
+        themes(first: 25) {
+          edges {
+            node {
+              name
+              id
+              role
+            }
+          }
+        }
       }
     `;
     
@@ -51,6 +60,7 @@ export const saveStoreDetails = async (id, storedata) => {
   try {
     const shop = storedata.data.shop;
     const volumeDiscountFunctionId = getBarn2VolumeDiscountFunctionId(storedata);
+    const getActiveThemeGid = getStoreActiveThemeGid(storedata);
 
     await prisma.session.update({
       where: { 
@@ -73,6 +83,7 @@ export const saveStoreDetails = async (id, storedata) => {
         moneyWithCurrencyInEmailsFormat: shop.currencyFormats.moneyWithCurrencyInEmailsFormat,
         checkoutApiSupported: shop.checkoutApiSupported,
         volumeDiscountFunctionId,
+        activeThemeGid: getActiveThemeGid
       },
     });
   } catch (error) {
@@ -86,3 +97,9 @@ const getBarn2VolumeDiscountFunctionId = (storedata) => {
   );
   return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
 };
+
+const getStoreActiveThemeGid = (storedata) => {
+  const themes = storedata.data.themes.edges;
+  const activeTheme = themes.find((theme) => theme.node.role === 'MAIN');
+  return activeTheme ? activeTheme.node.id : null;
+}

@@ -14,7 +14,7 @@
   --p-space-800: 2rem;
 }
 
-#barn2_discounts {
+.barn2_discounts {
   .barn2-db-main-title {
     display: flex;
     justify-content: center;
@@ -246,27 +246,6 @@
       &.discount-columns-9 {
         grid-template-columns: repeat(9, 1fr);
       }
-    }
-  }
-
-  .barn2-add-to-cart {
-    margin-top: 20px;
-    box-shadow: 0 0 0 1px #121212;
-    text-align: center;
-    font-size: 16px;
-    padding: 13px 30px;
-    width: 100%;
-    background: transparent;
-    outline: none;
-    border: none;
-    border-radius: 1px;
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    &.loading {
-      opacity: 0.5;
     }
   }
 }

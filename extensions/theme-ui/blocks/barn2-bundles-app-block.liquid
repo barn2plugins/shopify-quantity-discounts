@@ -1,0 +1,31 @@
+<script>
+  var b2ProductData = {
+    isDesignMode: Shopify.designMode,
+    product: {
+      id: {{ product.id }},
+      price: {{ product.price | json }},
+      compareAtPrice: {{ product.compare_at_price | json }},
+      collection: {{ product.collections | json }}
+    },
+    storeCurrency: {{ shop.currency | json }},
+    volumeBundles: {{ shop.metafields.barn2_bundles.product_discount.value | json }}
+  };
+</script>
+{% # theme-check-disable AssetSizeJavaScript %}
+<script src="{{ 'barn2-discounts.js' | asset_url }}" defer></script>
+{% # theme-check-enable AssetSizeJavaScript %}
+<div id="barn2_discounts_block" class="barn2_discounts"></div>
+
+{% schema %}
+{
+  "name": "Barn2 Bundles & Discounts",
+  "target": "section",
+  "settings": [
+    { "label": "Color", "id": "color", "type": "color", "default": "#000000" }
+  ],
+  "enabled_on": {
+    "templates": ["product", "collection", "page"]
+  },
+  "stylesheet": "barn2-discounts.css"
+}
+{% endschema %}

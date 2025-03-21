@@ -447,8 +447,8 @@ export const getDiscountMetafieldId = async ({admin, shopifyDiscountId}) => {
 
 const structureDiscountData = (fetcherData) => {
   let discountData = [];
-  if ( fetcherData.type === "volume_discount" ) {
-    const volumeBundles = JSON.parse(fetcherData.volume_discounts);
+  if ( fetcherData.type === "volume_bundle" ) {
+    const volumeBundles = JSON.parse(fetcherData.volumeBundles);
     
     discountData = volumeBundles
     .filter(d => d.discount !== "")

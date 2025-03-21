@@ -3,7 +3,6 @@ import classNames from 'classnames/dedupe';
 
 export default function VolumeBundle({volumeBundles, layout, isInEditor, currentVariant, storeDetails}) {
   const [selectedBundle, setSelectedBundle] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const displayFormattedPrice = (price) => {
     return storeDetails.moneyFormat.replace('{{amount}}', price);
@@ -81,57 +80,30 @@ export default function VolumeBundle({volumeBundles, layout, isInEditor, current
 
     return displayFormattedPrice(priceWithFixedDecimal);
   }
-  
+
   /**
-   * Adds the selected bundle to the cart and redirects to cart page
-   * Uses Shopify's cart API to add items and handles different cart redirect methods
-   * 
-   * @async
-   * @returns {Promise<void>}
-   * @throws {Error} When the cart API request fails
+   * Updates the product quantity input field with the selected bundle's quantity
+   *
+   * @param {Object} bundle - The bundle object containing quantity information
+   * @param {number} bundle.quantity - The quantity of items in the bundle
    */
-  const addToCart = async () => {
-    if (selectedBundle === null) return;
-
-    setLoading(true);
-    
-    const bundle = volumeBundles[selectedBundle];
-    const formData = {
-      'items': [{
-        'id': currentVariant.id || '',
-        'quantity': bundle.quantity
-      }]
-    };
-
-    try {
-      const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        // Try different methods to redirect to cart
-        if (window.Shopify && window.Shopify.theme && window.Shopify.theme.cart) {
-          window.Shopify.theme.cart.open();
-        } else if (window.Shopify && window.Shopify.routes && window.Shopify.routes.cart) {
-          window.location.href = window.Shopify.routes.cart;
-        } else {
-          window.location.href = '/cart';
-        }
-      }
-    } catch (error) {
-      console.error('Error adding to cart:', error);
+  const updateProductQuantity = (bundle) => {
+    const quantityInput = document.querySelector('.product-form__input.product-form__quantity input[type="number"]');
+    if (quantityInput) {
+      quantityInput.value = bundle.quantity;
+      // Trigger change event to update any listeners
+      quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
     }
   };
 
   useEffect(() => {
-    // Select highlighted bundle if exists
-    const highlightedIndex = volumeBundles.findIndex(bundle => bundle.highlighted);
-    if (highlightedIndex !== -1) {
-      setSelectedBundle(highlightedIndex);
+    // Find the highlighted bundle
+    const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
+    if (highlightedBundle) {
+      const bundleIndex = volumeBundles.indexOf(highlightedBundle);
+      setSelectedBundle(bundleIndex);
+      // Set product quantity to the highlighted bundle's quantity
+      updateProductQuantity(highlightedBundle);
     }
   }, [volumeBundles]);
 
@@ -159,7 +131,10 @@ export default function VolumeBundle({volumeBundles, layout, isInEditor, current
                   'selected': selectedBundle === index,
                 }
               )}
-              onClick={() => setSelectedBundle(index)}
+              onClick={() => {
+                setSelectedBundle(index);
+                updateProductQuantity(bundle);
+              }}
             >
               { bundle.highlighted && <span className="barn2-highlighted-text">Most popular</span>}
               <div className="barn2-dbs-top">
@@ -177,17 +152,6 @@ export default function VolumeBundle({volumeBundles, layout, isInEditor, current
           )
         })}
       </div>
-      <button 
-        className={classNames(
-          'barn2-add-to-cart',
-          {
-            'loading': loading
-          }
-        )}
-        onClick={addToCart}
-      >
-        Get this deal
-      </button>
     </div>
   )
 }

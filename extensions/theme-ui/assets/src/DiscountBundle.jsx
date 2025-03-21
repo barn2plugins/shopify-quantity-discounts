@@ -37,6 +37,13 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     }
   }
 
+  const hideQuantityPicker = () => {
+    const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+    if (quantityInput) {
+      quantityInput.style.display = 'none';
+    }
+  }
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const variantId = urlParams.get("variant");
@@ -70,6 +77,11 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     // Store store currency
     const storeCurrency = isInEditor ? window.b2ProductData.storeCurrency : window?.Shopify?.currency?.active;
     setStoreCurrency(currencyCodeToSymbol(storeCurrency));
+
+    // Hide quantity picker
+    if (bundleData.type === 'volume_bundle') {
+      hideQuantityPicker();
+    }
   }, [])
 
   if ( currentVariant === null ) {

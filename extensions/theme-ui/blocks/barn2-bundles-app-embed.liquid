@@ -8,7 +8,7 @@
       collection: {{ product.collections | json }}
     },
     storeCurrency: {{ shop.currency | json }},
-    volumeBundles: {{ shop.metafields.barn2_custom_discounts.product_discount.value | json }}
+    volumeBundles: {{ shop.metafields.barn2_bundles.product_discount.value | json }}
   };
 </script>
 {% # theme-check-disable AssetSizeJavaScript %}
@@ -19,7 +19,7 @@
 {% schema %}
 {
   "name": "Barn2 Bundles & Discounts",
-  "target": "section",
+  "target": "body",
   "settings": [
     { "label": "Color", "id": "color", "type": "color", "default": "#000000" }
   ],

@@ -1,4 +1,5 @@
 import { StoreService } from './store.service';
+import { parseObjectId } from '../utils/utils';
 
 /**
  * Service class for handling bundle-related operations
@@ -105,9 +106,8 @@ export class BundleService {
         const excludedProductsList = typeof excludedProducts === 'string' 
           ? JSON.parse(excludedProducts) 
           : excludedProducts;
-
         // Check if the current productId is in the excluded list
-        if (excludedProductsList?.some(product => product.id === productId)) {
+        if (excludedProductsList?.some(product => parseObjectId(product.id) === productId)) {
           return false;
         }
 
