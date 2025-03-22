@@ -1,6 +1,6 @@
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
-import { deleteShopifyVolumeDiscount } from "../actions/discount.actions.js";
+import { DiscountService } from "../services/discount.service";
 
 export const action = async ({ request }) => {
     const {admin} = await authenticate.admin(request);
@@ -12,7 +12,7 @@ export const action = async ({ request }) => {
     }
 
     try {
-        const isDeleted = await deleteShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId);
+        const isDeleted = await DiscountService.deleteShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId);
         if (!isDeleted) {
             return null;
         }

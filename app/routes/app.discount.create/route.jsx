@@ -11,10 +11,10 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal libraries and components
 import { authenticate } from "../../shopify.server"
-import prisma from "../../db.server";
-import { actions, createShopifyVolumeDiscount } from "../../actions/discount.actions";
 import { BundleService } from "../../services/bundle.service";
-import { StoreService } from "../../services/store.service.js";
+import { StoreService } from "../../services/store.service";
+import { ProductService } from "../../services/product.service";
+import { CollectionService } from "../../services/collection.service";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
 
@@ -36,39 +36,46 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
 
-  try {
-    if (fetcherData.intent === 'create') {
-      const store = await StoreService.getStoreDetails(session.id, {
-        volumeDiscountFunctionId: true,
-        userId: true
-      });
+  if (fetcherData.intent === 'create') {
+    const store = await StoreService.getStoreDetails(session.id, {
+      volumeDiscountFunctionId: true,
+      userId: true
+    });
 
-      if (!store) return null;
+    if (!store) return null;
 
-      const shopifyDiscountGID = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId: store.volumeDiscountFunctionId});
-      const shopifyDiscountid = shopifyDiscountGID.split('/').pop();
+    const bundle = await BundleService.createBundle({ admin, session, fetcherData, discountFunctionId: store.volumeDiscountFunctionId });
 
-      const createDiscount = actions[fetcherData.intent];
-      const actionData = await createDiscount({ prisma, fetcherData, session, shopifyDiscountGID });
-      if (!actionData) return null;
-
-      const allDiscounts = await BundleService.getAllBundles(session.id);
-      await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts});
-  
-      // Once the discount bundle successfully created, redirect to the edit page
-      return redirect(`/app/discount/${shopifyDiscountid}/edit`);
+    if (bundle?.success === false) {
+      return null;
     }
 
-    const actionFn = actions[fetcherData.intent];
-    if (!actionFn) return null;
-    
-    return await actionFn(admin);
-  } catch (error) {
-    console.error(`Failed to execute ${fetcherData.intent}:`, error);
-    return { 
-      success: false, 
-      error: `Failed to ${fetcherData.intent.replace('load', 'fetch')}` 
-    };
+    const allDiscounts = await BundleService.getAllBundles(session.id);
+    if (allDiscounts?.success === false) {
+      return null;
+    }
+    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts: allDiscounts.bundles});
+
+    // Once the discount bundle successfully created, redirect to the edit page
+    return redirect(`/app/discount/${bundle.shopifyDiscountid}/edit`);
+  } 
+  
+  if ( fetcherData.intent === 'loadProducts' ) {
+    const response = await ProductService.getProducts({admin})
+    if (response?.success === false) {
+      return null;
+    }
+
+    return response;
+  }
+ 
+  if ( fetcherData.intent === 'loadCollections' ) {
+    const response = await CollectionService.getCollections({admin})
+    if (response?.success === false) {
+      return null;
+    }
+
+    return response;
   }
 }
 

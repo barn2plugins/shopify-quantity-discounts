@@ -18,7 +18,7 @@ export async function loader({ request }) {
     const productId = url.searchParams.get('productId');
     
     const discountBundles = await BundleService.getAllBundles(session.id);
-    if ( !discountBundles || discountBundles.length <= 0 ) {
+    if ( !discountBundles.success || discountBundles.bundles.length <= 0 ) {
       return new Response(JSON.stringify({
         response: 'no_discounts',
         productId

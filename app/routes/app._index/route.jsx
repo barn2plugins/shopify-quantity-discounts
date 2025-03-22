@@ -27,12 +27,15 @@ export const loader = async ({ request }) => {
   const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
 
   const discountBundles = await BundleService.getAllBundles(session.id);
+  if (!discountBundles.success) {
+    return null;
+  }
 
   const statisticsData = await getAppStatisticsData();
 
   return { 
     statisticsData,
-    discountBundles,
+    discountBundles: discountBundles.bundles,
     appEmbedDisabled,
     bundlesDiscountsExtensionId
   };

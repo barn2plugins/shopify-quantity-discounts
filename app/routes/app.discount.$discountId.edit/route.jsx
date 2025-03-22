@@ -11,10 +11,10 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal libraries and components
 import { authenticate } from "../../shopify.server.js"
-import prisma from "../../db.server.js";
-import { actions, updateShopifyVolumeDiscount, getDiscountMetafieldId } from "../../actions/discount.actions.js";
 import { BundleService } from "../../services/bundle.service.js";
 import { StoreService } from "../../services/store.service.js";
+import { ProductService } from "../../services/product.service";
+import { CollectionService } from "../../services/collection.service";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils.jsx";
 
@@ -38,7 +38,7 @@ export const loader = async ({ request, params }) => {
 
   const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
 
-  const discountBundle = await actions.getDiscountBundle({session, params});
+  const discountBundle = await BundleService.getBundle({sessionId: session.id, bundleId: params.discountId});
   const { currency, timezone } = store || {};
   const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency, timezone });
 
@@ -61,41 +61,48 @@ export const action = async ({ request }) => {
 
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
-  
-  try {
-    if (fetcherData.intent === 'update') {
-      const store = await StoreService.getStoreDetails(session.id, {
-        userId: true
-      });
 
-      if (!store) return null;
-      
-      const shopifyDiscountId = fetcherData.shopifyDiscountId;
-      const metafieldId = await getDiscountMetafieldId({admin, shopifyDiscountId});
-      if (!metafieldId) return null;
-      await updateShopifyVolumeDiscount({admin, fetcherData, metafieldId});
+  // When the request is to update the discount function and bundles
+  if (fetcherData.intent === 'update') {
+    const store = await StoreService.getStoreDetails(session.id, {
+      userId: true
+    });
 
-      const updateDiscount = actions[fetcherData.intent];
-      const discountData = await updateDiscount({ prisma, fetcherData });
-
-      const allDiscounts = await BundleService.getAllBundles(session.id);
-      await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts});
-
-      return discountData;
+    if (!store) return null;
+    
+    // Update both the discount function in Shopify and update the discount bundle in the database
+    const discountData = await BundleService.updateBundle({admin, fetcherData});
+    if (discountData?.success === false) {
+      return null;
     }
-    
-    const actionFn = actions[fetcherData.intent];
-    if (!actionFn) return null;
-    
-    return await actionFn(
-      fetcherData.intent.startsWith('load') ? admin : { prisma, fetcherData, session }
-    );
-  } catch (error) {
-    console.error(`Failed to execute ${fetcherData.intent}:`, error);
-    return { 
-      success: false, 
-      error: `Failed to ${fetcherData.intent.replace('load', 'fetch')}` 
-    };
+
+    const allDiscounts = await BundleService.getAllBundles(session.id);
+    if (allDiscounts?.success === false) {
+      return null;
+    }
+    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts: allDiscounts.bundles});
+
+    return discountData;
+  }
+  
+  // When the request is to load the products from Shopify
+  if ( fetcherData.intent === 'loadProducts' ) {
+    const response = await ProductService.getProducts({admin})
+    if (response?.success === false) {
+      return null;
+    }
+
+    return response;
+  }
+ 
+  // When the request is to load the collections from Shopify
+  if ( fetcherData.intent === 'loadCollections' ) {
+    const response = await CollectionService.getCollections({admin})
+    if (response?.success === false) {
+      return null;
+    }
+
+    return response;
   }
 }
 
