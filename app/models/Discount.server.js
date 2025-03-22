@@ -16,7 +16,9 @@ export async function getAllDiscountBundles(sessionId) {
   // Query database to get all bundles for the shop
   return await prisma.discountBundle.findMany({
     where: {
-      sessionId
+      store: {
+        sessionId
+      }
     },
     orderBy: {
       priority: 'desc'
@@ -38,25 +40,25 @@ export async function getAllDiscountBundles(sessionId) {
  *   bundleId: '456'
  * });
  */
-export async function getDiscountBundleById({sessionId, bundleId}) {
+export async function getDiscountBundleById({storeId, bundleId}) {
   return await prisma.discountBundle.findFirst({
     where: {
       shopifyDiscountId: `gid://shopify/DiscountAutomaticNode/${bundleId}`,
-      sessionId: sessionId
+      storeId: storeId
     }
   });
 }
 
-export async function createDiscountBundle({sessionId, shopifyDiscountGID, data}) {
+export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) {
   return await prisma.discountBundle.create({
     data: {
+      store: { connect: { id: storeId } },
       name: data.name,
       type: data.type,
       whichProducts: data.whichProducts,
       layout: data.layout,
       previewEnabled: data.previewEnabled ? true : false,
       active: data.active ? true : false,
-      session: { connect: { id: sessionId } },
       shopifyDiscountId: shopifyDiscountGID,
       selectedProducts: data.selectedProducts,
       selectedCollections: data.selectedCollections,

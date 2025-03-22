@@ -88,9 +88,9 @@ export class BundleService {
    *                           - displayError?: user-friendly error message if operation failed
    *                           - bundle?: the retrieved bundle data if successful
    */
-  static async getBundle({sessionId, bundleId}) {
+  static async getBundle({storeId, bundleId}) {
     try {
-      return await getDiscountBundleById({sessionId, bundleId});
+      return await getDiscountBundleById({storeId, bundleId});
     } catch (error) {
       console.log(error);
       return {
@@ -106,9 +106,9 @@ export class BundleService {
    * 
    * @param {Object} params - The parameters object
    * @param {Object} params.admin - Shopify admin API instance
-   * @param {Object} params.session - Session object containing user information
-   * @param {string} params.session.id - Session ID for the current user
-   * @param {string} params.discountFunctionId - ID of the discount function to use
+   * @param {Object} params.store - Store object containing store information
+   * @param {string} params.store.id - Store ID
+   * @param {string} params.store.volumeDiscountFunctionId - ID of the volume discount function
    * @param {Object} params.fetcherData - Data for creating the bundle and discount
    * @returns {Promise<Object>} Object containing:
    *                           - success: boolean indicating if operation was successful
@@ -117,14 +117,14 @@ export class BundleService {
    *                           - error?: error message if operation failed
    *                           - displayError?: user-friendly error message if operation failed
    */
-  static async createBundle({admin, session, discountFunctionId, fetcherData}) {
+  static async createBundle({admin, store, fetcherData}) {
     try {
       // Create the discount function
-      const shopifyDiscountGID = await DiscountService.createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId});
+      const shopifyDiscountGID = await DiscountService.createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId: store.volumeDiscountFunctionId});
       const shopifyDiscountid = shopifyDiscountGID.split('/').pop();
 
       // Create the bundle
-      const bundle = await createDiscountBundle({sessionId: session.id, shopifyDiscountGID, data: fetcherData});
+      const bundle = await createDiscountBundle({storeId: store.id, shopifyDiscountGID, data: fetcherData});
 
       return {
         success: true,

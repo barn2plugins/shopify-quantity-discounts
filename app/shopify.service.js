@@ -57,7 +57,7 @@ export const fetchStoreDetails = async (admin) => {
 };
 
 // Save store details to the database
-export const saveStoreDetails = async (id, storedata) => {
+export const saveStoreDetails = async (sessionId, storedata) => {
   try {
     const shop = storedata.data.shop;
     const volumeDiscountFunctionId = getBarn2VolumeDiscountFunctionId(storedata);
@@ -65,26 +65,30 @@ export const saveStoreDetails = async (id, storedata) => {
 
     await prisma.session.update({
       where: { 
-        id: id 
+        id: sessionId 
       },
       data: {
         userId: shop.id,
-        storeName: shop.name,
         email: shop.email,
-        shopOwnerName: shop.shopOwnerName,
-        url: shop.url,
-        currency: shop.currencyCode,
-        timezone: shop.timezoneAbbreviation,
-        planDisplayName: shop.plan.displayName,
-        isPartnerDevelopment: shop.plan.partnerDevelopment,
-        isShopifyPlus: shop.plan.shopifyPlus,
-        moneyFormat: shop.currencyFormats.moneyFormat,
-        moneyInEmailsFormat: shop.currencyFormats.moneyInEmailsFormat,
-        moneyWithCurrencyFormat: shop.currencyFormats.moneyWithCurrencyFormat,
-        moneyWithCurrencyInEmailsFormat: shop.currencyFormats.moneyWithCurrencyInEmailsFormat,
-        checkoutApiSupported: shop.checkoutApiSupported,
-        volumeDiscountFunctionId,
-        activeThemeGid: getActiveThemeGid
+        store: {
+          create: {
+            storeName: shop.name,
+            url: shop.url,
+            shopOwnerName: shop.shopOwnerName,
+            currency: shop.currencyCode,
+            timezone: shop.timezoneAbbreviation,
+            planDisplayName: shop.plan.displayName,
+            isPartnerDevelopment: shop.plan.partnerDevelopment,
+            isShopifyPlus: shop.plan.shopifyPlus,
+            activeThemeGid: getActiveThemeGid,
+            volumeDiscountFunctionId,
+            moneyFormat: shop.currencyFormats.moneyFormat,
+            moneyInEmailsFormat: shop.currencyFormats.moneyInEmailsFormat,
+            moneyWithCurrencyFormat: shop.currencyFormats.moneyWithCurrencyFormat,
+            moneyWithCurrencyInEmailsFormat: shop.currencyFormats.moneyWithCurrencyInEmailsFormat,
+            checkoutApiSupported: shop.checkoutApiSupported,
+          }
+        }
       },
     });
   } catch (error) {

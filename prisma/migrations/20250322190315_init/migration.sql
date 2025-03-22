@@ -2,41 +2,51 @@
 CREATE TABLE "Session" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "shop" TEXT NOT NULL,
-    "storeName" TEXT,
     "state" TEXT NOT NULL,
     "isOnline" BOOLEAN NOT NULL DEFAULT false,
     "scope" TEXT,
     "expires" DATETIME,
     "accessToken" TEXT NOT NULL,
-    "volumeDiscountFunctionId" TEXT,
-    "storeDiscountMetaFieldId" TEXT,
     "userId" TEXT,
     "firstName" TEXT,
     "lastName" TEXT,
     "email" TEXT,
-    "url" TEXT,
-    "shopOwnerName" TEXT,
     "accountOwner" BOOLEAN NOT NULL DEFAULT false,
     "locale" TEXT,
     "collaborator" BOOLEAN DEFAULT false,
-    "emailVerified" BOOLEAN DEFAULT false,
+    "emailVerified" BOOLEAN DEFAULT false
+);
+
+-- CreateTable
+CREATE TABLE "Store" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "sessionId" TEXT NOT NULL,
+    "storeName" TEXT,
+    "url" TEXT,
+    "shopOwnerName" TEXT,
     "currency" TEXT,
     "timezone" TEXT,
     "planDisplayName" TEXT,
-    "activeThemeGid" TEXT,
-    "appEmbedDisabled" BOOLEAN DEFAULT true,
     "isPartnerDevelopment" BOOLEAN DEFAULT false,
     "isShopifyPlus" BOOLEAN DEFAULT false,
+    "activeThemeGid" TEXT,
+    "appEmbedDisabled" BOOLEAN DEFAULT true,
+    "volumeDiscountFunctionId" TEXT,
+    "storeDiscountMetaFieldId" TEXT,
     "moneyFormat" TEXT,
     "moneyInEmailsFormat" TEXT,
     "moneyWithCurrencyFormat" TEXT,
     "moneyWithCurrencyInEmailsFormat" TEXT,
-    "checkoutApiSupported" BOOLEAN DEFAULT false
+    "checkoutApiSupported" BOOLEAN DEFAULT false,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Store_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "Session" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "DiscountBundle" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "storeId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "type" TEXT NOT NULL DEFAULT '',
     "previewEnabled" BOOLEAN NOT NULL DEFAULT false,
@@ -45,7 +55,6 @@ CREATE TABLE "DiscountBundle" (
     "priority" INTEGER NOT NULL DEFAULT 0,
     "active" BOOLEAN NOT NULL DEFAULT false,
     "shopifyDiscountId" TEXT,
-    "sessionId" TEXT NOT NULL,
     "selectedProducts" TEXT,
     "selectedCollections" TEXT,
     "excludedProducts" TEXT,
@@ -61,5 +70,8 @@ CREATE TABLE "DiscountBundle" (
     "previewOptions" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "DiscountBundle_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "Session" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "DiscountBundle_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Store_sessionId_key" ON "Store"("sessionId");

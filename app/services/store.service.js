@@ -13,9 +13,9 @@ export class StoreService {
    */
   static async getStoreDetails(sessionId, params) {
     try {
-      return await prisma.session.findFirst({
+      return await prisma.store.findUnique({
         where: {
-          id: sessionId
+          sessionId
         },
         select: params
       });

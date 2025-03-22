@@ -30,6 +30,7 @@ export const loader = async ({ request, params }) => {
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
   const store = await StoreService.getStoreDetails(session.id, {
+    id: true,
     currency: true,
     timezone: true,
     volumeDiscountFunctionId: true,
@@ -38,9 +39,8 @@ export const loader = async ({ request, params }) => {
 
   const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
 
-  const discountBundle = await BundleService.getBundle({sessionId: session.id, bundleId: params.discountId});
-  const { currency, timezone } = store || {};
-  const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency, timezone });
+  const discountBundle = await BundleService.getBundle({storeId: store.id, bundleId: params.discountId});
+  const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency: store?.currency, timezone: store?.timezone });
 
   if (!parsedDiscountBundle) {
     throw new Response("Discount bundle not found", {
@@ -65,7 +65,11 @@ export const action = async ({ request }) => {
   // When the request is to update the discount function and bundles
   if (fetcherData.intent === 'update') {
     const store = await StoreService.getStoreDetails(session.id, {
-      userId: true
+      session: {
+        select: {
+          userId: true
+        }
+      }
     });
 
     if (!store) return null;
@@ -80,7 +84,7 @@ export const action = async ({ request }) => {
     if (allDiscounts?.success === false) {
       return null;
     }
-    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts: allDiscounts.bundles});
+    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
     return discountData;
   }

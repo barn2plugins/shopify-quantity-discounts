@@ -37,13 +37,18 @@ export const action = async ({ request }) => {
 
   if (fetcherData.intent === 'create') {
     const store = await StoreService.getStoreDetails(session.id, {
+      id: true,
       volumeDiscountFunctionId: true,
-      userId: true
+      session: {
+        select: {
+          userId: true
+        }
+      }
     });
 
     if (!store) return null;
 
-    const bundle = await BundleService.createBundle({ admin, session, fetcherData, discountFunctionId: store.volumeDiscountFunctionId });
+    const bundle = await BundleService.createBundle({ admin, store, fetcherData });
 
     if (bundle?.success === false) {
       return null;
@@ -53,7 +58,7 @@ export const action = async ({ request }) => {
     if (allDiscounts?.success === false) {
       return null;
     }
-    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.userId, allDiscounts: allDiscounts.bundles});
+    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
     // Once the discount bundle successfully created, redirect to the edit page
     return redirect(`/app/discount/${bundle.shopifyDiscountid}/edit`);
