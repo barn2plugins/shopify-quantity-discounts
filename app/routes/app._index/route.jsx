@@ -11,8 +11,8 @@ import { useState } from "react";
 import DiscountStatistics from "./components/DiscountStatistics";
 import DiscountBundlesTable from "./components/DiscountBundlesTable";
 import EmptyStateComponent from "./components/EmptyStateComponent";
-import { getAppStatisticsData } from "./actions";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
+import { getAppStatisticsData } from "./actions";
 
 import { BundleService } from "../../services/bundle.service.js";
 import { StoreService } from "../../services/store.service.js";

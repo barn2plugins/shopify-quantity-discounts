@@ -9,20 +9,20 @@ import { useState, useEffect } from "react";
 import { useLoaderData, useFetcher } from "@remix-run/react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
-// Internal libraries and components
+// Internal services and components
 import { authenticate } from "../../shopify.server.js"
 import { BundleService } from "../../services/bundle.service.js";
 import { StoreService } from "../../services/store.service.js";
 import { ProductService } from "../../services/product.service";
 import { CollectionService } from "../../services/collection.service";
 
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils.jsx";
-
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 import Content from "../../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../../components/Layouts/Discount/Sidebar.jsx";
 
 import DiscountModals from "../../components/Modals/DiscountModals.jsx";
+
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../../utils/utils.jsx";
 
 export const loader = async ({ request, params }) => {
   const { admin, session } = await authenticate.admin(request);

@@ -193,9 +193,14 @@ export class BundleService {
    *                                             - false if product is explicitly excluded
    *                                             - undefined if no matching bundle found
    */
-  static async getEligibleProductBundle({storefront, discountBundles, productId}) {
+  static async getEligibleDiscountBundle({storefront, session, productId}) {
+    const discountBundles = await BundleService.getAllBundles(session.id);
+    if (!discountBundles?.success) {
+      return false;
+    }
+
     // Iterate through the discount bundles
-    for (const bundle of discountBundles) {
+    for (const bundle of discountBundles.bundles) {
       const { 
         whichProducts, 
         selectedProducts, 
@@ -297,7 +302,7 @@ export class BundleService {
       }
     };
     
-    return;
+    return false;
   }
 
   /**

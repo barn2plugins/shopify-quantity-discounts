@@ -12,31 +12,29 @@ export async function loader({ request }) {
       moneyFormat: true,
     });
 
-    if (!store) return null;
-
     const url = new URL(request.url);
     const productId = url.searchParams.get('productId');
     
-    const discountBundles = await BundleService.getAllBundles(session.id);
-    if ( !discountBundles.success || discountBundles.bundles.length <= 0 ) {
+    try {
+      const eligibleProductBundle = await BundleService.getEligibleDiscountBundle({storefront, session, productId});
+      
+      if (!eligibleProductBundle) {
+        return new Response(JSON.stringify({
+          success: true,
+          response: 'no_discounts',
+          productId
+        }));
+      }
+
       return new Response(JSON.stringify({
-        response: 'no_discounts',
-        productId
-      }));
-    }
-
-    const eligibleProductBundle = await BundleService.getEligibleProductBundle({storefront, discountBundles, productId});
-
-    if (!eligibleProductBundle) {
-      return new Response(JSON.stringify({
-        response: 'no_discounts',
-        productId
-      }));
-    }
-
-    return new Response(JSON.stringify({
+        success: true,
         eligibleProductBundle,
         productId,
         store
-    }));
+      }));
+    } catch (e) {
+      return new Response(JSON.stringify({
+        success: false
+      }));  
+    }
 }
