@@ -354,11 +354,9 @@ export const rgbaToHex = ({ r, g, b, a }) => {
  * 
  * @param {Object} params - The parameters object
  * @param {Object} params.discountBundle - The discount bundle object to parse
- * @param {string} params.discountBundle.storeDisplay - JSON string containing store display settings
- * @param {string} params.discountBundle.customDesigns - JSON string containing custom design settings
  * @returns {Promise<Object>} The discount bundle object with parsed storeDisplay and customDesigns properties
  */
-export const parseBundleObject = async ( {discountBundle, currency, timezone} ) => {
+export const parseBundleObject = async ( {discountBundle} ) => {
   if (discountBundle.storeDisplay ) {
     discountBundle.storeDisplay = JSON.parse(discountBundle.storeDisplay);
   }
@@ -368,9 +366,6 @@ export const parseBundleObject = async ( {discountBundle, currency, timezone} ) 
   if (discountBundle.previewOptions) {
     discountBundle.previewOptions = JSON.parse(discountBundle.previewOptions);
   }
-
-  discountBundle.currencyCode = discountBundle.currencyCode ? currency : '$';
-  discountBundle.timezone = discountBundle.timezone? timezone : 'UTC';
 
   return discountBundle;
 }

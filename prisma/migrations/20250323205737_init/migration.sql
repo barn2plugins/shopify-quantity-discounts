@@ -25,7 +25,7 @@ CREATE TABLE "Store" (
     "url" TEXT,
     "shopOwnerName" TEXT,
     "currency" TEXT,
-    "timezone" TEXT,
+    "ianaTimezone" TEXT,
     "planDisplayName" TEXT,
     "isPartnerDevelopment" BOOLEAN DEFAULT false,
     "isShopifyPlus" BOOLEAN DEFAULT false,

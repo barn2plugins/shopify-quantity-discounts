@@ -26,29 +26,7 @@ export default function BulkPricingTiers({
   setFormState,
   pricingTiers,
   setPricingTiers,
-  timezone = 'EST',
 }) {
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [selectedDates, setSelectedDates] = useState(() => {
-    const now = new Date();
-    const userDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
-    const endDate = new Date(userDate);
-    endDate.setDate(userDate.getDate() + 6);
-    
-    return {
-      start: userDate,
-      end: endDate
-    };
-  });
-
-  useEffect(() => {
-    setFormState({
-      ...formState,
-      specificDates: JSON.stringify(selectedDates)
-    })    
-  }, [selectedDates])
-
   const currencySymbol = currencyCodeToSymbol(formState.currencyCode);
 
   const volumeBundleDiscountTypes = [
@@ -110,12 +88,6 @@ export default function BulkPricingTiers({
     };
     setPricingTiers([...pricingTiers, newTier]);
   };
-
-  useEffect(() => {
-    if (formState.activeDates === 'specific_dates') {
-      setDatePickerVisible(true);
-    }
-  }, [])
 
   if (pricingTiers.length <= 0) {
     return null;
@@ -235,35 +207,6 @@ export default function BulkPricingTiers({
                     setFormState({...formState, discountCalculation: value[0]})
                   }}
                 />
-              </Grid.Cell>
-            </Grid>
-            <Grid>
-              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
-                <Text as="p" variant="bodyLg" fontWeight="medium">Active dates</Text>
-              </Grid.Cell>
-
-              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 8, xl: 8}}>
-                <BlockStack gap="200">
-                  <ChoiceList
-                    choices={[
-                      {label: 'Always available', value: 'always_available'},
-                      {label: 'Specific dates', value: 'specific_dates'},
-                    ]}
-                    selected={formState?.activeDates}
-                    onChange={(value) => {
-                      setFormState({...formState, activeDates: value[0]})
-                      setDatePickerVisible(value[0] === 'specific_dates');
-                    }}
-                  />
-                  {datePickerVisible && (
-                    <DateRangePicker
-                      selectedDates={selectedDates}
-                      setSelectedDates={setSelectedDates}
-                      visible={visible}
-                      setVisible={setVisible}
-                    />
-                  )}
-                </BlockStack>
               </Grid.Cell>
             </Grid>
             <Grid>

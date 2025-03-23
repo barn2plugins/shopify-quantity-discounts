@@ -46,7 +46,7 @@ model Store {
   url                             String?
   shopOwnerName                   String?
   currency                        String?
-  timezone                        String?
+  ianaTimezone                    String?
   planDisplayName                 String?
   isPartnerDevelopment            Boolean?  @default(false)
   isShopifyPlus                   Boolean?  @default(false)

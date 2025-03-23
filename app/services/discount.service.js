@@ -59,8 +59,8 @@ export class DiscountService {
           automaticAppDiscount: {
             title: `Barn2 Bundles & Bulk Discounts - ${fetcherData.name}`,
             functionId: discountFunctionId,
-            startsAt: "2025-03-04T00:00:00Z",
-            endsAt: "2025-12-31T23:59:59Z",
+            startsAt: JSON.parse(fetcherData.specificDates).start,
+            endsAt: JSON.parse(fetcherData.specificDates).end,
             combinesWith: {
               orderDiscounts: false,
               productDiscounts: false,
@@ -149,8 +149,8 @@ export class DiscountService {
           id: fetcherData.shopifyDiscountId,
           automaticAppDiscount: {
             title: `Barn2 Bundles & Bulk Discounts - ${fetcherData.name}`,
-            startsAt: "2025-03-04T00:00:00Z",
-            endsAt: "2025-12-31T23:59:59Z",
+            startsAt: JSON.parse(fetcherData.specificDates).start,
+            endsAt: JSON.parse(fetcherData.specificDates).end,
             metafields: [
               {
                 id: metafieldId,

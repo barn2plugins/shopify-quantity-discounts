@@ -17,9 +17,9 @@ export class BundleService {
   static async getDefaultBundle(sessionId) {
     const storeDetails = await StoreService.getStoreDetails(sessionId, {
       currency: true,
-      timezone: true
+      ianaTimezone: true
     });
-    const { currency, timezone } = storeDetails || {};
+    const { currency, ianaTimezone } = storeDetails || {};
     
     return {
       discountBundleId: null,
@@ -32,7 +32,7 @@ export class BundleService {
       currencyCode: currency || '$',
       discountCalculation: 'individual_products',
       activeDates: 'always_available',
-      timezone: timezone || 'UTC',
+      timezone: ianaTimezone || 'UTC',
       designOptions: 'theme_default',
       customDesigns: {
         backgroundColor: '#cf8383',

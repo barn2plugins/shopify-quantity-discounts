@@ -28,7 +28,7 @@ export const action = async ({ request }) => {
                 excludedCollections: originalBundle.excludedCollections,
                 priority: originalBundle.priority,
                 active: false,
-                sessionId: originalBundle.sessionId,
+                storeId: originalBundle.storeId,
                 shopifyDiscountId: originalBundle.shopifyDiscountId,
                 previewEnabled: false,
                 volumeBundles: originalBundle.volumeBundles,

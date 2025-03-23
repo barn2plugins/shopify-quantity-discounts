@@ -12,7 +12,7 @@ export const fetchStoreDetails = async (admin) => {
             email
             shopOwnerName
             currencyCode
-            timezoneAbbreviation
+            ianaTimezone
             url
             plan {
                 displayName
@@ -76,7 +76,7 @@ export const saveStoreDetails = async (sessionId, storedata) => {
             url: shop.url,
             shopOwnerName: shop.shopOwnerName,
             currency: shop.currencyCode,
-            timezone: shop.timezoneAbbreviation,
+            ianaTimezone: shop.ianaTimezone,
             planDisplayName: shop.plan.displayName,
             isPartnerDevelopment: shop.plan.partnerDevelopment,
             isShopifyPlus: shop.plan.shopifyPlus,

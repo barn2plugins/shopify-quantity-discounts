@@ -24,7 +24,7 @@ export const loader = async ({ request }) => {
 
   const store = await StoreService.getStoreDetails(session.id, { activeThemeGid: true });
 
-  const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
+  const appEmbedDisabled = store ? await StoreService.isAppEmbedDisabled({admin, store}) : true;
 
   const discountBundles = await BundleService.getAllBundles(session.id);
   if (!discountBundles.success) {

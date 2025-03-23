@@ -4,6 +4,7 @@ import DiscountNameSection from "../../Sections/DiscountNameSection.jsx";
 import DiscountTypeSection from "../../Sections/DiscountTypeSection.jsx";
 import ProductSelectionSection from "../../Sections/ProductSelectionSection.jsx";
 import LayoutSection from "../../Sections/LayoutSection.jsx";
+import ActiveDatesSections from "../../Sections/ActiveDatesSections.jsx";
 import VolumeBundleSection from "../../Sections/VolumeBundleSection.jsx";
 import BulkPricingTiers from "../../Sections/BulkPricingTiers.jsx";
 import DesignOptions from "../../Sections/DesignOptions.jsx";
@@ -20,7 +21,7 @@ export default function Content({
   setVolumeBundles,
   pricingTiers,
   setPricingTiers,
-  discountBundle,
+  store,
   shopify
 }) {
 
@@ -43,6 +44,11 @@ export default function Content({
               selectedCollections={selectedCollections}
               shopify={shopify}
               buttonLabels={buttonLabels}
+            />
+            <ActiveDatesSections
+              formState={formState}
+              setFormState={setFormState}
+              timezone={store?.ianaTimezone}
             />
             <LayoutSection
               formState={formState}
@@ -67,7 +73,6 @@ export default function Content({
           setFormState={setFormState}
           pricingTiers={pricingTiers}
           setPricingTiers={setPricingTiers}
-          timezone={discountBundle.timezone}
         />
       ) }
       <DesignOptions

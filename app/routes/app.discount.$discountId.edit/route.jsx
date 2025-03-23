@@ -32,7 +32,7 @@ export const loader = async ({ request, params }) => {
   const store = await StoreService.getStoreDetails(session.id, {
     id: true,
     currency: true,
-    timezone: true,
+    ianaTimezone: true,
     volumeDiscountFunctionId: true,
     activeThemeGid: true
   });
@@ -40,7 +40,7 @@ export const loader = async ({ request, params }) => {
   const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
 
   const discountBundle = await BundleService.getBundle({storeId: store.id, bundleId: params.discountId});
-  const parsedDiscountBundle = await parseBundleObject({ discountBundle, currency: store?.currency, timezone: store?.timezone });
+  const parsedDiscountBundle = await parseBundleObject({ discountBundle });
 
   if (!parsedDiscountBundle) {
     throw new Response("Discount bundle not found", {
@@ -52,7 +52,11 @@ export const loader = async ({ request, params }) => {
   return { 
     discountBundle: parsedDiscountBundle, 
     appEmbedDisabled,
-    bundlesDiscountsExtensionId
+    store: {
+      currencyCode: store?.currency || '$',
+      ianaTimezone: store.ianaTimezone || 'UTC',
+      bundlesDiscountsExtensionId
+    }
   };
 }
 
@@ -113,7 +117,7 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const { discountBundle, appEmbedDisabled, bundlesDiscountsExtensionId } = useLoaderData();
+  const { discountBundle, appEmbedDisabled, store } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
@@ -171,7 +175,7 @@ export default function DiscountPage() {
         }
       >
         <BlockStack gap="500">
-          { isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
+          { isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId} />}
           <div className="discount-layout">
             <div className="discount-content">
               <Content
@@ -185,7 +189,7 @@ export default function DiscountPage() {
                 setVolumeBundles={setVolumeBundles}
                 pricingTiers={pricingTiers}
                 setPricingTiers={setPricingTiers}
-                discountBundle={discountBundle}
+                store={store}
                 shopify={shopify}
               />
             </div>
