@@ -4,17 +4,31 @@ import {
   BlockStack,
   Button,
   InlineStack,
-  Icon,
   LegacyCard,
 } from "@shopify/polaris";
-import {EditIcon, DuplicateIcon, DeleteIcon, SortIcon} from '@shopify/polaris-icons';
-import { useState, useEffect } from "react";
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { useFetcher } from "@remix-run/react";
+import {EditIcon, DuplicateIcon, DeleteIcon} from '@shopify/polaris-icons';
+import {useState, useEffect} from "react";
+import {useAppBridge} from "@shopify/app-bridge-react";
+import {useFetcher} from "@remix-run/react";
+
+import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core';
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 import DeleteConfirmationModal from "../../../components/Modals/DeleteConfirmationModal";
-import { getApplyToText } from "../../../utils/utils";
 import IndexTable from "../../../components/Fields/IndexTable";
+import SortableRow from "./SortableRow";
 
 export default function DiscountBundlesTable({ discountBundles }) {
   const shopify = useAppBridge();
@@ -112,6 +126,52 @@ export default function DiscountBundlesTable({ discountBundles }) {
     plural: 'discounts',
   };
 
+  const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	);
+
+	/**
+	 * Sort items in the state after dragging is complete.
+	 *
+	 * @param {object} event - The drag end event
+	 */
+	const handleDragEnd = (event) => {
+		const { active, over } = event;
+
+		if (active.id !== over.id) {
+			setBundles((items) => {
+				const oldIndex = items.map(e => e.id).indexOf(active.id)
+				const newIndex = items.map(e => e.id).indexOf(over.id);
+				const reorderedItems = arrayMove(items, oldIndex, newIndex);
+
+				// Update priorities based on new order
+				const updatedBundles = reorderedItems.map((bundle, index) => ({
+					...bundle,
+					priority: reorderedItems.length - index // Reverse the index since higher priority should be at top
+				}));
+
+        // Send the updated priorities to the server
+				fetcher.submit(
+					{ 
+						priorities: JSON.stringify(updatedBundles.map(b => ({ 
+							id: b.id, 
+							priority: b.priority 
+						})))
+					},
+					{
+						method: "PUT",
+						action: "/app/discount/update-bundle-priorities",
+					}
+				);
+
+        return updatedBundles;
+			});
+		}
+	}
+
   return (
     <>
       <Layout>
@@ -138,41 +198,27 @@ export default function DiscountBundlesTable({ discountBundles }) {
                 ]}
                 selectable={false}
               >
-                {bundles.map((bundle, index) => (
-                  <tr id={bundle.id} key={bundle.id} position={index} className="discounts_table_row">
-                    <td className="col-sort-icon">
-                      <Icon source={SortIcon} color="subdued" />
-                    </td>
-                    <td className="col-priority">
-                      <Text variation="strong">{bundle.priority}</Text>
-                    </td>
-                    <td className="col-bundle-name">
-                      <Text>{bundle.name}</Text>
-                    </td>
-                    <td className="col-bundle-type">
-                      { bundle.type === 'volume_bundle' ? 'Volume bundle' : 'Bulk pricing' }
-                    </td>
-                    <td className="col-applied-to">
-                      {getApplyToText(bundle)}
-                    </td>
-                    <td className="col-status">
-                      <div className="toggle-switcher">
-                        <input 
-                          type="checkbox" 
-                          id={`switch-${bundle.id}`}
-                          name={`preview-${bundle.id}`}
-                          value={bundle.active}
-                          checked={bundle.active}
-                          onChange={(event) => handleBundleToggle(event, bundle)}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={bundles}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {bundles.map(
+                      (bundle, index) => 
+                        <SortableRow
+                          bundle={bundle}
+                          index={index}
+                          renderRowActions={renderRowActions}
+                          handleBundleToggle={handleBundleToggle}
                         />
-                        <label htmlFor={`switch-${bundle.id}`}>Toggle</label>
-                      </div>
-                    </td>
-                    <td className="col-actions" alignment="right">
-                      {renderRowActions(bundle)}
-                    </td>
-                  </tr>
-                ))}
+                      )
+                    }
+                  </SortableContext>
+                </DndContext>
               </IndexTable>
             </LegacyCard>
           </BlockStack>

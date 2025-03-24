@@ -50,9 +50,17 @@ export async function getDiscountBundleById({storeId, bundleId}) {
 }
 
 export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) {
+  
+  const bundleCount = await prisma.discountBundle.count({
+    where: {
+      storeId: storeId
+    }
+  });
+
   return await prisma.discountBundle.create({
     data: {
       store: { connect: { id: storeId } },
+      priority: bundleCount + 1,
       name: data.name,
       type: data.type,
       whichProducts: data.whichProducts,

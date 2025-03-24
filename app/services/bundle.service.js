@@ -121,6 +121,13 @@ export class BundleService {
     try {
       // Create the discount function
       const shopifyDiscountGID = await DiscountService.createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId: store.volumeDiscountFunctionId});
+      if (!shopifyDiscountGID) {
+        return {
+          success: false,
+          error: 'Failed to create discount',
+          displayError: 'Failed to create discount'
+        }
+      }
       const shopifyDiscountid = shopifyDiscountGID.split('/').pop();
 
       // Create the bundle

@@ -78,14 +78,14 @@ export class DiscountService {
         }
       }
     );
-  
     const responseJson = await response.json();
-    const discountId = responseJson.data.discountAutomaticAppCreate.automaticAppDiscount.discountId;
-  
+
     if (responseJson.data.discountAutomaticAppCreate.userErrors.length > 0) {
       return false;
     }
-  
+
+    const discountId = responseJson.data.discountAutomaticAppCreate.automaticAppDiscount.discountId;
+
     return discountId;
   }
 
