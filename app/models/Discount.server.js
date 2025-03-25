@@ -138,3 +138,24 @@ export async function updateDiscountBundleById({discountId, data}) {
     }
   });
 }
+
+/**
+ * Finds multiple discount bundles by their names for a given session
+ * 
+ * @param {Object} params - The parameters object
+ * @param {string[]} params.nameOfDiscountApplications - Array of discount names to search for
+ * @param {string} params.sessionId - The session ID of the current user
+ * @returns {Promise<Array<Object>>} Array of matching discount bundle objects
+ */
+export async function finyManyByNames({nameOfDiscountApplications, sessionId}) {
+  return await prisma.discountBundle.findMany({
+    where: {
+      name: {
+        in: nameOfDiscountApplications
+      },
+      store: {
+        sessionId: sessionId
+      }
+    }
+  });
+}

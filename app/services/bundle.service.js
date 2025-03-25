@@ -1,7 +1,7 @@
 import { StoreService } from './store.service';
 import { DiscountService } from './discount.service';
 import { parseObjectId } from '../utils/utils';
-import { createDiscountBundle, getAllDiscountBundles, getDiscountBundleById, updateDiscountBundleById } from '../models/Discount.server';
+import { createDiscountBundle, getAllDiscountBundles, getDiscountBundleById, updateDiscountBundleById, finyManyByNames } from '../models/Discount.server';
 
 /**
  * Service class for handling bundle-related operations
@@ -352,5 +352,33 @@ export class BundleService {
     const collections = response?.data?.product?.collections?.edges;
     
     return collections ? collections : [];
+  }
+
+  /**
+   * Finds discount bundles by their names
+   * 
+   * @param {Object} params - The parameters object
+   * @param {string[]} params.nameOfDiscountApplications - Array of discount names to search for
+   * @param {string} params.sessionId - Session ID for the current user
+   * @returns {Promise<Object>} Object containing:
+   *                           - success: boolean indicating if operation was successful
+   *                           - bundles?: Array of matching discount bundles if successful
+   *                           - error?: error message if operation failed
+   *                           - displayError?: user-friendly error message if operation failed
+   */
+  static async findDiscountBundlesByNames({nameOfDiscountApplications, sessionId}) {
+    try {
+      const bundles = await finyManyByNames({nameOfDiscountApplications, sessionId});
+      return {
+        success: true,
+        bundles
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        displayError: 'Failed to find bundles'
+      }
+    }
   }
 }
