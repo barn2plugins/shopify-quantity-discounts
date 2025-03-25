@@ -9,23 +9,23 @@ import {
 
 // Internal components and libraries
 import PartnerDevelopment from "./components/Notice/PartnerDevelopment";
-import prisma from "./db.server";
 import { authenticate } from "./shopify.server";
+import { StoreService } from "./services/store.service.js";
 import './styles/app.scss';
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
-  const user = await prisma.session.findFirst({
-    where: {
-      id: session.id
-    }
-  });
+
+  const store = await StoreService.getStoreDetails(session.id, { isPartnerDevelopment: true });
   
-  return user;
+  return {
+    isPartnerDevelopment: store?.isPartnerDevelopment,
+    isSubscribed: false, // TODO: Implement subscription check
+  };
 };
 
 export default function App() {
-  const user = useLoaderData();
+  const { isPartnerDevelopment, isSubscribed } = useLoaderData();
 
   return (
     <html>
@@ -42,7 +42,7 @@ export default function App() {
       </head>
       <body>
         <div className="barn2-app-root">
-          { user.isPartnerDevelopment && <PartnerDevelopment/> }
+          { isPartnerDevelopment && !isSubscribed && <PartnerDevelopment/> }
           <Outlet />
         </div>
         <ScrollRestoration />

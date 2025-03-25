@@ -10,7 +10,20 @@ export async function loader({ request }) {
     }
     const store = await StoreService.getStoreDetails(session.id, {
       moneyFormat: true,
+      isPartnerDevelopment: true
     });
+
+    const isPartnerDevelopment = store?.isPartnerDevelopment;
+    const isSubscribed = false; // TODO: Implement subscription check
+
+    const shouldDisableDiscounts = isPartnerDevelopment === false && !isSubscribed;
+
+    if (shouldDisableDiscounts) {
+      return new Response(JSON.stringify({
+        success: true,
+        response: 'disable_discounts',
+      }));
+    }
 
     const url = new URL(request.url);
     const productId = url.searchParams.get('productId');
