@@ -54,17 +54,29 @@ export class BundleService {
   }
 
   /**
-   * Retrieves all bundles from the database
+   * Retrieves paginated bundles from the database
    * 
    * @param {string} sessionId - Session ID for the current user
-   * @returns {Promise<Array>} Array of bundle objects
+   * @param {number} [page=1] - Current page number (defaults to 1)
+   * @param {number} [limit=20] - Number of items per page (defaults to 20)
+   * @returns {Promise<Object>} Object containing:
+   *                           - success: boolean indicating if operation was successful
+   *                           - bundles?: Array of bundle objects if successful
+   *                           - pagination?: Object containing pagination metadata:
+   *                             - total: Total number of bundles
+   *                             - page: Current page number
+   *                             - limit: Items per page
+   *                             - totalPages: Total number of pages
+   *                           - error?: Error message if operation failed
+   *                           - displayError?: User-friendly error message if operation failed
    */
-  static async getAllBundles(sessionId) {
+  static async getAllBundles(sessionId, page = 1, limit = 20) {
     try {
-      const bundles = await getAllDiscountBundles(sessionId);
+      const {bundles, pagination} = await getAllDiscountBundles(sessionId, page, limit);
       return {
         success: true,
-        bundles
+        bundles,
+        pagination
       }
     } catch (error) {
       console.log(error);

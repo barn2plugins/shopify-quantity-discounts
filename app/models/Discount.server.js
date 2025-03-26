@@ -1,20 +1,34 @@
 import prisma from "../db.server"
 
 /**
- * Retrieves all discount bundles for a given session from the database
+ * Retrieves paginated discount bundles for a given session from the database
  * 
  * @param {string} sessionId - The session ID of the current user
- * @returns {Promise<Array<Object>|null>} Array of discount bundle objects ordered by priority, or null if error occurs
- * 
- * @example
- * const bundles = await getAllDiscountBundles('session123');
- * if (bundles) {
- *   bundles.forEach(bundle => console.log(bundle.name));
- * }
+ * @param {number} page - The current page number (starts from 1)
+ * @param {number} limit - Number of items per page
+ * @returns {Promise<Object>} Object containing bundles and pagination data
+ * @returns {Object[]} .bundles - Array of discount bundle objects
+ * @returns {Object} .pagination - Pagination metadata
+ * @returns {number} .pagination.total - Total number of bundles
+ * @returns {number} .pagination.page - Current page number
+ * @returns {number} .pagination.limit - Items per page
+ * @returns {number} .pagination.totalPages - Total number of pages
  */
-export async function getAllDiscountBundles(sessionId) {
-  // Query database to get all bundles for the shop
-  return await prisma.discountBundle.findMany({
+export async function getAllDiscountBundles(sessionId, page, limit) {
+  // Calculate the number of items to skip
+  const skip = (page - 1) * limit;
+
+  // Get total count for pagination
+  const total = await prisma.discountBundle.count({
+    where: {
+      store: {
+        sessionId
+      }
+    }
+  });
+
+  // Get paginated results
+  const bundles = await prisma.discountBundle.findMany({
     where: {
       store: {
         sessionId
@@ -22,8 +36,20 @@ export async function getAllDiscountBundles(sessionId) {
     },
     orderBy: {
       priority: 'desc'
-    }
+    },
+    skip,
+    take: limit
   });
+
+  return {
+    bundles,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
 }
 
 /**

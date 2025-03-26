@@ -5,6 +5,7 @@ import {
   Button,
   InlineStack,
   LegacyCard,
+  Pagination
 } from "@shopify/polaris";
 import {EditIcon, DuplicateIcon, DeleteIcon} from '@shopify/polaris-icons';
 import {useState, useEffect} from "react";
@@ -30,9 +31,8 @@ import DeleteConfirmationModal from "../../../components/Modals/DeleteConfirmati
 import IndexTable from "../../../components/Fields/IndexTable";
 import SortableRow from "./SortableRow";
 
-export default function DiscountBundlesTable({ discountBundles }) {
+export default function DiscountBundlesTable({ fetcher, discountBundles, pagination }) {
   const shopify = useAppBridge();
-  const fetcher = useFetcher();
   const [bundleToDelete, setBundleToDelete] = useState({});
   const [bundles, setBundles] = useState([]);
   const [duplicatingId, setDuplicatingId] = useState(null);
@@ -172,6 +172,22 @@ export default function DiscountBundlesTable({ discountBundles }) {
 		}
 	}
 
+  /**
+   * Handles pagination changes by submitting a request to fetch the next/previous page of discount bundles
+   * 
+   * @param {number} page - The target page number to fetch
+   * @param {number} limit - Number of items per page
+   * @returns {void}
+   */
+  const handlePageChange = (page, limit) => {
+    fetcher.submit(
+      { page, limit, action: 'paginateBundlesData' },
+      {
+        method: "POST",
+      }
+    );
+  };
+
   return (
     <>
       <Layout>
@@ -179,7 +195,7 @@ export default function DiscountBundlesTable({ discountBundles }) {
           <BlockStack gap={500}>
             <InlineStack align="space-between">
               <Text variant="headingLg" as="h4">
-                Discount bundles
+                Discount
               </Text>
               <Button variant="primary" url="/app/discount/create">New discount</Button>
             </InlineStack>
@@ -221,6 +237,15 @@ export default function DiscountBundlesTable({ discountBundles }) {
                 </DndContext>
               </IndexTable>
             </LegacyCard>
+            <InlineStack align="center" fullWidth>
+              <Pagination
+                onPrevious={() => handlePageChange(pagination.page - 1, pagination.limit)}
+                onNext={() => handlePageChange(pagination.page + 1, pagination.limit)}
+                hasPrevious={pagination.page > 1}
+                hasNext={pagination.page < pagination.totalPages}
+                label={`${((pagination.page - 1) * pagination.limit) + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total} discounts`}
+              />
+            </InlineStack>
           </BlockStack>
         </Layout.Section>
       </Layout>

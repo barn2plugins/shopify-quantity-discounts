@@ -5,12 +5,14 @@ import {
 } from "@shopify/polaris";
 import { authenticate } from "../../shopify.server";
 import { useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFetcher } from "@remix-run/react";
 
 // Internal components and libraries
 import DiscountStatistics from "./components/DiscountStatistics";
 import DiscountBundlesTable from "./components/DiscountBundlesTable";
 import EmptyStateComponent from "./components/EmptyStateComponent";
+import SupportBlock from "./components/SupportBlock";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 import { getAppStatisticsData } from "./actions";
 
@@ -19,6 +21,10 @@ import { StoreService } from "../../services/store.service.js";
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
+  
+  const page = 1;
+  
+  const limit = 20;
 
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
@@ -26,7 +32,8 @@ export const loader = async ({ request }) => {
 
   const appEmbedDisabled = store ? await StoreService.isAppEmbedDisabled({admin, store}) : true;
 
-  const discountBundles = await BundleService.getAllBundles(session.id);
+  const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+
   if (!discountBundles.success) {
     return null;
   }
@@ -37,28 +44,77 @@ export const loader = async ({ request }) => {
     statisticsData,
     discountBundles: discountBundles.bundles,
     appEmbedDisabled,
-    bundlesDiscountsExtensionId
+    bundlesDiscountsExtensionId,
+    pagination: discountBundles.pagination,
   };
 };
 
-export default function Index() {
-  const { statisticsData, discountBundles, appEmbedDisabled, bundlesDiscountsExtensionId } = useLoaderData();
+export const action = async ({ request }) => {
+  const { session } = await authenticate.admin(request);
+  
+  const formData = await request.formData();
+  const fetcherData = Object.fromEntries(formData);
+  
+  if (fetcherData?.action === 'paginateBundlesData') {
+    const page = parseInt(fetcherData?.page);
+    const limit = parseInt(fetcherData?.limit);
+    const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
 
+    if (!discountBundles.success) {
+      return null;
+    }
+    
+    return {
+      bundles: discountBundles.bundles, 
+      pagination: discountBundles.pagination
+    }
+  }
+
+  if (fetcherData?.action === 'duplicateBundle') {
+    const bundleId = parseInt(fetcherData?.bundleId);
+    console.log('bundleId', bundleId);
+  }
+  
+
+  return null;
+}
+
+export default function Index() {
+  const fetcher = useFetcher();
+  const { statisticsData, discountBundles, appEmbedDisabled, bundlesDiscountsExtensionId, pagination } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
+
+  const [ bundles, setBundles ] = useState(discountBundles || []);
+  const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
+
+  const updatedBundles = fetcher.data?.bundles;
+  const updatedPagination = fetcher.data?.pagination;
+
+  useEffect(() => {
+    if (updatedBundles) {
+      setBundles(updatedBundles);
+    }
+    if (updatedPagination) {
+      setBundlesPagination(updatedPagination);
+    }
+  }, [updatedBundles, updatedPagination]);
 
   return (
     <div className="barn2-app-home">
-      <Page fullWidth={discountBundles.length > 0 ? true : false}>
+      <Page fullWidth={bundles.length > 0 ? true : false}>
         <Box style={{ paddingBottom: '40px' }}>
-          { discountBundles.length <= 0 && (
+          { bundles.length <= 0 && (
             <EmptyStateComponent />
           ) }
     
-          { discountBundles.length > 0 && (
-            <BlockStack gap="500">
-              { discountBundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
+          { bundles.length > 0 && (
+            <BlockStack>
+              { bundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
               <DiscountStatistics statisticsData={statisticsData}/>
-              <DiscountBundlesTable discountBundles={discountBundles} />
+              <BlockStack gap="1000">
+                <DiscountBundlesTable fetcher={fetcher} discountBundles={bundles} pagination={bundlesPagination} />
+                <SupportBlock/>
+              </BlockStack>
             </BlockStack>
           ) }
         </Box>

@@ -5,8 +5,14 @@
 // App Home Page
 .barn2-app-home {
   .discounts_table_row {
-    vertical-align: top;
-    
+    vertical-align: middle;
+
+    &:not(:last-child) {
+      td {
+        border-bottom: 1px solid var(--p-color-bg-surface-secondary-active);
+      }
+    }
+
     &:hover td {
         background-color: var(--p-color-bg-surface-hover);
     }
@@ -26,28 +32,28 @@
   }
 
   .col-priority {
-      width: 7%
+      width: 8%
   }
 
   .col-bundle-name {
-      width: 15%
+      width: 16%
   }
 
   .col-bundle-type {
-      width: 11%
+      width: 13%
   }
 
   .col-applied-to {
-      width: 30%;
+      width: 26%;
       word-wrap: break-word;
   }
 
   .col-status {
-      width: 10%
+      width: 8%
   }
 
   .col-actions {
-      width: 17%
+      width: 13%
   }
 }
 

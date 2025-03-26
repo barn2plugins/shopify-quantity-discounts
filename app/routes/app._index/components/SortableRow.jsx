@@ -25,7 +25,7 @@ export default function SortableRow({ bundle, index, handleBundleToggle, renderR
   return (
     <tr ref={setNodeRef} style={style} id={bundle.id} key={bundle.id} position={index} className="discounts_table_row">
       <td className="col-sort-icon" {...attributes} {...listeners}>
-        <Icon source={SortIcon} color="subdued" />
+        <Icon source={SortIcon} tone="subdued" />
       </td>
       <td className="col-priority">
         <Text variation="strong">{bundle.priority}</Text>

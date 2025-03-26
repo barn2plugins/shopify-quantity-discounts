@@ -5,7 +5,7 @@ BlockStack,
 
 function DataCard({data}) {
   return (
-    <BlockStack gap="200">
+    <BlockStack gap="100">
       <p style={{color: 'var(--p-color-text-secondary)'}}>
         <Text as="span" variant="bodySm">{data.title}</Text>
       </p>
