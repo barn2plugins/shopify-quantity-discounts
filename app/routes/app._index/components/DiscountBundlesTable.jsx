@@ -37,6 +37,8 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
   const [bundles, setBundles] = useState([]);
   const [duplicatingId, setDuplicatingId] = useState(null);
 
+  const bundleDeleted = fetcher.data?.bundleDeleted;
+
   /**
    * Handles the duplication of a discount bundle.
    * Sets the duplicating state for loading indicator and submits the duplication request to the 'app/discount/duplicate' route
@@ -61,6 +63,12 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
     setBundleToDelete(bundle);
     shopify.modal.show('delete-confirmation-modal');
   };
+
+  useEffect(() => {
+    if ( bundleDeleted ) {
+      shopify.toast.show("Discount bundle has been deleted");
+    }
+  }, [bundleDeleted, shopify]);
 
   /**
    * Handles the toggle state of a discount bundle's active status.
@@ -250,7 +258,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
         </Layout.Section>
       </Layout>
 
-      <DeleteConfirmationModal bundleToDelete={bundleToDelete} fetcher={fetcher} />
+      <DeleteConfirmationModal bundleToDelete={bundleToDelete} fetcher={fetcher} pagination={pagination} />
     </>
   )
 }

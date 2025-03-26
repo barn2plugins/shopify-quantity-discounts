@@ -1,9 +1,10 @@
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { DiscountService } from "../services/discount.service";
+import { BundleService } from "../services/bundle.service";
 
 export const action = async ({ request }) => {
-    const {admin} = await authenticate.admin(request);
+    const {admin, session} = await authenticate.admin(request);
     const formData = await request.formData();
     const fetcherData = Object.fromEntries(formData);
 
@@ -11,19 +12,29 @@ export const action = async ({ request }) => {
         return null;
     }
 
+    const bundleId = parseInt(fetcherData?.bundleId);
+    const shopifyDiscountId = fetcherData?.shopifyDiscountId;
+    const limit = parseInt(fetcherData?.limit);
+    const page = parseInt(fetcherData?.page);
+
     try {
-        const isDeleted = await DiscountService.deleteShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId);
-        if (!isDeleted) {
-            return null;
-        }
+        await DiscountService.deleteShopifyVolumeDiscount(admin, shopifyDiscountId);
     
-        const deleteBundle = await prisma.discountBundle.delete({
+        await prisma.discountBundle.delete({
             where: {
-                id: parseInt(fetcherData.id),
+                id: bundleId,
             },
         });
 
-        return { deleteBundle };
+        // Retrieve the updated list of bundles after deletion
+        const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+
+        return { 
+            success: true,
+            bundleDeleted: true,
+            bundles: discountBundles.bundles, 
+            pagination: discountBundles.pagination
+        };
     } catch (error) {
         console.error(error);
     }

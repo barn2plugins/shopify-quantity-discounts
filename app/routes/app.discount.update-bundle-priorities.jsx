@@ -8,7 +8,7 @@ export const action = async ({ request }) => {
   const priorities = JSON.parse(formData.get("priorities"));
 
   try {
-    // Update all bundles in a transaction
+    // Update all bundles in a single transaction
     await prisma.$transaction(
       priorities.map(({ id, priority }) =>
         prisma.discountBundle.update({

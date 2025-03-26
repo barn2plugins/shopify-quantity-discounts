@@ -2,27 +2,25 @@ import { Box, Text } from "@shopify/polaris";
 import { useEffect } from "react";
 import { useAppBridge, Modal, TitleBar } from "@shopify/app-bridge-react";
 
-export default function DeleteConfirmationModal({ bundleToDelete, fetcher }) {
+export default function DeleteConfirmationModal({ bundleToDelete, fetcher, pagination }) {
   const shopify = useAppBridge();
-  const deleteBundleRe = fetcher.data?.deleteBundle;
 
   const confirmDelete = () => {
     shopify.modal.hide('delete-confirmation-modal');
 
     fetcher.submit(
-      { id: bundleToDelete.id, shopifyDiscountId: bundleToDelete.shopifyDiscountId },
+      { 
+        bundleId: bundleToDelete.id, 
+        shopifyDiscountId: bundleToDelete.shopifyDiscountId,
+        limit: pagination.limit,
+        page: pagination.page
+      },
       { 
         method: "DELETE", 
         action: "/app/discount/delete",
       }
     );
   };
-
-  useEffect(() => {
-    if ( deleteBundleRe ) {
-      shopify.toast.show("Discount bundle has been deleted");
-    }
-  }, [deleteBundleRe, shopify]);
 
   return (
     <Modal
