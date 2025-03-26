@@ -49,7 +49,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
     setDuplicatingId(bundle.id);
     
     fetcher.submit(
-      { bundleId: bundle.id },
+      { bundleId: bundle.id, page: pagination.page, limit: pagination.limit },
       {
         method: "POST",
         action: "/app/discount/duplicate",

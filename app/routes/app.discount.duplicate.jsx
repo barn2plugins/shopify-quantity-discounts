@@ -1,15 +1,20 @@
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { BundleService } from "../services/bundle.service";
 
 export const action = async ({ request }) => {
-    await authenticate.admin(request);
+    const { session } = await authenticate.admin(request);
     const formData = await request.formData();
-    const { bundleId } = Object.fromEntries(formData);
+    const fetcherData = Object.fromEntries(formData);
+    
+    const bundleId = parseInt(fetcherData?.bundleId);
+    const page = parseInt(fetcherData?.page);
+    const limit = parseInt(fetcherData?.limit);
 
     try {
         const originalBundle = await prisma.discountBundle.findUnique({
             where: {
-                id: parseInt(bundleId),
+                id: bundleId,
             },
         });
 
@@ -42,7 +47,13 @@ export const action = async ({ request }) => {
             },
         });
 
-        return { success: true, duplicateBundle };
+        const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+
+        return { 
+            success: true,
+            bundles: discountBundles.bundles, 
+            pagination: discountBundles.pagination
+        };
     } catch (error) {
         console.error('Error duplicating bundle:', error);
         return { success: false, error: error.message };

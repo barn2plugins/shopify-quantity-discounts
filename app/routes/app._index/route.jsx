@@ -70,12 +70,6 @@ export const action = async ({ request }) => {
     }
   }
 
-  if (fetcherData?.action === 'duplicateBundle') {
-    const bundleId = parseInt(fetcherData?.bundleId);
-    console.log('bundleId', bundleId);
-  }
-  
-
   return null;
 }
 
