@@ -1,9 +1,9 @@
-import { InlineGrid, BlockStack, InlineStack, Text } from '@shopify/polaris';
+import { InlineGrid, BlockStack, Text } from '@shopify/polaris';
 import {currencyCodeToSymbol} from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames/dedupe';
 
-export default function BundlePreview({ formState, volumeBundles }) {
+export default function VolumeBundlePreview({ formState, volumeBundles, store }) {
   const [currencyCode, setCurrencyCode] = useState('$');
   const [selectedBundle, setSelectedBundle] = useState(0);
 
@@ -52,7 +52,7 @@ export default function BundlePreview({ formState, volumeBundles }) {
   }
 
   useEffect(() => {
-    setCurrencyCode(currencyCodeToSymbol(formState.currencyCode));
+    setCurrencyCode(currencyCodeToSymbol(store.currencyCode));
   }, [formState.currencyCode])
 
   if ( volumeBundles.length <= 0 || formState.previewEnabled === false ) {
@@ -62,8 +62,11 @@ export default function BundlePreview({ formState, volumeBundles }) {
   return (
     <div className="bundle-preview">
       { formState.previewOptions?.title && (
-        <div className="main-title">
-          <span>{formState.previewOptions?.title}</span>
+        <div className="bundle-header">
+          <div className="main-title">
+            <span>{formState.previewOptions?.title}</span>
+          </div>
+          <p className="main-description">{formState.previewOptions?.description}</p>
         </div>
       ) }
 
@@ -98,13 +101,13 @@ export default function BundlePreview({ formState, volumeBundles }) {
                     alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
                   }}>
                     <h4 className='bundle-title'>{bundle.description}</h4>
-                    <Text as='span' variant='bodyXs'>{ discountText(bundle) }</Text>
+                    { formState.previewOptions?.amountSaved && <Text as='span' variant='bodyXs'>{ discountText(bundle) }</Text> }
                   </BlockStack>
                 </BlockStack>
 
                 <BlockStack >
                   <Text variant='bodyLg' fontWeight='medium'>{displayCalculatedPrice(bundle)}</Text>
-                  <Text as='span' variant='bodyXs' textDecorationLine="line-through">{displayOriginalPrice(bundle)}</Text>
+                  { formState.previewOptions?.showOriginalPrice && <Text as='span' variant='bodyXs' textDecorationLine="line-through">{displayOriginalPrice(bundle)}</Text> }
                 </BlockStack>
               </div>
             ) })}

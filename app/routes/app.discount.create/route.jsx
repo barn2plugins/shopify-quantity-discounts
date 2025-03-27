@@ -24,9 +24,23 @@ import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../uti
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
+
+  const store = await StoreService.getStoreDetails(session.id, {
+    currency: true,
+    ianaTimezone: true,
+    moneyFormat: true,
+  });
+
   const defaultBundle = await BundleService.getDefaultBundle(session.id);
 
-  return defaultBundle;
+  return {
+    defaultBundle,
+    store: {
+      currencyCode: store?.currency || '$',
+      ianaTimezone: store.ianaTimezone || 'UTC',
+      moneyFormat: store.moneyFormat || '{{amount}} {{currency}}',
+    }
+  };
 };
 
 export const action = async ({ request }) => {
@@ -86,9 +100,9 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const discountBundle = useLoaderData();
+  const { defaultBundle, store } = useLoaderData();
   
-  const [ formState, setFormState ] = useState(discountBundle);
+  const [ formState, setFormState ] = useState(defaultBundle);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
   const [ selectedCollections, setSelectedCollections ] = useState([]);
   const [ excludedProducts, setExcludedProducts ] = useState([]);
@@ -163,7 +177,8 @@ export default function DiscountPage() {
               setVolumeBundles={setVolumeBundles}
               pricingTiers={pricingTiers}
               setPricingTiers={setPricingTiers}
-              discountBundle={discountBundle}
+              discountBundle={defaultBundle}
+              store={store}
               shopify={shopify}
             />
           </div>
@@ -172,6 +187,7 @@ export default function DiscountPage() {
               formState={formState}
               setFormState={setFormState}
               volumeBundles={volumeBundles}
+              store={store}
             />
           </div>
         </div>

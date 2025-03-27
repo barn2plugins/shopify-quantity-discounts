@@ -74,11 +74,11 @@ export default function ColorField({ onChange, value, field }) {
   const colorPrefix = () => {
     const rgba = hsbToRgba(color.hue, color.saturation, color.brightness);
     return <div style={{
-      width: '20px', 
-      height: '20px', 
-      outline: `1px solid rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`,
-      border: '1px solid white',
-      backgroundColor: `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
+      width: '15px', 
+      height: '15px', 
+      backgroundColor: `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`,
+      boxShadow: '0 0 0 1px rgba(227, 227, 227, 1)	',
+      borderRadius: '3px',
     }}></div>;
   };
 
@@ -109,18 +109,16 @@ export default function ColorField({ onChange, value, field }) {
         preventCloseOnChildOverlayClick
         onClose={handleOnClose}
         activator={
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <TextField
-              type="text"
-              onFocus={() => setVisible(!visible)}
-              onChange={(value) => handleColorInput(value)}
-              prefix={colorPrefix()}
-              autoComplete="off"
-              value={getDisplayColor()}
-              label="Color"
-              labelHidden
-            />
-          </div>
+          <TextField
+            type="text"
+            onFocus={() => setVisible(!visible)}
+            onChange={(value) => handleColorInput(value)}
+            prefix={colorPrefix()}
+            autoComplete="off"
+            value={getDisplayColor()}
+            label="Color"
+            labelHidden
+          />
         }
       >
         <ColorPicker onChange={setColor} color={color}/>

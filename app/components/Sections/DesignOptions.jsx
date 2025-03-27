@@ -51,86 +51,129 @@ export default function DesignOptions({ formState, setFormState }) {
         {showCustomDesignOptions && (
           <>
             <Grid>
-              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 4}}>
+              <Grid.Cell columnSpan={{xs: 6}}>
                 <BlockStack gap={400}>
                   <BlockStack gap={100}>
-                    <Text>Background color</Text>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Table color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.tableColor} 
+                      field="tableColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Header text color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.headerTextColor} 
+                      field="headerTextColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Background color</Text>
                     <ColorField 
                       onChange={updateDesignColorField} 
                       value={formState?.customDesigns?.backgroundColor} 
                       field="backgroundColor" 
                     />
                   </BlockStack>
-                  <BlockStack gap={100}>
-                    <Text>Selected background color</Text>
-                    <ColorField 
-                      onChange={updateDesignColorField} 
-                      value={formState?.customDesigns?.selectedBackgroundColor} 
-                      field="selectedBackgroundColor"
-                    />
-                  </BlockStack>
-                  <BlockStack gap={100}>
-                    <Text>Badge color</Text>
-                    <ColorField 
-                      onChange={updateDesignColorField} 
-                      value={formState?.customDesigns?.badgeColor} 
-                      field="badgeColor"
-                    />
-                  </BlockStack>
                 </BlockStack>
               </Grid.Cell>
-              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 4}}>
+              <Grid.Cell columnSpan={{xs: 6}}>
                 <BlockStack gap={400}>
                   <BlockStack gap={100}>
-                    <Text>Label color</Text>
-                    <ColorField 
-                      onChange={updateDesignColorField} 
-                      value={formState?.customDesigns?.labelColor} 
-                      field="labelColor"
-                    />
-                  </BlockStack>
-                  <BlockStack gap={100}>
-                    <Text>Text color</Text>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Text color</Text>
                     <ColorField 
                       onChange={updateDesignColorField} 
                       value={formState?.customDesigns?.textColor} 
-                      field="textColor"
+                      field="textColor" 
                     />
                   </BlockStack>
-                 
                 </BlockStack>
               </Grid.Cell>
-              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 4}}>
+             
+              <Grid.Cell columnSpan={{xs: 6}}>
                 <BlockStack gap={400}>
                   <BlockStack gap={100}>
-                    <Text>Cart notice background color</Text>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Label color</Text>
                     <ColorField 
                       onChange={updateDesignColorField} 
-                      value={formState?.customDesigns?.cartNoticeBackground} 
-                      field="cartNoticeBackground"
+                      value={formState?.customDesigns?.labelColor} 
+                      field="labelColor" 
                     />
                   </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
                   <BlockStack gap={100}>
-                    <Text>Cart notice text color</Text>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Label text color</Text>
                     <ColorField 
                       onChange={updateDesignColorField} 
-                      value={formState?.customDesigns?.cartNoticeText} 
-                      field="cartNoticeText"
+                      value={formState?.customDesigns?.lebelTextColor} 
+                      field="lebelTextColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+             
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Cart notice background color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.cartNoticeBackgroundColor} 
+                      field="cartNoticeBackgroundColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Cart notice text color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.cartNoticeTextColor} 
+                      field="cartNoticeTextColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+         
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Badge</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.badgeColor} 
+                      field="badgeColor" 
                     />
                   </BlockStack>
                 </BlockStack>
               </Grid.Cell>
             </Grid>
             <Grid>
-              <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 4}}>
+              <Grid.Cell columnSpan={{xs: 6}}>
                 <BlockStack gap={400}>
                   <BlockStack gap={100}>
-                    <Text>Corner radius</Text>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Corner radius</Text>
                     <ChoiceList
                       choices={[
-                        {label: 'Square', value: 'square'},
                         {label: 'Slightly rounded', value: 'slightlyRounded'},
-                        {label: 'Fully rounded', value: 'fullyRounded'}
+                        {label: 'Fully rounded', value: 'fullyRounded'},
+                        {label: 'Square', value: 'square'},
                       ]}
                       selected={[formState?.customDesigns?.cornerRadius || 'square']}
                       onChange={(value) => {

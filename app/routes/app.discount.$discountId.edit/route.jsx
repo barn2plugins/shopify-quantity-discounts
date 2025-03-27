@@ -34,7 +34,8 @@ export const loader = async ({ request, params }) => {
     currency: true,
     ianaTimezone: true,
     volumeDiscountFunctionId: true,
-    activeThemeGid: true
+    activeThemeGid: true,
+    moneyFormat: true,
   });
 
   const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
@@ -55,7 +56,8 @@ export const loader = async ({ request, params }) => {
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
-      bundlesDiscountsExtensionId
+      bundlesDiscountsExtensionId,
+      moneyFormat: store.moneyFormat || '{{amount}} {{currency}}',
     }
   };
 }
@@ -198,6 +200,8 @@ export default function DiscountPage() {
                 formState={formState}
                 setFormState={setFormState}
                 volumeBundles={volumeBundles}
+                pricingTiers={pricingTiers}
+                store={store}
               />
             </div>
           </div>

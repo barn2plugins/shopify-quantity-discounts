@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import classNames from 'classnames/dedupe';
 
-export default function VolumeBundle({volumeBundles, layout, isInEditor, currentVariant, storeDetails}) {
+export default function VolumeBundle({bundleData, isInEditor, currentVariant, storeDetails}) {
   const [selectedBundle, setSelectedBundle] = useState(null);
+  const [volumeBundles, setVolumeBundles] = useState([]);
+  const [layout, setLayout] = useState();
+  const [previewOptions, setPreviewOptions] = useState([]);
+
+  useEffect(() => {
+      setVolumeBundles(JSON.parse(bundleData.volumeBundles || []));
+      setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
+      setLayout(bundleData.layout)
+  }, [])
 
   const displayFormattedPrice = (price) => {
     return storeDetails.moneyFormat.replace('{{amount}}', price);
@@ -109,11 +118,18 @@ export default function VolumeBundle({volumeBundles, layout, isInEditor, current
 
   return (
     <div className="barn2-discount-bundles">
-      <div className="barn2-db-main-title"><span>Buy</span></div>
-      <div className="barn2-db-main-description">
-        <span>Time-limited offer text! Customize this text to highlight your special deal, promotion, or exclusive discount.</span>
-      </div>
-      <div 
+      { bundleData.previewEnabled && (
+        <>
+          <div className="barn2-db-main-title"><span>{previewOptions?.title}</span></div>
+          {previewOptions?.description &&
+            <div className="barn2-db-main-description">
+              <span>{previewOptions?.description}</span>
+            </div>
+          }
+        </>
+      )}
+      
+      <div
         className={classNames(
           'barn2-discount-bundles-list',
           `barn2-dbs-layout-${layout}`,
@@ -141,12 +157,12 @@ export default function VolumeBundle({volumeBundles, layout, isInEditor, current
                 <span className="barn2-input-circle"></span>
                 <div className="barn2-dbs-text-block">
                   <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
-                  <p>{discountText(bundle)}</p>
+                  { previewOptions.amountSaved && <p>{discountText(bundle)}</p> }
                 </div>
               </div>
               <div className="barn2-dbs-bottom">
                 <span className="barn2-dbs-price">{calculatePrice(bundle, 'discounted')}</span>
-                <span className="barn2-dbs-regular-price">{calculatePrice(bundle, 'regular')}</span>
+                { previewOptions.showOriginalPrice && <span className="barn2-dbs-regular-price">{calculatePrice(bundle, 'regular')}</span> }
               </div>
             </div>
           )

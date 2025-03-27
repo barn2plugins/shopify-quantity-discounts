@@ -1,4 +1,13 @@
-export default function BulkPricing({pricingTiers, isInEditor, currentVariant, storeDetails}) {
+import { useEffect, useState } from "react";
+
+export default function BulkPricing({bundleData, isInEditor, currentVariant, storeDetails}) {
+  const [pricingTiers, setPricingTiers] = useState([]);
+  const [previewOptions, setPreviewOptions] = useState([]);
+
+  useEffect(() => {
+      setPricingTiers(JSON.parse(bundleData.pricingTiers || []));
+      setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
+  }, [])
 
   /**
    * Generates formatted discount text based on the pricing tier's discount type and value
@@ -49,14 +58,21 @@ export default function BulkPricing({pricingTiers, isInEditor, currentVariant, s
 
   const displayFormattedPrice = (price) => {
     return storeDetails.moneyFormat.replace('{{amount}}', price);
-  } 
+  }
 
   return (
     <div className="barn2-bulk-table-wrapper">
-      <div className="barn2-db-main-title"><span>Buy</span></div>
-      <div className="barn2-db-main-description">
-        <span>Time-limited offer text! Customize this text to highlight your special deal, promotion, or exclusive discount.</span>
-      </div>
+      { bundleData.previewEnabled && (
+        <>
+          <div className="barn2-db-main-title"><span>{previewOptions?.title}</span></div>
+          {previewOptions?.description &&
+            <div className="barn2-db-main-description">
+              <span>{previewOptions?.description}</span>
+            </div>
+          }
+        </>
+      )}
+
       <div className="barn2-bulk-table-container">
         <table className="barn2-bulk-table">
           <thead>

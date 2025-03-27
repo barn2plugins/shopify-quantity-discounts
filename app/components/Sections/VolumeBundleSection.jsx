@@ -171,9 +171,12 @@ export default function VolumeBundleSection({
                 </td>
                 <td className="cell_action">
                   {index !== 0 && (
-                    <span onClick={() => handleDeleteVolume(index)}>
-                      <Icon source={DeleteIcon} />
-                    </span>
+                    <Button 
+                      icon={DeleteIcon} 
+                      plain 
+                      accessibilityLabel={`Delete volume bundle ${bundle.id}`} 
+                      onClick={() => handleDeleteVolume(index)}
+                    />
                   )}
                 </td>
               </tr>

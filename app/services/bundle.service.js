@@ -35,13 +35,15 @@ export class BundleService {
       timezone: ianaTimezone || 'UTC',
       designOptions: 'theme_default',
       customDesigns: {
-        backgroundColor: '#cf8383',
-        selectedBackgroundColor: '#2cc473',
-        badgeColor: '#60a3d9',
-        labelColor: '#c2c050',
-        textColor: '#a3115f',
-        cartNoticeBackground: '#60a3d9',
-        cartNoticeText: '#59178b',
+        tableColor: '#0E54E1',
+        headerTextColor: '#FDFDFD',
+        backgroundColor: '#ffffff',
+        textColor: '#303030',
+        labelColor: '#E0F0FF',
+        lebelTextColor: '#002E6A',
+        cartNoticeBackgroundColor: '#303030',
+        cartNoticeTextColor: '#FFFFFF',
+        badgeColor: '#FFA647',
         cornerRadius: 'square'
       },
       previewOptions: {

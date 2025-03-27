@@ -91,15 +91,14 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   return (
     currentVariant !== null && bundleData.type === 'volume_bundle' ?
       <VolumeBundle 
-        volumeBundles={JSON.parse(bundleData.volumeBundles || [])} 
-        layout={bundleData.layout}
+        bundleData={bundleData}
         isInEditor={isInEditor} 
         currentVariant={currentVariant} 
         storeDetails={storeDetails}
       />
       :
       <BulkPricing 
-        pricingTiers={JSON.parse(bundleData.pricingTiers || [])} 
+        bundleData={bundleData}
         isInEditor={isInEditor} 
         currentVariant={currentVariant} 
         storeDetails={storeDetails}

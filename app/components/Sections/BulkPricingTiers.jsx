@@ -26,8 +26,9 @@ export default function BulkPricingTiers({
   setFormState,
   pricingTiers,
   setPricingTiers,
+  store
 }) {
-  const currencySymbol = currencyCodeToSymbol(formState.currencyCode);
+  const currencySymbol = currencyCodeToSymbol(store.currencyCode);
 
   const volumeBundleDiscountTypes = [
     {
@@ -99,7 +100,7 @@ export default function BulkPricingTiers({
         <BlockStack gap={1000}>
           <BlockStack gap={300}>
             <Text as="p" variant="bodyLg" fontWeight="medium">Bulk Pricing</Text>
-            <Box className="app-bundles-table">
+            <Box className="app-bundles-table app-pricing-tiers-table">
               <IndexTable
                 itemCount={pricingTiers.length}
                 headings={[
@@ -164,9 +165,12 @@ export default function BulkPricingTiers({
                     </td>
                     <td className="cell_action">
                       {index !== 0 && (
-                        <span onClick={() => handleDeletePricingTier(index)}>
-                          <Icon source={DeleteIcon} />
-                        </span>
+                        <Button 
+                          icon={DeleteIcon} 
+                          plain 
+                          accessibilityLabel={`Delete pricing tier ${bundle.id}`} 
+                          onClick={() => handleDeletePricingTier(index)}
+                        />
                       )}
                     </td>
                   </tr>

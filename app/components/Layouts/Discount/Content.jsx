@@ -36,31 +36,35 @@ export default function Content({
     <BlockStack gap={600}>
       <Card>
         <BlockStack gap={600}>
-            <DiscountNameSection formState={formState} setFormState={setFormState} />
-            <DiscountTypeSection formState={formState} setFormState={setFormState} />
-            <ProductSelectionSection 
-              formState={formState}
-              setFormState={setFormState}
-              selectedCollections={selectedCollections}
-              shopify={shopify}
-              buttonLabels={buttonLabels}
-            />
-            <ActiveDatesSections
-              formState={formState}
-              setFormState={setFormState}
-              timezone={store?.ianaTimezone}
-            />
-            <LayoutSection
-              formState={formState}
-              setFormState={setFormState}
-            />
+          <DiscountNameSection formState={formState} setFormState={setFormState} />
+          <DiscountTypeSection formState={formState} setFormState={setFormState} />
+        </BlockStack>
+      </Card>
+      <Card>
+        <BlockStack gap={600}>
+          <ProductSelectionSection 
+            formState={formState}
+            setFormState={setFormState}
+            selectedCollections={selectedCollections}
+            shopify={shopify}
+            buttonLabels={buttonLabels}
+          />
+          <ActiveDatesSections
+            formState={formState}
+            setFormState={setFormState}
+            timezone={store?.ianaTimezone}
+          />
+          <LayoutSection
+            formState={formState}
+            setFormState={setFormState}
+          />
         </BlockStack>
       </Card>
 
       { formState.type === 'volume_bundle' && (
         <Card>
           <VolumeBundleSection 
-            currencyCode={formState.currencyCode}
+            currencyCode={store?.currencyCode}
             volumeBundles={volumeBundles}
             setVolumeBundles={setVolumeBundles}
           />
@@ -73,6 +77,7 @@ export default function Content({
           setFormState={setFormState}
           pricingTiers={pricingTiers}
           setPricingTiers={setPricingTiers}
+          store={store}
         />
       ) }
       <DesignOptions

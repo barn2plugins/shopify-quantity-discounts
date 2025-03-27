@@ -6,28 +6,44 @@ import {
 
 // Internal libraries and components
 import PreviewToggle from '../../Sections/PreviewToggle';
-import BundlePreview from '../../Sections/BundlePreview';
+import VolumeBundlePreview from '../../Sections/VolumeBundlePreview';
+import BulkPricingPreview from '../../Sections/BulkPricingPreview';
 import PreviewOptions from '../../Sections/PreviewOptions';
 
 export default function Sidebar({
   formState,
   setFormState,
-  volumeBundles
+  volumeBundles,
+  pricingTiers,
+  store
 }) {
+
   return (
     <Card>
-      <BlockStack gap={1000}>
+      <BlockStack gap={500}>
         <BlockStack gap={500}>
           <PreviewToggle
             formState={formState}
             setFormState={setFormState}
           />
 
-          <BundlePreview
-            formState={formState}
-            setFormState={setFormState}
-            volumeBundles={volumeBundles}
-          />
+          { formState.type === 'volume_bundle' && 
+            <VolumeBundlePreview
+              formState={formState}
+              setFormState={setFormState}
+              volumeBundles={volumeBundles}
+              store={store}
+            />
+          }
+
+          { formState.type === 'bulk_pricing' && 
+            <BulkPricingPreview
+              formState={formState}
+              setFormState={setFormState}
+              pricingTiers={pricingTiers}
+              store={store}
+            />
+          }
         </BlockStack>
 
         <BlockStack gap={500}>
