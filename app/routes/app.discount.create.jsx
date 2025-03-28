@@ -10,17 +10,17 @@ import { useLoaderData, useFetcher } from "@remix-run/react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal services and components
-import { authenticate } from "../../shopify.server"
-import { BundleService } from "../../services/bundle.service";
-import { StoreService } from "../../services/store.service";
-import { ProductService } from "../../services/product.service";
-import { CollectionService } from "../../services/collection.service";
+import { authenticate } from "../shopify.server"
+import { BundleService } from "../services/bundle.service";
+import { StoreService } from "../services/store.service";
+import { ProductService } from "../services/product.service";
+import { CollectionService } from "../services/collection.service";
 
-import Content from "../../components/Layouts/Discount/Content.jsx";
-import Sidebar from "../../components/Layouts/Discount/Sidebar.jsx";
-import DiscountModals from "../../components/Modals/DiscountModals.jsx";
+import Content from "../components/Layouts/Discount/Content.jsx";
+import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
+import DiscountModals from "../components/Modals/DiscountModals.jsx";
 
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../../utils/utils";
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../utils/utils";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
