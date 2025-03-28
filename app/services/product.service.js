@@ -42,7 +42,7 @@ export class ProductService {
     const response = await admin.graphql(
       `#graphql
         query {
-          products(first: 30) {
+          products(first: 20) {
             edges {
               node {
                 id

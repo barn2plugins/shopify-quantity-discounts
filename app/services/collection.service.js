@@ -31,7 +31,7 @@ export class CollectionService {
     const response = await admin.graphql(
       `#graphql
         query {
-          collections(first: 30) {
+          collections(first: 20) {
             edges {
               node {
                 id

@@ -10,13 +10,14 @@ import {
 import { Modal, TitleBar } from "@shopify/app-bridge-react";
 import { ImageIcon } from '@shopify/polaris-icons';
 import { useState, useEffect } from "react";
+import { useAppBridge } from "@shopify/app-bridge-react";
 
 export default function ProductExclusionsModal({ 
   fetcher, 
   excludedProducts, 
   setExcludedProducts, 
 }) {
-
+  const shopify = useAppBridge();
   const [ productSearchQuery, setProductSearchQuery ] = useState('');
   const [ productsLoading, setProductsLoading ] = useState(false);
   const [ storeProducts, setStoreProducts ] = useState([]);
@@ -31,7 +32,9 @@ export default function ProductExclusionsModal({
   const promotedBulkActions = [
     {
       content: 'Save',
-      onAction: () => console.log('Todo: implement bulk edit'),
+      onAction: () => {
+        shopify.modal.hide('select-products-modal');
+      },
     },
   ];
 

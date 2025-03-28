@@ -6,7 +6,7 @@ import {
 
 export default function PreviewToggle({ formState, setFormState }) {
   return (
-    <BlockStack gap={150} blockAlign="center">
+    <BlockStack gap={150}>
       <Text as="p" variant="bodyLg" fontWeight="medium">Preview</Text>
 
       <InlineStack gap={200} align="space-between">
