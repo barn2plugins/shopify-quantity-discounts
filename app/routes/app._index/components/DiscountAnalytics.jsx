@@ -10,7 +10,7 @@ import {
 
 // Internal components and libraries
 import DataCard from "./DataCard";
-export default function DiscountStatistics({statisticsData}) {
+export default function DiscountAnalytics({analyticsData}) {
   
   return (
     <Layout>
@@ -23,12 +23,12 @@ export default function DiscountStatistics({statisticsData}) {
                   <Grid>
                     <Grid.Cell columnSpan={{xs: 6}}>
                       <Box paddingInlineEnd="400" borderInlineEndWidth={200} borderColor="border">
-                        <DataCard data={statisticsData.discountedMonthlyOrders}/>
+                        <DataCard data={analyticsData.discountedMonthlyOrders}/>
                       </Box>
                     </Grid.Cell>
                     <Grid.Cell columnSpan={{xs: 6}}>
                       <Box paddingInlineStart="400">
-                        <DataCard data={statisticsData.discountedAllTimeOrders}/>
+                        <DataCard data={analyticsData.discountedAllTimeOrders}/>
                       </Box>
                     </Grid.Cell>
                   </Grid>
@@ -41,12 +41,12 @@ export default function DiscountStatistics({statisticsData}) {
                   <Grid>
                     <Grid.Cell columnSpan={{xs: 6}}>
                       <Box paddingInlineEnd="400" borderInlineEndWidth={200} borderColor="border">
-                        <DataCard data={statisticsData.discountedMonthlyRevenue}/>
+                        <DataCard data={analyticsData.discountedMonthlyRevenue}/>
                       </Box>
                     </Grid.Cell>
                     <Grid.Cell columnSpan={{xs: 6}}>
                       <Box paddingInlineStart="400">
-                        <DataCard data={statisticsData.discountedAllTimeRevenue}/>
+                        <DataCard data={analyticsData.discountedAllTimeRevenue}/>
                       </Box>
                     </Grid.Cell>
                   </Grid>

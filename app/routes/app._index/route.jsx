@@ -9,15 +9,17 @@ import { useState, useEffect } from "react";
 import { useFetcher } from "@remix-run/react";
 
 // Internal components and libraries
-import DiscountStatistics from "./components/DiscountStatistics";
+import DiscountAnalytics from "./components/DiscountAnalytics.jsx";
 import DiscountBundlesTable from "./components/DiscountBundlesTable";
 import EmptyStateComponent from "./components/EmptyStateComponent";
 import SupportBlock from "./components/SupportBlock";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
-import { getAppStatisticsData } from "./actions";
 
 import { BundleService } from "../../services/bundle.service.js";
 import { StoreService } from "../../services/store.service.js";
+import { getOrderAnalytics } from "../../services/analytics.service";
+
+import { getStoreAnalyticsData } from "../../utils/analytics"
 
 export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -38,10 +40,16 @@ export const loader = async ({ request }) => {
     return null;
   }
 
-  const statisticsData = await getAppStatisticsData();
+  const orderAnalyticsData = await getOrderAnalytics({sessionId: session.id});
+  
+  if (!orderAnalyticsData.success) {
+    return null;
+  }
+
+  const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
 
   return { 
-    statisticsData,
+    analyticsData,
     discountBundles: discountBundles.bundles,
     appEmbedDisabled,
     bundlesDiscountsExtensionId,
@@ -75,7 +83,7 @@ export const action = async ({ request }) => {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const { statisticsData, discountBundles, appEmbedDisabled, bundlesDiscountsExtensionId, pagination } = useLoaderData();
+  const { analyticsData, discountBundles, appEmbedDisabled, bundlesDiscountsExtensionId, pagination } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
@@ -104,7 +112,7 @@ export default function Index() {
           { bundles.length > 0 && (
             <BlockStack>
               { bundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
-              <DiscountStatistics statisticsData={statisticsData}/>
+              <DiscountAnalytics analyticsData={analyticsData}/>
               <BlockStack gap="1000">
                 <DiscountBundlesTable fetcher={fetcher} discountBundles={bundles} pagination={bundlesPagination} />
                 <SupportBlock/>
