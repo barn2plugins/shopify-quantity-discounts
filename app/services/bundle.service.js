@@ -383,9 +383,18 @@ export class BundleService {
   static async findDiscountBundlesByNames({nameOfDiscountApplications, sessionId}) {
     try {
       const bundles = await finyManyByNames({nameOfDiscountApplications, sessionId});
-      return {
-        success: true,
-        bundles
+      
+      if ( bundles?.length > 0) {
+        return {
+          success: true,
+          bundles
+        }
+      } else {
+        return {
+          success: false,
+          error: 'No bundles found',
+          displayError: 'No bundles found'
+        }
       }
     } catch (error) {
       return {
