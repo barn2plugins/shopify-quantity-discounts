@@ -1,6 +1,7 @@
 import { authenticate } from "../shopify.server";
 import { BundleService } from "../services/bundle.service";
-import { StoreService } from "../services/store.service.js";
+import { StoreService } from "../services/store.service";
+import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export async function loader({ request }) {
     const {storefront, session} = await authenticate.public.appProxy(request);
@@ -14,7 +15,7 @@ export async function loader({ request }) {
     });
 
     const isPartnerDevelopment = store?.isPartnerDevelopment;
-    const isSubscribed = false; // TODO: Implement subscription check
+    const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
     const shouldDisableDiscounts = isPartnerDevelopment === false && !isSubscribed;
 

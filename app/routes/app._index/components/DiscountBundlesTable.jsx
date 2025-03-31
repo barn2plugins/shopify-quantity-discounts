@@ -51,7 +51,11 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
     setDuplicatingId(bundle.id);
     
     fetcher.submit(
-      { bundleId: bundle.id, page: pagination.page, limit: pagination.limit },
+      { 
+        bundleId: bundle.id, 
+        page: pagination.page, 
+        limit: pagination.limit 
+      },
       {
         method: "POST",
         action: "/app/discount/duplicate",
@@ -87,9 +91,13 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
     setBundles(updatedBundles);
     
     fetcher.submit(
-      { bundleId: bundle.id, active: event.target.checked, shopifyDiscountId: bundle.shopifyDiscountId },
+      { 
+        bundleId: bundle.id, 
+        active: event.target.checked, 
+        shopifyDiscountId: bundle.shopifyDiscountId 
+      },
       {
-        method: "PUT",
+        method: "POST",
         action: "/app/discount/update",
       }
     );

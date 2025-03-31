@@ -93,7 +93,8 @@
 
 // Create Page
 @media screen and (min-width: 30.625em) {
-  .barn2-discounts-page-wrapper .Polaris-Page {
+  .barn2-discounts-page-wrapper .Polaris-Page,
+  .barn2-plans-page .Polaris-Page {
     max-width: 1080px;
   }
 }
@@ -436,6 +437,94 @@
 
     &:last-child {
       border-radius: 0 10px 0 0;
+    }
+  }
+}
+
+.barn2-plans-page {
+  .pricing_card_bleed {
+    background-color: var(--p-color-bg-surface-success);
+    padding: 16px; 
+    border-radius: 8px 8px 0 0
+  }
+  .pricing_card_inner {
+    padding: 20px;
+  }
+  .pricing_features {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+
+    li {
+      padding-left: 30px;
+      position: relative;
+
+      &:not(:last-child) {
+        margin-bottom: 10px;
+      }
+
+      .Polaris-Icon {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
+    }
+  }
+  .reviews_card_inside {
+    padding: 40px;
+
+    @media screen and (min-width: 10.625em) {
+      min-height: 276px;
+    }
+
+    .review_title {
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .review_icons {
+      width: 100px;
+      display: flex;
+      justify-content: flex-start;
+
+      svg {
+        fill: var(--p-color-bg-fill-warning);
+      }
+    }
+  }
+}
+
+// Footer 
+.barn2_credits {
+  margin: 40px 0px;
+  padding-bottom: 40px;
+
+  .credits_note, 
+  .footer_links {
+    text-align: center;
+  }
+
+  .footer_links {
+    margin-top: 10px;
+    a {
+      color: var(--p-color-text-link);
+      text-decoration: none;
+
+      &:not(:last-child) {
+        margin-right: 25px;
+        position: relative;
+
+        &:after {
+          content: '';
+          position: absolute;
+          right: -15px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1px;
+          height: 15px;
+          background-color: var(--p-color-text);
+        }
+      }
     }
   }
 }

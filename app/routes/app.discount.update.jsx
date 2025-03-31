@@ -8,7 +8,7 @@ export const action = async ({ request }) => {
     const fetcherData = Object.fromEntries(formData);
     
 
-    if (request.method !== "PUT") {
+    if (request.method !== "POST") {
         return null;
     }
         

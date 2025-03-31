@@ -12,16 +12,18 @@ import PartnerDevelopment from "./components/Notice/PartnerDevelopment";
 import Credits from "./components/Footer/Credits.jsx";
 import { authenticate } from "./shopify.server";
 import { StoreService } from "./services/store.service.js";
+import { currentSessionHasActiveSubscription } from "./services/subscription.service";
 import './styles/app.scss';
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
   const store = await StoreService.getStoreDetails(session.id, { isPartnerDevelopment: true });
-  
+  const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
+
   return {
     isPartnerDevelopment: store?.isPartnerDevelopment,
-    isSubscribed: false, // TODO: Implement subscription check
+    isSubscribed
   };
 };
 

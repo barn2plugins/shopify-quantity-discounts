@@ -73,5 +73,24 @@ CREATE TABLE "DiscountBundle" (
     CONSTRAINT "DiscountBundle_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "Subscription" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "storeId" INTEGER NOT NULL,
+    "chargeId" TEXT NOT NULL,
+    "plan" TEXT NOT NULL,
+    "price" TEXT NOT NULL,
+    "currency" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT false,
+    "test" BOOLEAN NOT NULL DEFAULT false,
+    "trialDays" INTEGER,
+    "billingOn" DATETIME,
+    "billingPeriodEnd" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Subscription_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Store_sessionId_key" ON "Store"("sessionId");

@@ -1,0 +1,150 @@
+import { 
+  createShopifySubscription, 
+  shopifyCurrentActiveSubscription, 
+  deactivatPreviousAppSubscriptions,
+  createAppSubscription,
+  getCurrentSessionActiveSubscription
+} from "../models/Subscription.server";
+
+/**
+ * Checks if the current session has an active subscription
+ * @param {Object} params - The parameters object
+ * @param {string} params.sessionId - The session ID to check for active subscription
+ * @returns {Promise<boolean>} Returns true if an active subscription exists, false otherwise
+ */
+export const currentSessionHasActiveSubscription = async (params) => {
+  try {
+    const activeSubscription = await getCurrentSessionActiveSubscription(params);
+    if (activeSubscription) {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Retrieves the active subscription for the current session
+ * @param {Object} params - The parameters object
+ * @param {string} params.sessionId - The session ID to retrieve the subscription for
+ * @returns {Promise<Object|boolean>} Returns the subscription object if found, false otherwise
+ */
+export const getActiveSubscriptionForCurrentSession = async (params) => {
+  try {
+    return await getCurrentSessionActiveSubscription(params);
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Creates a new Shopify subscription and returns the confirmation URL
+ * @param {Object} params - The parameters object
+ * @param {Object} params.admin - The Shopify admin client
+ * @param {string} params.billingName - The name of the subscription plan
+ * @param {number} params.billingAmount - The billing amount
+ * @param {string} params.billingInterval - The billing interval (ANNUAL/MONTHLY)
+ * @param {string} params.returnUrl - The URL to return to after subscription confirmation
+ * @returns {Promise<Object>} Returns object with:
+ *                           - success: boolean indicating if operation was successful
+ *                           - confirmationUrl: URL for subscription confirmation if successful
+ *                           - errors: Array of error objects if unsuccessful
+ */
+export const shopifyCreateSubscription = async (params) => {
+  try {
+    const response = await createShopifySubscription(params);
+    
+    if (response.data.appSubscriptionCreate.userErrors.length > 0) {
+      return {
+        success: false,
+        errors: response.data.appSubscriptionCreate.userErrors
+      }
+    }
+
+    return {
+      success: true,
+      confirmationUrl: response.data.appSubscriptionCreate.confirmationUrl
+    }
+
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error.message 
+    };
+  }
+}
+
+/**
+ * Retrieves current active subscriptions from Shopify
+ * @param {Function} graphql - The Shopify GraphQL client function
+ * @returns {Promise<Object>} Returns object with:
+ *                           - success: boolean indicating if operation was successful
+ *                           - subscriptions: Array of active subscriptions if successful
+ *                           - errors: Error message if unsuccessful
+ */
+export const getShopifyCurrentSubscription = async (graphql) => {
+  try {
+    const response = await shopifyCurrentActiveSubscription(graphql);
+    
+    if (response.errors) {
+      return {
+        success: false,
+        errors: 'Coudl not get current subscription' 
+      }
+    }
+    
+    return {
+      success: true,
+      subscriptions: response.data?.currentAppInstallation?.activeSubscriptions
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Records a new subscription in the application database
+ * @param {Object} params - The parameters object
+ * @param {Array} params.subscriptions - Array of subscription data from Shopify
+ * @param {Object} params.session - The current session object
+ * @param {string} params.chargeId - The Shopify charge ID
+ * @returns {Promise<Object>} Returns object with:
+ *                           - success: boolean indicating if operation was successful
+ *                           - error: Error message if unsuccessful
+ */
+export const recordAppSubscription = async (params) => {
+  try {
+    await createAppSubscription(params);
+    return {
+      success: true,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Deactivates all previous active subscriptions for a store
+ * @param {Object} params - The parameters object
+ * @param {Object} params.admin - The Shopify admin client
+ * @param {Object} params.session - The current session object
+ * @returns {Promise<Object>} Returns object with:
+ *                           - success: boolean indicating if operation was successful
+ *                           - error: Error message if unsuccessful
+ */
+export const deactivatePreviousAppSubscriptions = async (params) => {
+  try {
+    const response = await deactivatPreviousAppSubscriptions(params);
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
