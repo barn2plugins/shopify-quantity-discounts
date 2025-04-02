@@ -1,7 +1,14 @@
 import { StoreService } from './store.service';
 import { DiscountService } from './discount.service';
 import { parseObjectId } from '../utils/utils';
-import { createDiscountBundle, getAllDiscountBundles, getDiscountBundleById, updateDiscountBundleById, finyManyByNames } from '../models/Discount.server';
+import { 
+  createDiscountBundle, 
+  getAllDiscountBundles, 
+  getDiscountBundleById, 
+  updateDiscountBundleById, 
+  duplicateDiscountBundleById,
+  finyManyByNames 
+} from '../models/Discount.server';
 
 /**
  * Service class for handling bundle-related operations
@@ -200,6 +207,10 @@ export class BundleService {
         displayError: 'Failed to update bundle'
       }
     }
+  }
+
+  static async duplicateBundle(params) {
+    return await duplicateDiscountBundleById(params);
   }
 
   /**
