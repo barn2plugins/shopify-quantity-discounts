@@ -30,6 +30,9 @@ export default function PlansReviews({
   }
 
   const handleBilling = (plan, index) => {
+    if (isActivePlan(plan)) {
+      return;
+    }
     setLoading(true);
     setPressedButtonIndex(index);
 
@@ -110,7 +113,7 @@ export default function PlansReviews({
                       variant="primary"
                       onClick={() => handleBilling(plan, index)}
                       loading={loading && index === pressedButtonIndex}
-                      disabled={isActivePlan(plan)}
+                      tone={isActivePlan(plan) ? 'success' : 'primary'}
                     >
                       { isActivePlan(plan) ? 'Currently subscribed' : 'Select this plan' }
                     </Button>

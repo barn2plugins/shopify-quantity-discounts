@@ -149,13 +149,6 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
 		})
 	);
 
-  const getPageIndices = ({ total, page, limit }) => {
-    const startIndex = total - (page - 1) * limit;
-    const endIndex = Math.max(startIndex - limit + 1, 1);
-  
-    return { startIndex, endIndex };
-  };
-
 	/**
 	 * Sort items in the state after dragging is complete.
 	 *
@@ -164,7 +157,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
 	const handleDragEnd = (event) => {
 		const { active, over } = event;
 
-    const currentPageIndex = getPageIndices(pagination);
+    const startPriority = ((pagination.page - 1) * pagination.limit) + 1;
 
     if (active.id !== over.id) {
 			setBundles((items) => {
@@ -174,10 +167,9 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
 
 				// Update priorities based on new order
         const updatedBundles = reorderedItems.map((bundle, index) => {
-          console.log(index);
 					return {
 						...bundle,
-						priority: currentPageIndex.startIndex - index
+						priority: startPriority + index
 					};
 				});
 

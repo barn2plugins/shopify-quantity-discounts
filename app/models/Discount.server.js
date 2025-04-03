@@ -35,7 +35,7 @@ export async function getAllDiscountBundles(sessionId, page, limit) {
       }
     },
     orderBy: {
-      priority: 'desc'
+      priority: 'asc'
     },
     skip,
     take: limit
