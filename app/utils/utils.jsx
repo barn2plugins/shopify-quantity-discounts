@@ -377,26 +377,41 @@ export const parseBundleObject = async ( {discountBundle} ) => {
  * @returns {boolean|null} Returns true if the app embed block is disabled, false if enabled, or null if not found
  */
 export const isBarn2AppEmbedDisabled = (themeConfig) => {
-  // Extract JSON part by removing the comment block
-  const jsonStartIndex = themeConfig.indexOf('{');
-  const jsonStr = themeConfig.slice(jsonStartIndex);
   let isDisabled = null;
-
+  
   try {
-    const jsonData = JSON.parse(jsonStr);
+    const configJSON = parseThemeConfig(themeConfig); // TODO: Implement this helpe
+    
     const barn2AppEmbed = "shopify://apps/barn2-bundles-bulk-discounts/blocks/barn2-bundles-app-embed";
     
-    Object.values(jsonData.current.blocks).forEach(block => {
-      if (block.type.startsWith(barn2AppEmbed)) {
-        isDisabled = block.disabled;
+    let foundBlock = false;
+    if (configJSON.current?.blocks) {
+      Object.values(configJSON.current.blocks).forEach(block => {
+        if (block.type.startsWith(barn2AppEmbed)) {
+          isDisabled = block.disabled;
+          foundBlock = true;
+        }
+      });
+      
+      if (!foundBlock) {
+        isDisabled = true;
       }
-    });
+    } else {
+      isDisabled = true;
+    }
     
   } catch (error) {
 
   }
 
   return isDisabled;
+}
+
+export const parseThemeConfig = (themeConfig) => {
+  // Extract JSON part by removing the comment block
+  const jsonStartIndex = themeConfig.indexOf('{');
+  const jsonStr = themeConfig.slice(jsonStartIndex);
+  return JSON.parse(jsonStr);
 }
 
 /**

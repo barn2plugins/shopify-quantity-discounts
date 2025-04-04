@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import { fetchStoreDetails } from "../shopify.service";
+import { StoreService } from "../services/store.service";
 import { getStoreActiveThemeGid } from "../utils/utils";
-import prisma from "../db.server.js";
 
 export const action = async ({ request }) => {
   const { session, admin, topic } = await authenticate.webhook(request);
@@ -12,14 +12,8 @@ export const action = async ({ request }) => {
     const activeThemeGid = getStoreActiveThemeGid(storeData);
 
     // Update the active theme GID in the database
-    await prisma.session.update({
-      where: { 
-        id: session.id
-      },
-      data: {
-        activeThemeGid: activeThemeGid
-      },
-    });
+    await StoreService.updateStoreDetails(session.id, { activeThemeGid });
+
     return null;
   } catch (error) {
     console.log(error);
