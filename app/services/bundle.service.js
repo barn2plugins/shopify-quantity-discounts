@@ -4,6 +4,7 @@ import { parseObjectId } from '../utils/utils';
 import { 
   createDiscountBundle, 
   getAllDiscountBundles, 
+  getAllActiveDiscountBundles,
   getDiscountBundleById, 
   updateDiscountBundleById, 
   duplicateDiscountBundleById,
@@ -89,6 +90,32 @@ export class BundleService {
       }
     } catch (error) {
       console.log(error);
+      return {
+        success: false,
+        error: error.message,
+        displayError: 'Failed to get bundles'
+      }
+    }
+  }
+
+  /**
+   * Retrieves all active discount bundles from the database
+   * 
+   * @param {string} sessionId - Session ID for the current user
+   * @returns {Promise<Object>} Object containing:
+   *                           - success: boolean indicating if operation was successful
+   *                           - bundles?: Array of active bundle objects if successful
+   *                           - error?: Error message if operation failed
+   *                           - displayError?: User-friendly error message if operation failed
+   */
+  static async getAllActiveBundles(sessionId) {
+    try {
+      const bundles = await getAllActiveDiscountBundles(sessionId);
+      return {
+        success: true,
+        bundles
+      }
+    } catch (error) {
       return {
         success: false,
         error: error.message,
@@ -226,7 +253,7 @@ export class BundleService {
    *                                             - undefined if no matching bundle found
    */
   static async getEligibleDiscountBundle({storefront, session, productId}) {
-    const discountBundles = await BundleService.getAllBundles(session.id);
+    const discountBundles = await BundleService.getAllActiveBundles(session.id);
     if (!discountBundles?.success) {
       return false;
     }

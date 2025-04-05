@@ -53,6 +53,26 @@ export async function getAllDiscountBundles(sessionId, page, limit) {
 }
 
 /**
+ * Retrieves all active discount bundles for a given session from the database
+ * 
+ * @param {string} sessionId - The session ID of the current user
+ * @returns {Promise<Array<Object>>} Array of active discount bundle objects, ordered by priority
+ */
+export async function getAllActiveDiscountBundles(sessionId) {
+  return await prisma.discountBundle.findMany({
+    where: {
+      store: {
+        sessionId
+      },
+      active: true,
+    },
+    orderBy: {
+      priority: 'asc'
+    }
+  });
+}
+
+/**
  * Retrieves a specific discount bundle from the database using session ID and bundle ID
  * 
  * @param {Object} params - The parameters object

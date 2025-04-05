@@ -1,5 +1,5 @@
-import prisma from "../db.server";
 import { simplifyDiscountData, isBarn2AppEmbedDisabled } from "../utils/utils";
+import { getStoreBySessionId, updateStoreBySessionId } from "../models/Store.server";
 
 /**
  * Service class for handling store-related operations
@@ -13,12 +13,16 @@ export class StoreService {
    */
   static async getStoreDetails(sessionId, params) {
     try {
-      return await prisma.store.findUnique({
-        where: {
-          sessionId
-        },
-        select: params
-      });
+      return await getStoreBySessionId(sessionId, params);
+    } catch (error) {
+      console.error('Error fetching store details:', error);
+      return null;
+    }
+  }
+  
+  static async updateStoreDetails(sessionId, data) {
+    try {
+      return await updateStoreBySessionId(sessionId, data);
     } catch (error) {
       console.error('Error fetching store details:', error);
       return null;
