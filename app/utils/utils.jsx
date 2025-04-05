@@ -485,3 +485,74 @@ export const getStoreActiveThemeGid = (storedata) => {
   const activeTheme = themes.find((theme) => theme.node.role === 'MAIN');
   return activeTheme ? activeTheme.node.id : null;
 }
+
+export const getThemeColorSchemes = async (data) => {
+  const coonfigJSON = parseThemeConfig(data);
+
+  // Function to recursively find scheme-related keys
+  const findSchemeKeys = (obj, path = '') => {
+    let results = [];
+    
+    for (const [key, value] of Object.entries(obj)) {
+      const currentPath = path ? `${path}.${key}` : key;
+      
+      if (key.startsWith('scheme') || key === 'color_schemes') {
+        results.push({ path: currentPath, value });
+      }
+      
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        results = results.concat(findSchemeKeys(value, currentPath));
+      }
+    }
+    
+    return results;
+  };
+
+  // Function to check if a string is a color code
+  const isColorCode = (str) => {
+    return typeof str === 'string' && (
+      str.startsWith('#') || 
+      str.startsWith('rgb') || 
+      str.startsWith('rgba')
+    );
+  };
+
+  // Function to recursively extract color values
+  const extractColors = (data, path = '') => {
+    let colors = {};
+
+    if (typeof data === 'object' && data !== null) {
+      if (Array.isArray(data)) {
+        data.forEach((item, index) => {
+          const childColors = extractColors(item, `${path}[${index}]`);
+          colors = { ...colors, ...childColors };
+        });
+      } else {
+        Object.entries(data).forEach(([key, value]) => {
+          const currentPath = path ? `${path}.${key}` : key;
+          if (isColorCode(value)) {
+            colors[currentPath] = value;
+          } else {
+            const childColors = extractColors(value, currentPath);
+            colors = { ...colors, ...childColors };
+          }
+        });
+      }
+    }
+
+    return colors;
+  };
+
+  const schemeResults = findSchemeKeys(coonfigJSON);
+  const colorSchemes = {};
+
+  schemeResults.forEach(({ path, value }) => {
+    const colors = extractColors(value, path);
+    Object.assign(colorSchemes, colors);
+  });
+
+  // console.log('colorSchemes');
+  console.log(colorSchemes);
+
+  return colorSchemes;
+};

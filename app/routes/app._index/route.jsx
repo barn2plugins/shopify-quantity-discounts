@@ -110,7 +110,7 @@ export default function Index() {
           ) }
     
           { bundles.length > 0 && (
-            <BlockStack>
+            <BlockStack gap={500}>
               { bundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
               <DiscountAnalytics analyticsData={analyticsData}/>
               <BlockStack gap="1000">
