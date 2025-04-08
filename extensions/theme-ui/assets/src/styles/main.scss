@@ -4,7 +4,6 @@
   --p-color-icon-success: rgb(41 132 90);
   --p-color-bg-surface-success: rgb(205 254 225);
   --p-color-icon-brand: rgba(26, 26, 26, 1);
-  --p-color-bg-fill-secondary: rgba(241, 241, 241, 1);
   --p-border-radius-100: 0.25rem;
   --p-border-radius-200: 0.5rem;
   --p-space-400: 1rem;
@@ -15,6 +14,7 @@
 }
 
 .barn2_discounts {
+  max-width: 490px;
   .barn2-db-main-title {
     display: flex;
     justify-content: center;
@@ -46,18 +46,17 @@
     span {
       font-size: 12px;
       text-align: center;
-      background: white;
       z-index: 1;
     }
   }
 
   .barn2-bulk-table-container {
     margin-top: 20px;
-    border-radius: 15px;
+    border-radius: var(--barn2-bundles-corner-radius, 15px);
     overflow: hidden;
     width: 100%;
     max-width: 600px;
-    border: 1px solid #0E54E1;
+    border: 1px solid var(--barn2-bundles-border-color, #0E54E1);
     background-color: white;
   }
 
@@ -66,10 +65,9 @@
     border-collapse: collapse;
     
     thead {
-      background-color: #0E54E1;
-      color: white;
-
       th {
+        background-color: var(--barn2-bundles-table-color, #0E54E1);
+        color: var(--barn2-bundles-header-text-color, #ffffff);
         padding: 5px;
         text-align: center;
         font-size: 14.55px;
@@ -82,7 +80,9 @@
         padding: 8px 10px;
         text-align: center;
         font-size: 14px;
-        border-bottom: 1px solid #0E54E1;
+        border-bottom: 1px solid var(--barn2-bundles-border-color, #0E54E1);
+        background-color: var(--barn2-bundles-background-color, #ffffff);
+        color: var(--barn2-bundles-text-color, #121212bf);
       }
     }
 
@@ -91,8 +91,8 @@
     }
 
     .discount-pill {
-      background-color: #E0F0FF;
-      color: #002E6A;
+      background-color: var(--barn2-bundles-label-color, #E0F0FF);
+      color: var(--barn2-bundles-label-text-color, #002E6A);
       border-radius: 20px;
       padding: 1px 15px;
       display: inline-block;
@@ -105,7 +105,7 @@
     margin-top: 20px;
 
     .barn2-discount-bundle {
-      border: 1px solid var(--p-color-border-inverse);
+      border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
       border-radius: var(--p-border-radius-100);
       padding: var(--p-space-800) var(--p-space-400) var(--p-space-600);
       display: flex;
@@ -127,7 +127,7 @@
         width: 10px;
         height: 10px;
         border-radius: 100px;
-        border: 1px solid var(--p-color-icon-brand);
+        border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
         display: inline-block;
       }
 
@@ -141,12 +141,14 @@
         line-height: 15px;
         font-weight: 550;
         margin-bottom: 5px;
+        color: var(--barn2-bundles-bundle-text-color, #303030);
       }
       .barn2-dbs-bundle-price,
       .barn2-dbs-regular-price,
       .barn2-dbs-text-block p {
         font-size: 10px;
         line-height: 13px;
+        color: var(--barn2-bundles-bundle-text-color, #303030);
       }
 
       .barn2-dbs-bottom {
@@ -155,25 +157,36 @@
       }
 
       &.selected {
-        background-color: var(--p-color-bg-fill-secondary);
+        background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
+
         .barn2-input-circle {
           border-width: 2px;
+          border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
         }
       }
 
       &.highlighted {
+        border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
 
         .barn2-highlighted-text {
           position: absolute;
-          background-color: var(--p-color-icon-brand);
-          color: white;
+          background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
+          color: var(--barn2-bundles-badge-text-color, #ffffff);
           top: 0;
           border-radius: 0 0 10px 10px;
           padding: 0px 5px;
           font-size: 9px;
-          width: 70px;
+          width: 79px;
           right: calc(50% - 35px);
           line-height: 2;
+        }
+
+        .barn2-dbs-bundle-title,
+        .barn2-dbs-price,
+        .barn2-dbs-bundle-price,
+        .barn2-dbs-regular-price,
+        .barn2-dbs-text-block p {
+          color: var(--barn2-bundles-highlighted-text-color, #303030);
         }
       }
     }

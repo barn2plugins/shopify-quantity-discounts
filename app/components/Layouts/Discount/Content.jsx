@@ -54,10 +54,12 @@ export default function Content({
             setFormState={setFormState}
             timezone={store?.ianaTimezone}
           />
-          <LayoutSection
-            formState={formState}
-            setFormState={setFormState}
-          />
+          { formState?.type === 'volume_bundle' && 
+            <LayoutSection
+              formState={formState}
+              setFormState={setFormState}
+            />
+          }
         </BlockStack>
       </Card>
 

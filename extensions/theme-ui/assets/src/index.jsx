@@ -13,7 +13,7 @@ if (barn2Block) {
   initializeApp(barn2Block);
 } else {
   // If block not found, look for quantity input
-  const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+  const quantityInput = document.querySelector('product-form.product-form');
   if (quantityInput) {
     const appContainer = document.createElement('div');
     appContainer.id = 'barn2_discounts';

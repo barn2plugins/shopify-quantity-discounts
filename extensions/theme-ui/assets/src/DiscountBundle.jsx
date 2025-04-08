@@ -4,6 +4,8 @@ import { currencyCodeToSymbol } from './utils'
 import VolumeBundle from "./components/VolumeBundle";
 import BulkPricing from "./components/BulkPricing";
 
+import { setCustomDesignStyles } from './utils'
+
 export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   const [currentVariant, setCurrentVariant] = useState(null);
   const [storeCurrency, setStoreCurrency] = useState('$');
@@ -78,6 +80,8 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     const storeCurrency = isInEditor ? window.b2ProductData.storeCurrency : window?.Shopify?.currency?.active;
     setStoreCurrency(currencyCodeToSymbol(storeCurrency));
 
+    setCustomDesignStyles(bundleData);
+
     // Hide quantity picker
     if (bundleData.type === 'volume_bundle') {
       hideQuantityPicker();
@@ -88,20 +92,26 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     return;
   }
 
-  return (
-    currentVariant !== null && bundleData.type === 'volume_bundle' ?
+  if (currentVariant !== null && bundleData.type === 'volume_bundle') {
+    return (
       <VolumeBundle 
         bundleData={bundleData}
         isInEditor={isInEditor} 
         currentVariant={currentVariant} 
         storeDetails={storeDetails}
       />
-      :
-      <BulkPricing 
+    )
+  }
+
+  if (currentVariant!== null && bundleData.type === 'bulk_pricing' && bundleData.previewEnabled === true ) {
+    return (
+      <BulkPricing
         bundleData={bundleData}
-        isInEditor={isInEditor} 
-        currentVariant={currentVariant} 
+        isInEditor={isInEditor}
+        currentVariant={currentVariant}
         storeDetails={storeDetails}
+        storeCurrency={storeCurrency}
       />
-  )
+    )
+  }
 }

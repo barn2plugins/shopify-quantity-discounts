@@ -64,7 +64,9 @@ export default function BulkPricing({bundleData, isInEditor, currentVariant, sto
     <div className="barn2-bulk-table-wrapper">
       { bundleData.previewEnabled && (
         <>
-          <div className="barn2-db-main-title"><span>{previewOptions?.title}</span></div>
+          { previewOptions?.title && 
+            <div className="barn2-db-main-title"><span>{previewOptions?.title}</span></div> 
+          }
           {previewOptions?.description &&
             <div className="barn2-db-main-description">
               <span>{previewOptions?.description}</span>

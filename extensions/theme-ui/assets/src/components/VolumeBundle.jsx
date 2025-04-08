@@ -120,7 +120,9 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
     <div className="barn2-discount-bundles">
       { bundleData.previewEnabled && (
         <>
-          <div className="barn2-db-main-title"><span>{previewOptions?.title}</span></div>
+          { previewOptions?.title && 
+            <div className="barn2-db-main-title"><span>{previewOptions?.title}</span></div> 
+          }
           {previewOptions?.description &&
             <div className="barn2-db-main-description">
               <span>{previewOptions?.description}</span>

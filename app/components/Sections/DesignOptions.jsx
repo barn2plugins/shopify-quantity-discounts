@@ -48,7 +48,121 @@ export default function DesignOptions({ formState, setFormState }) {
           />
         </BlockStack>
 
-        {showCustomDesignOptions && (
+        { showCustomDesignOptions && formState?.type === 'volume_bundle' &&
+          <>
+            <Grid>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Text color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.bundleTextColor} 
+                      field="bundleTextColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Highlighted text color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.highlightedTextColor} 
+                      field="highlightedTextColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Border color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.bundleBorderColor} 
+                      field="bundleBorderColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Highlighted border color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.highlightedBorderColor} 
+                      field="highlightedBorderColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Badge color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.bundleBadgeColor} 
+                      field="bundleBadgeColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Badge text color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.badgeTextColor} 
+                      field="badgeTextColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Highlighted color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.highlightedColor} 
+                      field="highlightedColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+            </Grid>
+            <Grid>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Corner radius</Text>
+                    <ChoiceList
+                      choices={[
+                        {label: 'Slightly rounded', value: 'slightlyRounded'},
+                        {label: 'Fully rounded', value: 'fullyRounded'},
+                        {label: 'Square', value: 'square'},
+                      ]}
+                      selected={[formState?.customDesigns?.cornerRadius || 'fullyRounded']}
+                      onChange={(value) => {
+                        setFormState({...formState, customDesigns: {...formState.customDesigns, cornerRadius: value[0]}});
+                      }}
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+            </Grid>
+          </>
+        }
+
+        {showCustomDesignOptions && formState?.type === 'bulk_pricing' && (
           <>
             <Grid>
               <Grid.Cell columnSpan={{xs: 6}}>
@@ -125,6 +239,31 @@ export default function DesignOptions({ formState, setFormState }) {
                   </BlockStack>
                 </BlockStack>
               </Grid.Cell>
+
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Badge</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.badgeColor} 
+                      field="badgeColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{xs: 6}}>
+                <BlockStack gap={400}>
+                  <BlockStack gap={100}>
+                    <Text as="p" variant="bodyLg" fontWeight="medium">Border color</Text>
+                    <ColorField 
+                      onChange={updateDesignColorField} 
+                      value={formState?.customDesigns?.borderColor} 
+                      field="borderColor" 
+                    />
+                  </BlockStack>
+                </BlockStack>
+              </Grid.Cell>
              
               <Grid.Cell columnSpan={{xs: 6}}>
                 <BlockStack gap={400}>
@@ -138,6 +277,7 @@ export default function DesignOptions({ formState, setFormState }) {
                   </BlockStack>
                 </BlockStack>
               </Grid.Cell>
+
               <Grid.Cell columnSpan={{xs: 6}}>
                 <BlockStack gap={400}>
                   <BlockStack gap={100}>
@@ -146,19 +286,6 @@ export default function DesignOptions({ formState, setFormState }) {
                       onChange={updateDesignColorField} 
                       value={formState?.customDesigns?.cartNoticeTextColor} 
                       field="cartNoticeTextColor" 
-                    />
-                  </BlockStack>
-                </BlockStack>
-              </Grid.Cell>
-         
-              <Grid.Cell columnSpan={{xs: 6}}>
-                <BlockStack gap={400}>
-                  <BlockStack gap={100}>
-                    <Text as="p" variant="bodyLg" fontWeight="medium">Badge</Text>
-                    <ColorField 
-                      onChange={updateDesignColorField} 
-                      value={formState?.customDesigns?.badgeColor} 
-                      field="badgeColor" 
                     />
                   </BlockStack>
                 </BlockStack>
@@ -175,7 +302,7 @@ export default function DesignOptions({ formState, setFormState }) {
                         {label: 'Fully rounded', value: 'fullyRounded'},
                         {label: 'Square', value: 'square'},
                       ]}
-                      selected={[formState?.customDesigns?.cornerRadius || 'square']}
+                      selected={[formState?.customDesigns?.cornerRadius || 'fullyRounded']}
                       onChange={(value) => {
                         setFormState({...formState, customDesigns: {...formState.customDesigns, cornerRadius: value[0]}});
                       }}

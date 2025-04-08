@@ -52,7 +52,15 @@ export class BundleService {
         cartNoticeBackgroundColor: '#303030',
         cartNoticeTextColor: '#FFFFFF',
         badgeColor: '#FFA647',
-        cornerRadius: 'square'
+        borderColor: '#0E54E1',
+        cornerRadius: 'square',
+        bundleTextColor: '#303030',
+        highlightedTextColor: '#303030',
+        bundleBorderColor: '#616161',
+        highlightedBorderColor: '#616161',
+        bundleBadgeColor: '#1a1a1a',
+        badgeTextColor: '#ffffff',
+        highlightedColor: '#f1f1f1',
       },
       previewOptions: {
         title: '',
