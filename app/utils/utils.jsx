@@ -366,6 +366,9 @@ export const parseBundleObject = async ( {discountBundle} ) => {
   if (discountBundle.previewOptions) {
     discountBundle.previewOptions = JSON.parse(discountBundle.previewOptions);
   }
+  if (discountBundle.pricingTiers === '') {
+    discountBundle.pricingTiers = [];
+  }
 
   return discountBundle;
 }
@@ -555,4 +558,51 @@ export const getThemeColorSchemes = async (data) => {
   console.log(colorSchemes);
 
   return colorSchemes;
+};
+
+
+/**
+ * Applies custom design styles to the document root element using CSS variables
+ * 
+ * @param {Object} bundleData - The bundle configuration object
+ * @returns {void}
+ */
+export const setCustomDesignStyles = (bundleData) => {
+  if (!bundleData.designOptions || bundleData.designOptions !== 'custom_design') return;
+  const customDesigns = bundleData.customDesigns;
+  
+  document.documentElement.style.setProperty('--barn2-bundles-bundle-text-color', customDesigns.bundleTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-highlighted-text-color', customDesigns.highlightedTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-bundle-border-color', customDesigns.bundleBorderColor);
+  document.documentElement.style.setProperty('--barn2-bundles-highlighted-border-color', customDesigns.highlightedBorderColor);
+  document.documentElement.style.setProperty('--barn2-bundles-bundle-badge-color', customDesigns.bundleBadgeColor);
+  document.documentElement.style.setProperty('--barn2-bundles-badge-text-color', customDesigns.badgeTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-highlighted-color', customDesigns.highlightedColor);
+
+  document.documentElement.style.setProperty('--barn2-bundles-table-color', customDesigns.tableColor);
+  document.documentElement.style.setProperty('--barn2-bundles-header-text-color', customDesigns.headerTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-background-color', customDesigns.backgroundColor);
+  document.documentElement.style.setProperty('--barn2-bundles-text-color', customDesigns.textColor);
+  document.documentElement.style.setProperty('--barn2-bundles-label-color', customDesigns.labelColor);
+  document.documentElement.style.setProperty('--barn2-bundles-label-text-color', customDesigns.lebelTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-cart-notice-bg-color', customDesigns.cartNoticeBackgroundColor);
+  document.documentElement.style.setProperty('--barn2-bundles-cart-notice-text-color', customDesigns.cartNoticeTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-badge-color', customDesigns.badgeColor);
+  document.documentElement.style.setProperty('--barn2-bundles-border-color', customDesigns.borderColor);
+
+  // Handle corner radius
+  let borderRadius = '0';
+  switch (customDesigns.cornerRadius) {
+    case 'slightlyRounded':
+      borderRadius = '8px';
+      break;
+    case 'fullyRounded':
+      borderRadius = '15px';
+      break;
+    case 'square':
+    default:
+      borderRadius = '0';
+  }
+
+  document.documentElement.style.setProperty('--barn2-bundles-corner-radius', borderRadius);
 };

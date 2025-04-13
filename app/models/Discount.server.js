@@ -95,18 +95,43 @@ export async function getDiscountBundleById({storeId, bundleId}) {
   });
 }
 
+/**
+ * Creates a new discount bundle in the database
+ * 
+ * @param {Object} params - The parameters object
+ * @param {string} params.storeId - The ID of the store
+ * @param {string} params.shopifyDiscountGID - The Shopify discount GID
+ * @param {Object} params.data - The discount bundle data
+ * @param {string} params.data.name - The name of the discount
+ * @param {string} params.data.type - The type of discount
+ * @param {string} params.data.whichProducts - Product selection type
+ * @param {string} params.data.layout - Layout configuration
+ * @param {boolean} params.data.previewEnabled - Whether preview is enabled
+ * @param {boolean} params.data.active - Whether the discount is active
+ * @param {string} params.data.selectedProducts - JSON string of selected products
+ * @param {string} params.data.selectedCollections - JSON string of selected collections
+ * @param {string} params.data.excludedProducts - JSON string of excluded products
+ * @param {string} params.data.excludedCollections - JSON string of excluded collections
+ * @param {string} params.data.volumeBundles - JSON string of volume bundle settings
+ * @param {string} params.data.pricingTiers - JSON string of pricing tier settings
+ * @param {string} params.data.discountCalculation - Discount calculation method
+ * @param {string} params.data.activeDates - Active dates configuration
+ * @param {string} params.data.specificDates - Specific dates configuration
+ * @param {string} params.data.storeDisplay - Store display settings
+ * @param {string} params.data.designOptions - Design options configuration
+ * @param {string} params.data.customDesigns - Custom design settings
+ * @param {string} params.data.previewOptions - Preview options settings
+ * @returns {Promise<Object>} The created discount bundle object
+ */
 export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) {
-  
-  const bundleCount = await prisma.discountBundle.count({
-    where: {
-      storeId: storeId
-    }
-  });
+   // Get the highest priority discount
+  const latestDiscount = await getLatestDiscount(storeId);
+  const newPriority = latestDiscount ? latestDiscount.priority + 1 : 1;
 
   return await prisma.discountBundle.create({
     data: {
       store: { connect: { id: storeId } },
-      priority: bundleCount + 1,
+      priority: newPriority,
       name: data.name,
       type: data.type,
       whichProducts: data.whichProducts,
@@ -258,6 +283,23 @@ export async function finyManyByNames({nameOfDiscountApplications, sessionId}) {
       store: {
         sessionId: sessionId
       }
+    }
+  });
+}
+
+/**
+ * Retrieves the discount bundle with the highest priority for a given store
+ * 
+ * @param {string} storeId - The ID of the store
+ * @returns {Promise<Object|null>} The discount bundle with highest priority or null if no bundles exist
+ */
+const getLatestDiscount = async (storeId) => {
+  return await prisma.discountBundle.findFirst({
+    where: {
+      storeId: storeId
+    },
+    orderBy: {
+      priority: 'desc'
     }
   });
 }

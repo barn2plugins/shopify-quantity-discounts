@@ -239,7 +239,7 @@
   overflow: hidden;
   width: 100%;
   max-width: 600px;
-  border: 1px solid #0E54E1;
+  border: 1px solid var(--barn2-bundles-border-color, #0E54E1);
   background-color: white;
 }
 
@@ -248,10 +248,9 @@
   border-collapse: collapse;
   
   thead {
-    background-color: #0E54E1;
-    color: white;
-
     th {
+      background-color: var(--barn2-bundles-table-color, #0E54E1);
+      color: var(--barn2-bundles-header-text-color, #ffffff);
       padding: 5px;
       text-align: center;
       font-size: 14.55px;
@@ -264,7 +263,9 @@
       padding: 8px 10px;
       text-align: center;
       font-size: 12px;
-      border-bottom: 1px solid #0E54E1;
+      border-bottom: 1px solid var(--barn2-bundles-border-color, #0E54E1);
+      background-color: var(--barn2-bundles-background-color, #ffffff);
+      color: var(--barn2-bundles-text-color, #121212bf);
     }
   }
 
@@ -273,8 +274,8 @@
   }
 
   .discount-pill {
-    background-color: #E0F0FF;
-    color: #002E6A;
+    background-color: var(--barn2-bundles-label-color, #E0F0FF);
+    color: var(--barn2-bundles-label-text-color, #002E6A);
     border-radius: 20px;
     padding: 1px 15px;
     display: inline-block;
@@ -294,10 +295,23 @@
     cursor: pointer;
     user-select: none;
 
-    .bundle-title {
+    .bundle-title,
+    .bundle-discounted-price {
       font-size: var(--p-font-size-325);
       line-height: 15px;
       font-weight: var(--p-font-weight-medium);
+      color: var(--barn2-bundles-bundle-text-color, #303030);
+    }
+
+    .bundle-description,
+    .bundle-regular-price {
+      font-size: var(--p-font-size-275);
+      line-height: 12px;
+      color: var(--barn2-bundles-bundle-text-color, #303030);
+    }
+
+    .bundle-regular-price {
+      text-decoration: line-through;
     }
 
     .bundle-subtitle {
@@ -322,21 +336,32 @@
 
 
     &.selected {
-      background-color: var(--p-color-bg-surface-success);
+      background-color: var(--barn2-bundles-highlighted-color, #cdfee1);
       border-color: var(--p-color-icon-success);
 
       .input-field {
         .input-circle {
-          border-color: var(--p-color-icon-success);
+          border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
           border-width: 2px;
         }
       }
     }
 
+    &.highlighted {
+      background-color: var(--barn2-bundles-highlighted-color, #cdfee1);
+
+      .bundle-title,
+      .bundle-discounted-price,
+      .bundle-description,
+      .bundle-regular-price {
+        color: var(--barn2-bundles-highlighted-text-color, #303030);
+      }
+    }
+
     .highlightedText {
       position: absolute;
-      background-color: var(--p-color-icon-success);
-      color: white;
+      background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
+      color: var(--barn2-bundles-badge-text-color, #ffffff);
       top: 0;
       border-radius: 0 0 10px 10px;
       padding: 0px 5px;
@@ -542,4 +567,8 @@
       border-radius: 10px;
     }
   }
+}
+
+.barn2-documentation-link {
+  color: inherit;
 }

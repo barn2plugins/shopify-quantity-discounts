@@ -5,27 +5,11 @@ import classNames from 'classnames/dedupe';
 
 export default function BulkPricingPreview({ formState, pricingTiers, store }) {
   const [currencyCode, setCurrencyCode] = useState('$');
-  const [selectedBundle, setSelectedBundle] = useState(0);
 
   const demoProductPrice = 50;
 
   const prefixCurrency = (value) => {
     return `${currencyCode}${value}`;
-  }
-
-  const displayCalculatedPrice = ( bundle ) => {
-    if ( bundle.discount_type === 'amount' ) {
-      const price = bundle.quantity * demoProductPrice - bundle.discount
-      return prefixCurrency(price);
-    } else if ( bundle.discount_type === 'percentage' ) {
-      const totalPrice = bundle.quantity * demoProductPrice;
-      const discountAmount = (totalPrice * bundle.discount) / 100;
-      return prefixCurrency(totalPrice - discountAmount);
-    }
-  }
-
-  const displayOriginalPrice = ( bundle ) => {
-    return prefixCurrency(bundle.quantity * demoProductPrice)
   }
   
   /**
@@ -104,7 +88,7 @@ export default function BulkPricingPreview({ formState, pricingTiers, store }) {
     return Math.max(0, finalPrice.toFixed(2));
   }
 
-  if ( pricingTiers.length <= 0 || formState.previewEnabled === false ) {
+  if ( pricingTiers && pricingTiers.length <= 0 || formState.previewEnabled === false ) {
     return null;
   }
   

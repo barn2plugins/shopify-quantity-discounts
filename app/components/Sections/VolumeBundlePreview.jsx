@@ -5,7 +5,7 @@ import classNames from 'classnames/dedupe';
 
 export default function VolumeBundlePreview({ formState, volumeBundles, store }) {
   const [currencyCode, setCurrencyCode] = useState('$');
-  const [selectedBundle, setSelectedBundle] = useState(0);
+  const [selectedBundle, setSelectedBundle] = useState(null);
 
   const demoProductPrice = 50;
 
@@ -39,13 +39,13 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <Text as='span' variant='bodyXs'>Save {currencyCode}{bundle.discount}</Text>
+      outputText = <span>Save {currencyCode}{bundle.discount}</span>
     } else {
-      outputText = <Text as='span' variant='bodyXs'>Save {bundle.discount}%</Text>
+      outputText = <span>Save {bundle.discount}%</span>
     }
 
     if (!bundle.discount) {
-      outputText = <Text as='span' variant='bodyXs'>Regular price</Text>
+      outputText = <span>Regular price</span>
     }
 
     return outputText;
@@ -54,6 +54,16 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
   useEffect(() => {
     setCurrencyCode(currencyCodeToSymbol(store.currencyCode));
   }, [formState.currencyCode])
+
+
+  useEffect(() => {
+    // Find the highlighted bundle
+    const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
+    if (highlightedBundle) {
+      const bundleIndex = volumeBundles.indexOf(highlightedBundle);
+      setSelectedBundle(bundleIndex);
+    }
+  }, [volumeBundles]);
 
   if ( volumeBundles.length <= 0 || formState.previewEnabled === false ) {
     return null;
@@ -101,13 +111,17 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                     alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
                   }}>
                     <h4 className='bundle-title'>{bundle.description}</h4>
-                    { formState.previewOptions?.amountSaved && <Text as='span' variant='bodyXs'>{ discountText(bundle) }</Text> }
+                    { formState.previewOptions?.amountSaved && <p className="bundle-description">{ discountText(bundle) }</p> }
                   </BlockStack>
                 </BlockStack>
 
-                <BlockStack >
-                  <Text variant='bodyLg' fontWeight='medium'>{displayCalculatedPrice(bundle)}</Text>
-                  { formState.previewOptions?.showOriginalPrice && <Text as='span' variant='bodyXs' textDecorationLine="line-through">{displayOriginalPrice(bundle)}</Text> }
+                <BlockStack style={{
+                    gap: "5px",
+                    flexDirection: 'column',
+                    alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
+                  }}>
+                  <h4 className='bundle-discounted-price'>{displayCalculatedPrice(bundle)}</h4>
+                  { formState.previewOptions?.showOriginalPrice && <p className="bundle-regular-price">{displayOriginalPrice(bundle)}</p> }
                 </BlockStack>
               </div>
             ) })}
