@@ -5,28 +5,22 @@ import { BlockStack, Text, ChoiceList } from "@shopify/polaris";
 export default function ActiveDatesSections({ formState, setFormState, timezone }) {
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [selectedDates, setSelectedDates] = useState(() => {
-    const now = new Date();
-    const userDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
-    const endDate = new Date(userDate);
-    endDate.setDate(userDate.getDate() + 6);
-    
-    return {
-      start: userDate,
-      end: endDate
-    };
-  });
-
-  useEffect(() => {
-    setFormState({
-      ...formState,
-      specificDates: JSON.stringify(selectedDates)
-    })    
-  }, [selectedDates])
+  const [selectedDates, setSelectedDates] = useState({});
 
   useEffect(() => {
     if (formState.activeDates === 'specific_dates') {
       setDatePickerVisible(true);
+
+      if (formState?.specificDates) {
+        const dates = JSON.parse(formState.specificDates);
+        const startDate = new Date(dates.start);
+        const endDate = new Date(dates.end);
+    
+        setSelectedDates({
+          start: startDate,
+          end: endDate
+        });
+      }
     }
   }, [])
 

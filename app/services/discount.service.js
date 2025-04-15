@@ -60,7 +60,7 @@ export class DiscountService {
             title: `Barn2 Bundles & Bulk Discounts - ${fetcherData.name}`,
             functionId: discountFunctionId,
             startsAt: JSON.parse(fetcherData.specificDates).start,
-            endsAt: JSON.parse(fetcherData.specificDates).end,
+            endsAt: fetcherData.activeDates === 'specific_dates' ? JSON.parse(fetcherData.specificDates).end : null,
             combinesWith: {
               orderDiscounts: false,
               productDiscounts: false,

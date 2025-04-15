@@ -6,8 +6,8 @@ import {
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
-import { useLoaderData, useFetcher } from "@remix-run/react";
-import { useAppBridge } from "@shopify/app-bridge-react";
+import { useLoaderData, useFetcher, useNavigate } from "@remix-run/react";
+import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 
 // Internal services and components
 import { authenticate } from "../shopify.server.js"
@@ -22,7 +22,7 @@ import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 
 import DiscountModals from "../components/Modals/DiscountModals.jsx";
 
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject } from "../utils/utils.jsx";
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject, editPageHasChanges } from "../utils/utils.jsx";
 
 export const loader = async ({ request, params }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -119,6 +119,7 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
+  const navigate = useNavigate();
   const { discountBundle, appEmbedDisabled, store } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
@@ -129,19 +130,44 @@ export default function DiscountPage() {
   const [ excludedCollections, setExcludedCollections ] = useState([]);
   const [ volumeBundles, setVolumeBundles ] = useState([]);
   const [ pricingTiers, setPricingTiers ] = useState([]);
+  const [ pageLoaded, setPageLoaded ] = useState(false);
+  const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
 
   const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
 
-  useEffect(() => {
-    setVolumeBundles(discountBundle.volumeBundles ? JSON.parse(discountBundle.volumeBundles) : getDefaultBundleDiscountTypes())
-    setPricingTiers(discountBundle.pricingTiers ? JSON.parse(discountBundle.pricingTiers) : getDefaultPricingTiers())
-    setSelectedProducts(JSON.parse(discountBundle.selectedProducts))
-    setSelectedCollections(JSON.parse(discountBundle.selectedCollections))
-    setExcludedProducts(JSON.parse(discountBundle.excludedProducts))
-    setExcludedCollections(JSON.parse(discountBundle.excludedCollections))
-  }, []);
+  /**
+   * Handles the save action for the discount bundle
+   * Triggers the submission of form data to update the discount
+   * 
+   * @function
+   * @returns {void}
+   * @fires discountBundleAction
+   */
+  const handleSave = () => {
+    discountBundleAction();
+  };
 
-  // On clicking the update discount button, set the form state to active and submit the form
+  /**
+   * Handles the discard action for unsaved changes
+   * Resets the unsaved changes state and hides the save bar
+   * 
+   * @function
+   * @returns {void}
+   */
+  const handleDiscard = () => {
+    setHasUnsavedChanges(false);
+    shopify.saveBar.hide('edit-discount-save-bar');
+  };
+
+  /**
+   * Submits the discount bundle form data to update the discount
+   * Prepares form data by combining form state with selected products, collections,
+   * and other configuration options. All array/object data is stringified before submission.
+   * 
+   * @function
+   * @returns {void}
+   * @fires fetcher.submit
+   */
   const discountBundleAction = () => {
     const formData = {
       ...formState,
@@ -151,8 +177,8 @@ export default function DiscountPage() {
       selectedCollections: JSON.stringify(selectedCollections),
       excludedProducts: JSON.stringify(excludedProducts),
       excludedCollections: JSON.stringify(excludedCollections),
-      volumeBundles: formState.type === 'volume_bundle' ? JSON.stringify(volumeBundles) : '',
-      pricingTiers: formState.type === 'bulk_pricing' ? JSON.stringify(pricingTiers) : '',
+      volumeBundles: formState.type === 'volume_bundle' ? JSON.stringify(volumeBundles) : JSON.stringify([]),
+      pricingTiers: formState.type === 'bulk_pricing' ? JSON.stringify(pricingTiers) : JSON.stringify([]),
       storeDisplay: formState.storeDisplay ? JSON.stringify(formState.storeDisplay) : '',
       customDesigns: formState.customDesigns ? JSON.stringify(formState.customDesigns) : '',
       previewOptions: formState.previewOptions ? JSON.stringify(formState.previewOptions) : ''
@@ -161,20 +187,76 @@ export default function DiscountPage() {
     fetcher.submit(formData, { method: "POST" })
   };
 
+  /**
+   * Handles the back navigation action when clicking the back button
+   * If there are unsaved changes, shows a confirmation dialog
+   * Otherwise, navigates back to the app home page
+   * 
+   * @function
+   * @returns {void}
+   */
+  const handleBackAction = () => {
+    if (hasUnsavedChanges) {
+      // Show the save bar if there are unsaved changes
+      shopify.saveBar.leaveConfirmation('edit-discount-save-bar');
+      return;
+    }
+    navigate('/app');
+  };
+
+  /**
+   * Effect to set the initial state of the form
+   */
+  useEffect(() => {
+    setPricingTiers(discountBundle.pricingTiers ? JSON.parse(discountBundle.pricingTiers) : getDefaultPricingTiers())
+    setVolumeBundles(discountBundle.volumeBundles ? JSON.parse(discountBundle.volumeBundles) : getDefaultBundleDiscountTypes())
+    setSelectedProducts(JSON.parse(discountBundle.selectedProducts))
+    setSelectedCollections(JSON.parse(discountBundle.selectedCollections))
+    setExcludedProducts(JSON.parse(discountBundle.excludedProducts))
+    setExcludedCollections(JSON.parse(discountBundle.excludedCollections))
+    setPageLoaded(true);
+  }, []);
+
+  /**
+   * Effect to show the save bar when there are unsaved changes
+   */
+  useEffect(() => {
+    if (!pageLoaded) return;
+    
+    const hasChanges = editPageHasChanges({
+      formState, 
+      selectedProducts, 
+      selectedCollections, 
+      excludedProducts, 
+      excludedCollections, 
+      volumeBundles, 
+      pricingTiers, 
+      discountBundle
+    });
+
+    setHasUnsavedChanges(hasChanges);
+
+    hasChanges ? shopify.saveBar.show('edit-discount-save-bar') : shopify.saveBar.hide('edit-discount-save-bar');
+
+  }, [formState, selectedProducts, selectedCollections, excludedProducts, excludedCollections, volumeBundles, pricingTiers]);
+
+  useEffect(() => {
+    if (fetcher.data?.success === true) {
+      setHasUnsavedChanges(false);
+      shopify.saveBar.hide('edit-discount-save-bar');
+    }
+  }, [fetcher.data]);
+
   return (
     <div className="barn2-discounts-page-wrapper">
+      <SaveBar id="edit-discount-save-bar">
+        <button variant="primary" onClick={handleSave} disabled={isLoading} loading={isLoading ? "" : undefined}></button>
+        <button onClick={handleDiscard}></button>
+      </SaveBar>
+
       <Page
-        backAction={{content: 'Home', url: '/app'}}
+        backAction={{content: 'Home', onAction: handleBackAction}}
         title='Update discount'
-        primaryAction={
-          <Button 
-            variant="primary"
-            loading={isLoading}
-            onClick={discountBundleAction}
-          >
-            Update
-          </Button>
-        }
       >
         <BlockStack gap="500">
           { isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId} />}
@@ -219,7 +301,6 @@ export default function DiscountPage() {
         setExcludedCollections={setExcludedCollections}
         fetcher={fetcher}
       />
-
     </div>
   );
 }

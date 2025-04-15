@@ -88,7 +88,7 @@ export default function BulkPricingPreview({ formState, pricingTiers, store }) {
     return Math.max(0, finalPrice.toFixed(2));
   }
 
-  if ( pricingTiers && pricingTiers.length <= 0 || formState.previewEnabled === false ) {
+  if ( pricingTiers === undefined || pricingTiers && pricingTiers?.length <= 0 || formState.previewEnabled === false ) {
     return null;
   }
   

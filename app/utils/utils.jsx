@@ -366,10 +366,7 @@ export const parseBundleObject = async ( {discountBundle} ) => {
   if (discountBundle.previewOptions) {
     discountBundle.previewOptions = JSON.parse(discountBundle.previewOptions);
   }
-  if (discountBundle.pricingTiers === '') {
-    discountBundle.pricingTiers = [];
-  }
-
+  
   return discountBundle;
 }
 
@@ -606,3 +603,39 @@ export const setCustomDesignStyles = (bundleData) => {
 
   document.documentElement.style.setProperty('--barn2-bundles-corner-radius', borderRadius);
 };
+
+export const editPageHasChanges = ({
+  formState, 
+  selectedProducts, 
+  selectedCollections, 
+  excludedProducts, 
+  excludedCollections, 
+  volumeBundles, 
+  pricingTiers, 
+  discountBundle
+}) => {
+  const changes = {
+    formState: JSON.stringify(formState) !== JSON.stringify(discountBundle),
+    products: JSON.stringify(selectedProducts) !== discountBundle.selectedProducts,
+    collections: JSON.stringify(selectedCollections) !== discountBundle.selectedCollections,
+    excludedProducts: JSON.stringify(excludedProducts) !== discountBundle.excludedProducts,
+    excludedCollections: JSON.stringify(excludedCollections) !== discountBundle.excludedCollections,
+    volumeBundles: JSON.stringify(volumeBundles) !== discountBundle.volumeBundles,
+    pricingTiers: JSON.stringify(pricingTiers) !== discountBundle.pricingTiers
+  };
+
+  const hasChanges = Object.values(changes).some(changed => changed);
+  return hasChanges;
+}
+
+export const getSpecificDates = (timezone) => {
+  const now = new Date();
+  const userDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+  const endDate = new Date(userDate);
+  endDate.setDate(userDate.getDate() + 6);
+  
+  return {
+    start: userDate,
+    end: endDate
+  };
+}

@@ -1,6 +1,6 @@
 import { StoreService } from './store.service';
 import { DiscountService } from './discount.service';
-import { parseObjectId } from '../utils/utils';
+import { parseObjectId, getSpecificDates } from '../utils/utils';
 import { 
   createDiscountBundle, 
   getAllDiscountBundles, 
@@ -22,7 +22,7 @@ export class BundleService {
    * @param {string} sessionId - Session ID for the current user
    * @returns {Promise<Object>} Default bundle configuration object
    */
-  static async getDefaultBundle(sessionId) {
+  static async getDefaultBundle({sessionId, timezone}) {
     const storeDetails = await StoreService.getStoreDetails(sessionId, {
       currency: true,
       ianaTimezone: true
@@ -40,6 +40,7 @@ export class BundleService {
       currencyCode: currency || '$',
       discountCalculation: 'individual_products',
       activeDates: 'always_available',
+      specificDates: JSON.stringify(getSpecificDates(timezone)),
       timezone: ianaTimezone || 'UTC',
       designOptions: 'theme_default',
       customDesigns: {

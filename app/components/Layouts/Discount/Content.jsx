@@ -66,13 +66,14 @@ export default function Content({
       { formState.type === 'volume_bundle' && (
         <Card>
           <VolumeBundleSection 
+            formState={formState}
             currencyCode={store?.currencyCode}
             volumeBundles={volumeBundles}
             setVolumeBundles={setVolumeBundles}
           />
         </Card>
       ) }
-      
+
       { formState.type === 'bulk_pricing' && (
         <BulkPricingTiers 
           formState={formState}

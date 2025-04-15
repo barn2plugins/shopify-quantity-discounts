@@ -106,7 +106,7 @@
 
     .barn2-discount-bundle {
       border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
-      border-radius: var(--p-border-radius-100);
+      border-radius: var(--barn2-bundles-corner-radius, 7px);
       padding: var(--p-space-800) var(--p-space-400) var(--p-space-600);
       display: flex;
       gap: var(--p-space-500);
@@ -161,7 +161,7 @@
 
         .barn2-input-circle {
           border-width: 2px;
-          border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
+          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
         }
       }
 

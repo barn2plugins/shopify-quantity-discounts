@@ -15,11 +15,10 @@ import {
   Box
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 // Internal components
-import { currencyCodeToSymbol } from '../../utils/utils';
-import DateRangePicker from '../Fields/DateRangePicker';
+import { currencyCodeToSymbol, getDefaultPricingTiers } from '../../utils/utils';
 
 export default function BulkPricingTiers({ 
   formState,
@@ -89,6 +88,15 @@ export default function BulkPricingTiers({
     };
     setPricingTiers([...pricingTiers, newTier]);
   };
+
+  /**
+   * Effect to set the initial state of the form
+   */
+  useEffect(() => {
+    if (typeof formState?.pricingTiers === 'string' && formState.pricingTiers === '[]') {
+      setPricingTiers(getDefaultPricingTiers());
+    }
+  }, []);
 
   if (pricingTiers.length <= 0) {
     return null;

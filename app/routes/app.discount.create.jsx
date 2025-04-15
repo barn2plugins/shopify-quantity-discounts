@@ -31,7 +31,7 @@ export const loader = async ({ request }) => {
     moneyFormat: true,
   });
 
-  const defaultBundle = await BundleService.getDefaultBundle(session.id);
+  const defaultBundle = await BundleService.getDefaultBundle({sessionId: session.id, timezone: store.ianaTimezone});
 
   return {
     defaultBundle,
@@ -187,6 +187,7 @@ export default function DiscountPage() {
               formState={formState}
               setFormState={setFormState}
               volumeBundles={volumeBundles}
+              pricingTiers={pricingTiers}
               store={store}
             />
           </div>

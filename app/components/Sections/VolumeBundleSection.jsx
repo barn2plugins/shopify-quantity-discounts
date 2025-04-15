@@ -11,11 +11,14 @@ import {
   Box
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon } from '@shopify/polaris-icons';
+import { useEffect } from 'react';
+import { getDefaultBundleDiscountTypes } from '../../utils/utils';
 
 // Internal components
 import { currencyCodeToSymbol } from '../../utils/utils';
 
-export default function VolumeBundleSection({ 
+export default function VolumeBundleSection({
+  formState,
   currencyCode, 
   volumeBundles,
   setVolumeBundles,
@@ -33,7 +36,6 @@ export default function VolumeBundleSection({
       value: 'amount',
     }
   ];
-
   
   /**
    * Updates a specific field of a volume bundle at the given index

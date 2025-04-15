@@ -285,7 +285,7 @@
 .bundles-list {
   .bundle-single {
     border: 1px solid var(--p-color-border-inverse);
-    border-radius: var(--p-border-radius-200);
+    border-radius: var(--barn2-bundles-corner-radius, 7px);
     padding: var(--p-space-600) var(--p-space-400) var(--p-space-400);
     display: flex;
     gap: var(--p-space-500);
