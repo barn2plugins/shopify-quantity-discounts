@@ -85,6 +85,7 @@ export default function Index() {
   const fetcher = useFetcher();
   const { analyticsData, discountBundles, appEmbedDisabled, bundlesDiscountsExtensionId, pagination } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
+  const [ displaySupportBanner, setDisplaySupportBanner ] = useState(true);
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
   const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
@@ -115,7 +116,7 @@ export default function Index() {
               <DiscountAnalytics analyticsData={analyticsData}/>
               <BlockStack gap="1000">
                 <DiscountBundlesTable fetcher={fetcher} discountBundles={bundles} pagination={bundlesPagination} />
-                <SupportBlock/>
+                { displaySupportBanner && <SupportBlock setDisplaySupportBanner={setDisplaySupportBanner} /> }
               </BlockStack>
             </BlockStack>
           ) }

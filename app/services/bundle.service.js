@@ -5,7 +5,8 @@ import {
   createDiscountBundle, 
   getAllDiscountBundles, 
   getAllActiveDiscountBundles,
-  getDiscountBundleById, 
+  getBundleByDiscountId, 
+  getBundleByBundleId,
   updateDiscountBundleById, 
   duplicateDiscountBundleById,
   finyManyByNames 
@@ -147,7 +148,32 @@ export class BundleService {
    */
   static async getBundle({storeId, bundleId}) {
     try {
-      return await getDiscountBundleById({storeId, bundleId});
+      return await getBundleByDiscountId({storeId, bundleId});
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        error: error.message,
+        displayError: 'Failed to get bundle'
+      }
+    }
+  }
+
+  /**
+   * Retrieves a specific discount bundle from the database
+   * 
+   * @param {Object} params - The parameters object
+   * @param {string} params.sessionId - Session ID for the current user
+   * @param {string} params.bundleId - ID of the bundle to retrieve
+   * @returns {Promise<Object>} Object containing:
+   *                           - success: boolean indicating if operation was successful
+   *                           - error?: error message if operation failed
+   *                           - displayError?: user-friendly error message if operation failed
+   *                           - bundle?: the retrieved bundle data if successful
+   */
+  static async getBundleById({storeId, bundleId}) {
+    try {
+      return await getBundleByBundleId({storeId, bundleId});
     } catch (error) {
       console.log(error);
       return {
@@ -243,10 +269,6 @@ export class BundleService {
         displayError: 'Failed to update bundle'
       }
     }
-  }
-
-  static async duplicateBundle(params) {
-    return await duplicateDiscountBundleById(params);
   }
 
   /**

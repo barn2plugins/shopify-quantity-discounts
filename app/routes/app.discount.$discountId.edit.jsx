@@ -244,6 +244,7 @@ export default function DiscountPage() {
     if (fetcher.data?.success === true) {
       setHasUnsavedChanges(false);
       shopify.saveBar.hide('edit-discount-save-bar');
+      shopify.toast.show("Discount bundle has been updated");
     }
   }, [fetcher.data]);
 

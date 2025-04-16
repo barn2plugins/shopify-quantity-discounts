@@ -73,23 +73,34 @@ export async function getAllActiveDiscountBundles(sessionId) {
 }
 
 /**
+ * Retrieves a specific discount bundle from the database using session ID and discount ID
+ * 
+ * @param {Object} params - The parameters object
+ * @param {string} params.sessionId - The session ID of the current user
+ * @param {string} params.discount - The ID of the discount bundle to retrieve
+ * @returns {Promise<Object|null>} The discount bundle object if found, null if not found or error occurs
+ */
+export async function getBundleByDiscountId({storeId, bundleId}) {
+  return await prisma.discountBundle.findFirst({
+    where: {
+      shopifyDiscountId: `gid://shopify/DiscountAutomaticNode/${bundleId}`,
+      storeId: storeId
+    }
+  });
+}
+
+/**
  * Retrieves a specific discount bundle from the database using session ID and bundle ID
  * 
  * @param {Object} params - The parameters object
  * @param {string} params.sessionId - The session ID of the current user
  * @param {string} params.bundleId - The ID of the discount bundle to retrieve
  * @returns {Promise<Object|null>} The discount bundle object if found, null if not found or error occurs
- * 
- * @example
- * const bundle = await getDiscountBundleById({
- *   sessionId: 'session123',
- *   bundleId: '456'
- * });
  */
-export async function getDiscountBundleById({storeId, bundleId}) {
+export async function getBundleByBundleId({storeId, bundleId}) {
   return await prisma.discountBundle.findFirst({
     where: {
-      shopifyDiscountId: `gid://shopify/DiscountAutomaticNode/${bundleId}`,
+      id: bundleId,
       storeId: storeId
     }
   });
@@ -207,62 +218,6 @@ export async function updateDiscountBundleById({discountId, data}) {
       customDesigns: data.customDesigns,
       previewOptions: data.previewOptions,
     }
-  });
-}
-
-/**
- * Duplicates an existing discount bundle with a new priority and modified settings
- * 
- * @param {Object} params - The parameters object
- * @param {string} params.sessionId - The session ID of the current user
- * @param {string} params.bundleId - The ID of the discount bundle to duplicate
- * @returns {Promise<Object>} Returns either:
- *                           - The newly created discount bundle object
- *                           - {error: string} if bundle not found
- */
-export async function duplicateDiscountBundleById({sessionId, bundleId}) {
-
-  const bundleCount = await prisma.discountBundle.count({
-    where: {
-      store: {
-        sessionId,
-      }
-    }
-  });
-
-  const originalBundle = await prisma.discountBundle.findUnique({
-    where: {
-        id: bundleId,
-    },
-  });
-
-  if (!originalBundle) {
-    return { error: "Bundle not found" };
-  }
-
-  return await prisma.discountBundle.create({
-    data: {
-      name: `${originalBundle.name} (Copy)`,
-      type: originalBundle.type,
-      whichProducts: originalBundle.whichProducts,
-      selectedProducts: originalBundle.selectedProducts,
-      selectedCollections: originalBundle.selectedCollections,
-      excludedProducts: originalBundle.excludedProducts,
-      excludedCollections: originalBundle.excludedCollections,
-      priority: bundleCount + 1,
-      active: false,
-      storeId: originalBundle.storeId,
-      shopifyDiscountId: originalBundle.shopifyDiscountId,
-      previewEnabled: false,
-      volumeBundles: originalBundle.volumeBundles,
-      pricingTiers: originalBundle.pricingTiers,
-      discountCalculation: originalBundle.discountCalculation,
-      activeDates: originalBundle.activeDates,
-      specificDates: originalBundle.specificDates,
-      storeDisplay: originalBundle.storeDisplay,
-      designOptions: originalBundle.designOptions,
-      customDesigns: originalBundle.customDesigns,
-    },
   });
 }
 

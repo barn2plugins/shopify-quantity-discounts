@@ -213,7 +213,7 @@ export class DiscountService {
    * @param {string} shopifyDiscountId - ID of the Shopify automatic discount to delete
    * @returns {Promise<boolean>} Returns true if deletion was successful, false if there were errors
    */
-  static async activateShopifyVolumeDiscount (admin, shopifyDiscountId) {
+  static async activateShopifyVolumeDiscount ({admin, shopifyDiscountId}) {
     const response = await admin.graphql(
       `#graphql
       mutation discountAutomaticActivate($id: ID!) {
@@ -252,10 +252,10 @@ export class DiscountService {
   /**
    * Deactivates a Shopify automatic discount
    * @param {Object} admin - Shopify Admin API client instance
-   * @param {string} shopifyDiscountId - ID of the Shopify automatic discount to delete
+   * @param {string} shopifyDiscountId - ID of the Shopify automatic discount to deactivate
    * @returns {Promise<boolean>} Returns true if deletion was successful, false if there were errors
    */
-  static async deactivateShopifyVolumeDiscount(admin, shopifyDiscountId) {
+  static async deactivateShopifyVolumeDiscount({admin, shopifyDiscountId}) {
     const response = await admin.graphql(
       `#graphql
       mutation discountAutomaticDeactivate($id: ID!) {

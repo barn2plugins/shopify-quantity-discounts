@@ -33,7 +33,7 @@ export default function CollectionExclusionsModal({
     {
       content: 'Save',
       onAction: () => {
-        shopify.modal.hide('select-products-modal');
+        shopify.modal.hide('exclude-products-modal');
       },
     },
   ];

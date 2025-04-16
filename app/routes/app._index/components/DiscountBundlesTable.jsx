@@ -10,7 +10,6 @@ import {
 import {EditIcon, DuplicateIcon, DeleteIcon} from '@shopify/polaris-icons';
 import {useState, useEffect} from "react";
 import {useAppBridge} from "@shopify/app-bridge-react";
-import {useFetcher} from "@remix-run/react";
 
 import {
 	DndContext,
@@ -39,6 +38,8 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
 
   const bundleDeleted = fetcher.data?.bundleDeleted;
 
+  const fetcherIsSubmitting = fetcher.state === 'loading' || fetcher.state === 'submitting';
+
   /**
    * Handles the duplication of a discount bundle.
    * Sets the duplicating state for loading indicator and submits the duplication request to the 'app/discount/duplicate' route
@@ -49,7 +50,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
    */
   const handleDuplicate = (bundle) => {
     setDuplicatingId(bundle.id);
-    
+
     fetcher.submit(
       { 
         bundleId: bundle.id, 
@@ -103,16 +104,15 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
     );
   };
 
-  useEffect(() => {
-    setBundles(discountBundles);
-  }, [discountBundles])
-
-  useEffect(() => {
-    if (fetcher.state === 'idle' && duplicatingId) {
-      setDuplicatingId(null);
-    }
-  }, [duplicatingId, fetcher.state]);
-
+  /**
+   * Renders the action buttons for each discount bundle row
+   * Includes Edit, Duplicate, and Delete actions with appropriate icons and handlers
+   * 
+   * @param {Object} bundle - The discount bundle object
+   * @param {number} bundle.id - The unique identifier of the bundle
+   * @param {string} bundle.shopifyDiscountId - The Shopify discount ID associated with the bundle
+   * @returns {JSX.Element} Returns an InlineStack component containing action buttons
+   */
   const renderRowActions = (bundle) => (
     <InlineStack gap="200">
       <Button 
@@ -125,7 +125,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
         icon={DuplicateIcon} 
         plain 
         accessibilityLabel={`Duplicate discount ${bundle.id}`} 
-        loading={duplicatingId === bundle.id}
+        loading={duplicatingId === bundle.id && fetcherIsSubmitting}
         onClick={() => handleDuplicate(bundle)}
       />
       <Button 
@@ -207,6 +207,16 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
       }
     );
   };
+
+  useEffect(() => {
+    setBundles(discountBundles);
+  }, [discountBundles])
+
+  useEffect(() => {
+    if(fetcher.data?.duplicatedBundleId) {
+      shopify.toast.show("Discount bundle has been duplicated");
+    }
+  }, [fetcher.data]);
 
   return (
     <>

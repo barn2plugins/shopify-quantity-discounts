@@ -14,8 +14,8 @@ export const action = async ({ request }) => {
         
     try {
         const discountStatus = fetcherData.active === 'true'
-            ? await DiscountService.activateShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId)
-            : await DiscountService.deactivateShopifyVolumeDiscount(admin, fetcherData.shopifyDiscountId);
+            ? await DiscountService.activateShopifyVolumeDiscount({admin, shopifyDiscountId: fetcherData.shopifyDiscountId})
+            : await DiscountService.deactivateShopifyVolumeDiscount({admin, shopifyDiscountId: fetcherData.shopifyDiscountId});
             
         if (!discountStatus) {
             return null;
