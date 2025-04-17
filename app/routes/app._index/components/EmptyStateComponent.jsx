@@ -5,16 +5,20 @@ export default function EmptyStateComponent() {
     <Layout>
       <Layout.Section variant="oneHalf">
         <Card>
-          <EmptyState
-            heading="Create your first discount"
-            action={{
-              content: 'Create new discount', 
-              url: "/app/discount/create"
-            }}
-            image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-          >
-            <p>Add flexible quantity discounts and display them in your store.</p>
-          </EmptyState>
+          <div className='discount-empty-state'>
+            <EmptyState
+              heading="Create your first discount"
+              action={{
+                content: 'Create new discount', 
+                url: "/app/discount/create"
+              }}
+              image="https://i.ibb.co.com/fz2LntbQ/empty-state.png"
+              largeImage='https://i.ibb.co.com/39qQwJvV/empty-state.png'
+              imageContained="true"
+            >
+              <p>Add flexible quantity discounts and display them in your store.</p>
+            </EmptyState>
+          </div>
         </Card>
       </Layout.Section>
     </Layout>

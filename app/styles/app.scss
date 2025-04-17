@@ -74,6 +74,16 @@
 
 }
 
+.discount-empty-state {
+  .Polaris-EmptyState__ImageContainer {
+    max-width: 170px;
+
+    .Polaris-EmptyState__Image {
+      opacity: 1;
+    }
+  }
+}
+
 // Index table
 .barn2-index-table {
   border-collapse: collapse;

@@ -202,7 +202,7 @@ export async function updateDiscountBundleById({discountId, data}) {
       name: data.name,
       whichProducts: data.whichProducts,
       layout: data.layout,
-      previewEnabled: data.previewEnabled ? true : false,
+      previewEnabled: data.previewEnabled === 'true' ? true : false,
       active: data.active ? true : false,
       selectedProducts: data.selectedProducts,
       selectedCollections: data.selectedCollections,
