@@ -1,6 +1,6 @@
 import { authenticate } from "../shopify.server";
 import { fetchStoreDetails } from "../shopify.service";
-import { StoreService } from "../services/store.service";
+import { updateStoreDetails } from "../services/store.service";
 import { getStoreActiveThemeGid } from "../utils/utils";
 
 export const action = async ({ request }) => {
@@ -12,7 +12,7 @@ export const action = async ({ request }) => {
     const activeThemeGid = getStoreActiveThemeGid(storeData);
 
     // Update the active theme GID in the database
-    await StoreService.updateStoreDetails(session.id, { activeThemeGid });
+    await updateStoreDetails(session.id, { activeThemeGid });
 
     return null;
   } catch (error) {

@@ -11,10 +11,10 @@ import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 
 // Internal services and components
 import { authenticate } from "../shopify.server.js"
-import { BundleService } from "../services/bundle.service.js";
-import { StoreService } from "../services/store.service.js";
-import { ProductService } from "../services/product.service";
-import { CollectionService } from "../services/collection.service";
+import { getBundle, updateBundle, getAllBundles } from "../services/bundle.service.js";
+import { getStoreDetails, isAppEmbedDisabled, updateStoreMetafieldForVolumeDiscount } from "../services/store.service.js";
+import { getProducts } from "../services/product.service";
+import { getCollections } from "../services/collection.service";
 
 import AppBlockEmbed from "../components/Notice/AppBlockEmbed.jsx";
 import Content from "../components/Layouts/Discount/Content.jsx";
@@ -29,7 +29,7 @@ export const loader = async ({ request, params }) => {
   // Get the app embed block extension id
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
-  const store = await StoreService.getStoreDetails(session.id, {
+  const store = await getStoreDetails(session.id, {
     id: true,
     currency: true,
     ianaTimezone: true,
@@ -38,9 +38,9 @@ export const loader = async ({ request, params }) => {
     moneyFormat: true,
   });
 
-  const appEmbedDisabled = await StoreService.isAppEmbedDisabled({admin, store});
+  const appEmbedDisabled = await isAppEmbedDisabled({admin, store});
 
-  const discountBundle = await BundleService.getBundle({storeId: store.id, bundleId: params.discountId});
+  const discountBundle = await getBundle({storeId: store.id, bundleId: params.discountId});
   const parsedDiscountBundle = await parseBundleObject({ discountBundle });
 
   if (!parsedDiscountBundle) {
@@ -70,7 +70,7 @@ export const action = async ({ request }) => {
 
   // When the request is to update the discount function and bundles
   if (fetcherData.intent === 'update') {
-    const store = await StoreService.getStoreDetails(session.id, {
+    const store = await getStoreDetails(session.id, {
       session: {
         select: {
           userId: true
@@ -81,23 +81,23 @@ export const action = async ({ request }) => {
     if (!store) return null;
     
     // Update both the discount function in Shopify and update the discount bundle in the database
-    const discountData = await BundleService.updateBundle({admin, fetcherData});
+    const discountData = await updateBundle({admin, fetcherData});
     if (discountData?.success === false) {
       return null;
     }
 
-    const allDiscounts = await BundleService.getAllBundles(session.id);
+    const allDiscounts = await getAllBundles(session.id);
     if (allDiscounts?.success === false) {
       return null;
     }
-    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
+    await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
     return discountData;
   }
   
   // When the request is to load the products from Shopify
   if ( fetcherData.intent === 'loadProducts' ) {
-    const response = await ProductService.getProducts({admin})
+    const response = await getProducts({admin})
     if (response?.success === false) {
       return null;
     }
@@ -107,7 +107,7 @@ export const action = async ({ request }) => {
  
   // When the request is to load the collections from Shopify
   if ( fetcherData.intent === 'loadCollections' ) {
-    const response = await CollectionService.getCollections({admin})
+    const response = await getCollections({admin})
     if (response?.success === false) {
       return null;
     }

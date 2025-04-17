@@ -1,6 +1,6 @@
 import { authenticate } from "../shopify.server";
-import { BundleService } from "../services/bundle.service";
-import { StoreService } from "../services/store.service";
+import { getEligibleDiscountBundle } from "../services/bundle.service";
+import { getStoreDetails } from "../services/store.service";
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export async function loader({ request }) {
@@ -9,7 +9,7 @@ export async function loader({ request }) {
     if (!storefront) {
       return new Response();
     }
-    const store = await StoreService.getStoreDetails(session.id, {
+    const store = await getStoreDetails(session.id, {
       moneyFormat: true,
       isPartnerDevelopment: true
     });
@@ -30,7 +30,7 @@ export async function loader({ request }) {
     const productId = url.searchParams.get('productId');
     
     try {
-      const eligibleProductBundle = await BundleService.getEligibleDiscountBundle({storefront, session, productId});
+      const eligibleProductBundle = await getEligibleDiscountBundle({storefront, session, productId});
       
       if (!eligibleProductBundle) {
         return new Response(JSON.stringify({

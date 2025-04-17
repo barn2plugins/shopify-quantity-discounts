@@ -15,8 +15,8 @@ import EmptyStateComponent from "./components/EmptyStateComponent";
 import SupportBlock from "./components/SupportBlock";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
-import { BundleService } from "../../services/bundle.service.js";
-import { StoreService } from "../../services/store.service.js";
+import { getAllBundles } from "../../services/bundle.service.js";
+import { getStoreDetails, isAppEmbedDisabled } from "../../services/store.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
 
 import { getStoreAnalyticsData } from "../../utils/analytics"
@@ -30,11 +30,11 @@ export const loader = async ({ request }) => {
 
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
-  const store = await StoreService.getStoreDetails(session.id, { activeThemeGid: true });
+  const store = await getStoreDetails(session.id, { activeThemeGid: true });
 
-  const appEmbedDisabled = store ? await StoreService.isAppEmbedDisabled({admin, store}) : true;
+  const appEmbedDisabled = store ? await isAppEmbedDisabled({admin, store}) : true;
 
-  const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+  const discountBundles = await getAllBundles(session.id, page, limit);
 
   if (!discountBundles.success) {
     return null;
@@ -66,7 +66,7 @@ export const action = async ({ request }) => {
   if (fetcherData?.action === 'paginateBundlesData') {
     const page = parseInt(fetcherData?.page);
     const limit = parseInt(fetcherData?.limit);
-    const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+    const discountBundles = await getAllBundles(session.id, page, limit);
 
     if (!discountBundles.success) {
       return null;

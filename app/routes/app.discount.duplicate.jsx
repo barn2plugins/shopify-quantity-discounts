@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
-import { StoreService } from "../services/store.service";
-import { BundleService } from "../services/bundle.service";
-import { DiscountService } from "../services/discount.service";
+import { getStoreDetails } from "../services/store.service";
+import { getBundleById, getAllBundles } from "../services/bundle.service";
+import { createShopifyVolumeDiscount, deactivateShopifyVolumeDiscount } from "../services/discount.service";
 import { 
   createDiscountBundle, 
 } from '../models/Discount.server';
@@ -16,16 +16,16 @@ export const action = async ({ request }) => {
   const limit = parseInt(fetcherData?.limit);
 
   try {
-    const store = await StoreService.getStoreDetails(session.id, {
+    const store = await getStoreDetails(session.id, {
       id: true,
       volumeDiscountFunctionId: true,
     });
 
-    const originalBundle = await BundleService.getBundleById({storeId: store.id, bundleId});
+    const originalBundle = await getBundleById({storeId: store.id, bundleId});
     originalBundle.name = `${originalBundle.name} (Copy)`;
     originalBundle.active = false;
     
-    const shopifyDiscountGID = await DiscountService.createShopifyVolumeDiscount({
+    const shopifyDiscountGID = await createShopifyVolumeDiscount({
       admin, 
       fetcherData: originalBundle, 
       discountFunctionId: store.volumeDiscountFunctionId
@@ -40,8 +40,8 @@ export const action = async ({ request }) => {
     }
 
     const duplicatedBundle = await createDiscountBundle({storeId: store.id, shopifyDiscountGID, data: originalBundle});
-    await DiscountService.deactivateShopifyVolumeDiscount({admin, shopifyDiscountId: shopifyDiscountGID});
-    const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+    await deactivateShopifyVolumeDiscount({admin, shopifyDiscountId: shopifyDiscountGID});
+    const discountBundles = await getAllBundles(session.id, page, limit);
 
     return { 
         success: true,

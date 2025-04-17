@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
-import { DiscountService } from "../services/discount.service";
-import { BundleService } from "../services/bundle.service";
+import { deleteShopifyVolumeDiscount } from "../services/discount.service";
+import { getAllBundles } from "../services/bundle.service";
 
 export const action = async ({ request }) => {
     const {admin, session} = await authenticate.admin(request);
@@ -18,7 +18,7 @@ export const action = async ({ request }) => {
     const page = parseInt(fetcherData?.page);
 
     try {
-        await DiscountService.deleteShopifyVolumeDiscount(admin, shopifyDiscountId);
+        await deleteShopifyVolumeDiscount(admin, shopifyDiscountId);
     
         await prisma.discountBundle.delete({
             where: {
@@ -27,7 +27,7 @@ export const action = async ({ request }) => {
         });
 
         // Retrieve the updated list of bundles after deletion
-        const discountBundles = await BundleService.getAllBundles(session.id, page, limit);
+        const discountBundles = await getAllBundles(session.id, page, limit);
 
         return { 
             success: true,

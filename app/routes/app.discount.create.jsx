@@ -11,10 +11,10 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 
 // Internal services and components
 import { authenticate } from "../shopify.server"
-import { BundleService } from "../services/bundle.service";
-import { StoreService } from "../services/store.service";
-import { ProductService } from "../services/product.service";
-import { CollectionService } from "../services/collection.service";
+import { getDefaultBundle, createBundle, getAllBundles } from "../services/bundle.service";
+import { getStoreDetails, updateStoreMetafieldForVolumeDiscount } from "../services/store.service";
+import { getProducts } from "../services/product.service";
+import { getCollections } from "../services/collection.service";
 
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
@@ -25,13 +25,13 @@ import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../utils/
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
-  const store = await StoreService.getStoreDetails(session.id, {
+  const store = await getStoreDetails(session.id, {
     currency: true,
     ianaTimezone: true,
     moneyFormat: true,
   });
 
-  const defaultBundle = await BundleService.getDefaultBundle({sessionId: session.id, timezone: store.ianaTimezone});
+  const defaultBundle = await getDefaultBundle({sessionId: session.id, timezone: store.ianaTimezone});
 
   return {
     defaultBundle,
@@ -50,7 +50,7 @@ export const action = async ({ request }) => {
   const fetcherData = Object.fromEntries(formData);
 
   if (fetcherData.intent === 'create') {
-    const store = await StoreService.getStoreDetails(session.id, {
+    const store = await getStoreDetails(session.id, {
       id: true,
       volumeDiscountFunctionId: true,
       session: {
@@ -62,24 +62,24 @@ export const action = async ({ request }) => {
 
     if (!store) return null;
 
-    const bundle = await BundleService.createBundle({ admin, store, fetcherData });
+    const bundle = await createBundle({ admin, store, fetcherData });
 
     if (bundle?.success === false) {
       return null;
     }
 
-    const allDiscounts = await BundleService.getAllBundles(session.id);
+    const allDiscounts = await getAllBundles(session.id);
     if (allDiscounts?.success === false) {
       return null;
     }
-    await StoreService.updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
+    await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
     // Once the discount bundle successfully created, redirect to the edit page
     return redirect(`/app/discount/${bundle.shopifyDiscountid}/edit`);
   } 
   
   if ( fetcherData.intent === 'loadProducts' ) {
-    const response = await ProductService.getProducts({admin})
+    const response = await getProducts({admin})
     if (response?.success === false) {
       return null;
     }
@@ -88,7 +88,7 @@ export const action = async ({ request }) => {
   }
  
   if ( fetcherData.intent === 'loadCollections' ) {
-    const response = await CollectionService.getCollections({admin})
+    const response = await getCollections({admin})
     if (response?.success === false) {
       return null;
     }

@@ -1,4 +1,4 @@
-import { BundleService } from "../services/bundle.service";
+import { findDiscountBundlesByNames } from "../services/bundle.service";
 import { saveOrderAnalytics } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 
@@ -17,7 +17,7 @@ export const action = async ({ request }) => {
 
   const nameOfDiscountApplications = payload?.discount_applications.map((application) => application.title);
 
-  const discountBundlesFound = await BundleService.findDiscountBundlesByNames({nameOfDiscountApplications, sessionId: session?.id});
+  const discountBundlesFound = await findDiscountBundlesByNames({nameOfDiscountApplications, sessionId: session?.id});
   if (!discountBundlesFound.success) {
     return new Response();
   }
