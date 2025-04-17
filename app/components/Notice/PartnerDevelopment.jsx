@@ -1,15 +1,21 @@
+import { useNavigate } from "@remix-run/react";
+
 export default function PartnerDevelopment() {
+  const navigate = useNavigate();
 
-    const styles = {
-        backgroundColor: 'rgb(254 252 232 / var(--tw-bg-opacity, 1))',
-        padding: '.75rem',
-        textAlign: 'center',
-        marginBottom: '20px'
-    }
+  const styles = {
 
-    return (
-        <div style={styles}>
-            <p>This app is free for development stores. When your store goes live, all premium features will be hidden until you choose a Plan.</p>
-        </div>
-    )
+  }
+
+  const navigateToPlans = (e) => {
+    e.preventDefault();
+    console.log('clicked'); 
+    navigate('/app/plans')
+  }
+
+  return (
+    <div className="development-store-notice">
+      <p>This app is free for development stores. When your store goes live, all premium features will be hidden until you choose a <a href="" onClick={(e) => navigateToPlans(e)}>Plan</a>.</p>
+    </div>
+  )
 }
