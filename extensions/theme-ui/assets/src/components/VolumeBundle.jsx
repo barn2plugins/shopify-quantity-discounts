@@ -154,7 +154,7 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
                 updateProductQuantity(bundle);
               }}
             >
-              { bundle.highlighted && <span className="barn2-highlighted-text">Most popular</span>}
+              { bundle.label.length > 0 && <span className="barn2-highlighted-text">{bundle.label}</span>}
               <div className="barn2-dbs-top">
                 <span className="barn2-input-circle"></span>
                 <div className="barn2-dbs-text-block">

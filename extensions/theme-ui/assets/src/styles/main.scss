@@ -165,21 +165,21 @@
         }
       }
 
+      .barn2-highlighted-text {
+        position: absolute;
+        background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
+        color: var(--barn2-bundles-badge-text-color, #ffffff);
+        top: 0;
+        border-radius: 0 0 10px 10px;
+        padding: 0px 5px;
+        font-size: 9px;
+        width: 79px;
+        right: calc(50% - 35px);
+        line-height: 2;
+      }
+
       &.highlighted {
         border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
-
-        .barn2-highlighted-text {
-          position: absolute;
-          background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
-          color: var(--barn2-bundles-badge-text-color, #ffffff);
-          top: 0;
-          border-radius: 0 0 10px 10px;
-          padding: 0px 5px;
-          font-size: 9px;
-          width: 79px;
-          right: calc(50% - 35px);
-          line-height: 2;
-        }
 
         .barn2-dbs-bundle-title,
         .barn2-dbs-price,

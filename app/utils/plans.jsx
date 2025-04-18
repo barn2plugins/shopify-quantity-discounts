@@ -38,21 +38,21 @@ export const userReviews = [
   {
     id: 1,
     user: {
-      name: 'Darrel Martin',
+      name: 'Larissa',
       location: 'United Kingdom',
     },
-    title: 'Easy to install and high standard app',
-    description: 'Great app. The install and configuration is very easy and has a good concise set of options. Barn2 are very helpful and clearly work hard to maintain a high standard of work and client support.',
+    title: 'Super Helpful',
+    description: 'A wonderful company that has helped me with all of my needs and has even gone the extra mile without charging extra. Special thanks to Adrian and the developers for sorting out our problems in a speedy and professional manner.',
     rating: 5,
   },
   {
     id: 2,
     user: {
-      name: 'Robert Pfeifer',
-      location: 'United States',
+      name: 'Jolanda',
+      location: 'Netherlands',
     },
-    title: 'Fantastic app that work easily!',
-    description: 'Barn2 not only make fantastic apps that work easily and the customer service is second to none. The only thing better than dependable products is dependable customer service – they have that, too.',
+    title: 'Very good customer service',
+    description: 'This company has really good customer support. If you face a problem they are very cooperative in finding a solution. You can feel that it\'s not only about earning money - it\'s all about satisfied customers. They make very good products!',
     rating: 5,
   }
 ];

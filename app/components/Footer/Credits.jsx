@@ -2,7 +2,7 @@ export default function Credits() {
   const footerLinks = [
     {
       label: 'Documentation',
-      href: 'https://barn2.com/documentation'
+      href: 'https://barn2.com/kb-categories/barn2-bundles-discounts-documentation/'
     },
     {
       label: 'Need help?',

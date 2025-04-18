@@ -15,14 +15,14 @@ export default function ActiveDatesSections({ formState, setFormState, timezone 
         const dates = JSON.parse(formState.specificDates);
         const startDate = new Date(dates.start);
         const endDate = new Date(dates.end);
-    
+        
         setSelectedDates({
           start: startDate,
           end: endDate
         });
       }
     }
-  }, [])
+  }, [formState.activeDates]);
 
   return (
     <BlockStack gap={200}>
@@ -39,7 +39,7 @@ export default function ActiveDatesSections({ formState, setFormState, timezone 
               setDatePickerVisible(value[0] === 'specific_dates');
           }}
         />
-        {datePickerVisible && (
+        {datePickerVisible && Object.keys(selectedDates).length > 0 && (
           <DateRangePicker
               selectedDates={selectedDates}
               setSelectedDates={setSelectedDates}

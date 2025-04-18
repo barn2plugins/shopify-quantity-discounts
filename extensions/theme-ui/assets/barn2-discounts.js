@@ -21372,7 +21372,7 @@ function hD({ bundleData: $, isInEditor: W, currentVariant: M, storeDetails: Pe 
               ut(xe), ln(Oe);
             },
             children: [
-              Oe.highlighted && /* @__PURE__ */ nt.jsx("span", { className: "barn2-highlighted-text", children: "Most popular" }),
+              Oe.label.length > 0 && /* @__PURE__ */ nt.jsx("span", { className: "barn2-highlighted-text", children: Oe.label }),
               /* @__PURE__ */ nt.jsxs("div", { className: "barn2-dbs-top", children: [
                 /* @__PURE__ */ nt.jsx("span", { className: "barn2-input-circle" }),
                 /* @__PURE__ */ nt.jsxs("div", { className: "barn2-dbs-text-block", children: [

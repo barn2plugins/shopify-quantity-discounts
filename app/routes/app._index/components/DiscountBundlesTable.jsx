@@ -267,15 +267,17 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
                 </DndContext>
               </IndexTable>
             </LegacyCard>
-            <InlineStack align="center" fullWidth>
-              <Pagination
-                onPrevious={() => handlePageChange(pagination.page - 1, pagination.limit)}
-                onNext={() => handlePageChange(pagination.page + 1, pagination.limit)}
-                hasPrevious={pagination.page > 1}
-                hasNext={pagination.page < pagination.totalPages}
-                label={`${((pagination.page - 1) * pagination.limit) + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total} discounts`}
-              />
-            </InlineStack>
+            {pagination.totalPages > 1 && (
+              <InlineStack align="center" fullWidth>
+                <Pagination
+                  onPrevious={() => handlePageChange(pagination.page - 1, pagination.limit)}
+                  onNext={() => handlePageChange(pagination.page + 1, pagination.limit)}
+                  hasPrevious={pagination.page > 1}
+                  hasNext={pagination.page < pagination.totalPages}
+                  label={`${((pagination.page - 1) * pagination.limit) + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total} discounts`}
+                />
+              </InlineStack>
+            )}
           </BlockStack>
         </Layout.Section>
       </Layout>

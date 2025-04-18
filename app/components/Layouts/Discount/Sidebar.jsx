@@ -56,8 +56,8 @@ export default function Sidebar({
 
   return (
     <Card>
-      <BlockStack gap={500}>
-        <BlockStack gap={500}>
+      <BlockStack gap={formState.previewEnabled ? 500 : 10}>
+        <BlockStack gap={formState.type === 'volume_bundle' ? 200 : 500}>
           <PreviewToggle
             formState={formState}
             setFormState={setFormState}
@@ -86,6 +86,7 @@ export default function Sidebar({
           <PreviewOptions 
             formState={formState}
             setFormState={setFormState}
+            volumeBundles={volumeBundles}
           />
         </BlockStack>
       </BlockStack>

@@ -15,7 +15,7 @@ export default function PartnerDevelopment() {
 
   return (
     <div className="development-store-notice">
-      <p>This app is free for development stores. When your store goes live, all premium features will be hidden until you choose a <a href="" onClick={(e) => navigateToPlans(e)}>Plan</a>.</p>
+      <p>This app is free for development stores. When your store goes live, all premium features will be hidden until you <a href="" onClick={(e) => navigateToPlans(e)}>choose a Plan</a>.</p>
     </div>
   )
 }

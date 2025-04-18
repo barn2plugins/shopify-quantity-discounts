@@ -209,7 +209,6 @@ export default function DiscountPage() {
    */
   useEffect(() => {
     setPricingTiers(discountBundle.pricingTiers ? JSON.parse(discountBundle.pricingTiers) : getDefaultPricingTiers())
-    setVolumeBundles(discountBundle.volumeBundles ? JSON.parse(discountBundle.volumeBundles) : getDefaultBundleDiscountTypes())
     setSelectedProducts(JSON.parse(discountBundle.selectedProducts))
     setSelectedCollections(JSON.parse(discountBundle.selectedCollections))
     setExcludedProducts(JSON.parse(discountBundle.excludedProducts))

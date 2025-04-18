@@ -5,7 +5,6 @@ import {
   Text, 
   Button, 
   TextField, 
-  Icon, 
   Checkbox, 
   InlineStack,
   Box
@@ -89,6 +88,17 @@ export default function VolumeBundleSection({
     setVolumeBundles([...volumeBundles, newBundle]);
   };
 
+  /**
+   * Effect to set the initial state of the form
+   */
+  useEffect(() => {
+    if (typeof formState?.volumeBundles === 'string' && formState.volumeBundles === '[]') {
+      setVolumeBundles(getDefaultBundleDiscountTypes());
+    } else if (formState.volumeBundles) {
+      setVolumeBundles(JSON.parse(formState.volumeBundles));
+    }
+  }, []);
+
   return (
     <BlockStack gap={300}>
       <Text as="p" variant="bodyLg" fontWeight="medium">Volume bundles</Text>
@@ -141,6 +151,7 @@ export default function VolumeBundleSection({
                           const selectedValue = event.target.value;
                           handleVolumeChange(index, 'discount_type', selectedValue);
                         }}
+                        className="select-with-custom-arrow"
                       >
                         { volumeBundleDiscountTypes.map((option) => (
                           <option key={option.value} value={option.value}>{option.label}</option>
@@ -153,6 +164,7 @@ export default function VolumeBundleSection({
                     type="text"
                     value={bundle.description.toString()}
                     onChange={(value) => handleVolumeChange(index, 'description', value)}
+                    placeholder="Buy one"
                   />
                 </td>
                 <td className="cell_label">

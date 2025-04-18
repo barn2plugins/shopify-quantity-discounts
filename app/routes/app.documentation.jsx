@@ -9,7 +9,7 @@ import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
 
-  const documentationUrl = 'https://barn2.com/documentation'
+  const documentationUrl = 'https://barn2.com/kb-categories/barn2-bundles-discounts-documentation/'
   
   return {
     documentationUrl

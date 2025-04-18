@@ -2,12 +2,29 @@ import {
   BlockStack,
   Checkbox,
   Text,
-  TextField
+  TextField,
+  Grid,
+  ChoiceList,
+  InlineStack
 } from "@shopify/polaris";
+import { useState, useEffect } from "react";
 
-export default function PreviewOptions({formState, setFormState}) {
+import LayoutSection from "./LayoutSection.jsx";
+
+export default function PreviewOptions({
+  formState, 
+  setFormState, 
+  volumeBundles
+}) {
+
+  const [ hasDiscount, setHasDiscount ] = useState(false);
+
+  useEffect(() => {
+    const foundDiscount = volumeBundles.some(bundle => bundle.discount !== '');
+    setHasDiscount(foundDiscount);
+  }, [volumeBundles]);
   
-  if ( formState.previewEnabled === false ) {
+  if ( formState.type === 'bulk_pricing' && formState.previewEnabled === false ) {
     return null;
   }
 
@@ -28,20 +45,25 @@ export default function PreviewOptions({formState, setFormState}) {
           placeholder="Time-limited offer!"
         />
 
-        <Checkbox
-          label="Show original price"
-          checked={formState.previewOptions?.showOriginalPrice}
-          onChange={(value) => setFormState({...formState, previewOptions: {...formState.previewOptions, showOriginalPrice: value}})}
-        />
+        { formState.type === 'volume_bundle' && (
+          <>
+            <Checkbox
+              label="Show original price"
+              checked={formState.previewOptions?.showOriginalPrice}
+              onChange={(value) => setFormState({...formState, previewOptions: {...formState.previewOptions, showOriginalPrice: value}})}
+            />
 
-        <Checkbox
-          label="Amount saved"
-          checked={formState.previewOptions?.amountSaved}
-          onChange={(value) => setFormState({...formState, previewOptions: {...formState.previewOptions, amountSaved: value}})}
-        />
+            { hasDiscount && 
+              <Checkbox
+                label="Amount saved"
+                checked={formState.previewOptions?.amountSaved}
+                onChange={(value) => setFormState({...formState, previewOptions: {...formState.previewOptions, amountSaved: value}})}
+              />
+            }
 
+          </>
+        )}
       </BlockStack>
-      
     </BlockStack>
   )
 }

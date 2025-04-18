@@ -65,7 +65,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     }
   }, [volumeBundles]);
 
-  if ( volumeBundles.length <= 0 || formState.previewEnabled === false ) {
+  if (volumeBundles.length <= 0 || (formState.type === 'bulk_pricing' && formState.previewEnabled === false) ) {
     return null;
   }
   
@@ -95,7 +95,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                 )}
                 onClick={(event) => setSelectedBundle(index)}
               >
-                { bundle.highlighted && <span className="highlightedText">Most popular</span>}
+                { bundle.label.length > 0 && <span className="highlightedText">{bundle.label}</span>}
                 <BlockStack 
                   style={{
                     flexDirection: formState.layout === 'horizontal' ? 'row' : 'column',
