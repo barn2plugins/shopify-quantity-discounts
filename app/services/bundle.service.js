@@ -8,7 +8,8 @@ import {
   getBundleByDiscountId, 
   getBundleByBundleId,
   updateDiscountBundleById, 
-  finyManyByNames 
+  finyManyByNames,
+  getLatestDiscount
 } from '../models/Discount.server';
 
 /**
@@ -387,6 +388,17 @@ export async function getEligibleDiscountBundle({storefront, session, productId}
   };
   
   return false;
+}
+
+/**
+ * Retrieves the most recently created discount bundle for a store
+ * 
+ * @param {Object} params - The parameters object
+ * @param {string} params.storeId - ID of the store to get the latest bundle for
+ * @returns {Promise<Object>} The most recent discount bundle object
+ */
+export async function getLatestDiscountBundle({storeId}) {
+  return await getLatestDiscount({storeId});
 }
 
 /**

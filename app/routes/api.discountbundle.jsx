@@ -1,15 +1,21 @@
 import { authenticate } from "../shopify.server";
-import { getEligibleDiscountBundle } from "../services/bundle.service";
+import { getEligibleDiscountBundle, getLatestDiscountBundle } from "../services/bundle.service";
 import { getStoreDetails } from "../services/store.service";
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
-export async function loader({ request }) {
+export async function action({ request }) {
+    if (request.method !== 'POST') {
+      return new Response();
+    }
+  
     const {storefront, session} = await authenticate.public.appProxy(request);
 
     if (!storefront) {
       return new Response();
     }
+
     const store = await getStoreDetails(session.id, {
+      id: true,
       moneyFormat: true,
       isPartnerDevelopment: true
     });
@@ -26,11 +32,13 @@ export async function loader({ request }) {
       }));
     }
 
-    const url = new URL(request.url);
-    const productId = url.searchParams.get('productId');
-    
+    const { productId, isInEditor } = await request.json();
+    const shouldSendDummyBundleData = typeof productId === 'undefined' && isInEditor;
+
     try {
-      const eligibleProductBundle = await getEligibleDiscountBundle({storefront, session, productId});
+      let eligibleProductBundle = shouldSendDummyBundleData ? 
+        await getLatestDiscountBundle({storeId: store.id}) : 
+        await getEligibleDiscountBundle({storefront, session, productId});
       
       if (!eligibleProductBundle) {
         return new Response(JSON.stringify({

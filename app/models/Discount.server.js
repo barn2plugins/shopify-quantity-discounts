@@ -248,7 +248,7 @@ export async function finyManyByNames({nameOfDiscountApplications, sessionId}) {
  * @param {string} storeId - The ID of the store
  * @returns {Promise<Object|null>} The discount bundle with highest priority or null if no bundles exist
  */
-const getLatestDiscount = async (storeId) => {
+export const getLatestDiscount = async ({storeId}) => {
   return await prisma.discountBundle.findFirst({
     where: {
       storeId: storeId

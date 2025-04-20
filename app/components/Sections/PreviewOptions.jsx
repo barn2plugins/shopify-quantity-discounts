@@ -3,13 +3,8 @@ import {
   Checkbox,
   Text,
   TextField,
-  Grid,
-  ChoiceList,
-  InlineStack
 } from "@shopify/polaris";
 import { useState, useEffect } from "react";
-
-import LayoutSection from "./LayoutSection.jsx";
 
 export default function PreviewOptions({
   formState, 
