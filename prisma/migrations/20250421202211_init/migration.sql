@@ -108,5 +108,19 @@ CREATE TABLE "OrderAnalytics" (
     CONSTRAINT "OrderAnalytics_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "Options" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "storeId" INTEGER NOT NULL,
+    "key" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Options_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Store_sessionId_key" ON "Store"("sessionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Options_key_key" ON "Options"("key");

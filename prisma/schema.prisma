@@ -72,6 +72,7 @@ model Store {
   discountBundles DiscountBundle[]
   subscriptions   Subscription[]
   orderAnalytics  OrderAnalytics[]
+  options         Options[]
 }
 
 model DiscountBundle {
@@ -138,6 +139,18 @@ model OrderAnalytics {
   quantity            Int
   totalDiscountAmount String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Options {
+  id        Int   @id @default(autoincrement())
+  storeId   Int
+  store     Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  key       String @unique
+  value     String
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

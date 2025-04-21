@@ -18,7 +18,7 @@ import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getStoreDetails, isAppEmbedDisabled } from "../../services/store.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
-
+import { getOptionValue } from "../../services/options.service"
 import { getStoreAnalyticsData } from "../../utils/analytics"
 
 export const loader = async ({ request }) => {
@@ -30,7 +30,7 @@ export const loader = async ({ request }) => {
 
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
-  const store = await getStoreDetails(session.id, { activeThemeGid: true });
+  const store = await getStoreDetails(session.id, { id: true, activeThemeGid: true });
 
   const appEmbedDisabled = store ? await isAppEmbedDisabled({admin, store}) : true;
 
@@ -48,12 +48,15 @@ export const loader = async ({ request }) => {
 
   const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
 
+  const shouldHideSupportBanner = await getOptionValue({storeId: store.id, key: 'hideSupportBanner'});
+
   return { 
     analyticsData,
     discountBundles: discountBundles.bundles,
     appEmbedDisabled,
     bundlesDiscountsExtensionId,
     pagination: discountBundles.pagination,
+    shouldHideSupportBanner
   };
 };
 
@@ -83,9 +86,16 @@ export const action = async ({ request }) => {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const { analyticsData, discountBundles, appEmbedDisabled, bundlesDiscountsExtensionId, pagination } = useLoaderData();
+  const { 
+    analyticsData, 
+    discountBundles, 
+    appEmbedDisabled, 
+    bundlesDiscountsExtensionId, 
+    pagination,
+    shouldHideSupportBanner
+  } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
-  const [ displaySupportBanner, setDisplaySupportBanner ] = useState(true);
+  const [ displaySupportBanner, setDisplaySupportBanner ] = useState(!shouldHideSupportBanner);
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
   const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
@@ -116,7 +126,9 @@ export default function Index() {
               <DiscountAnalytics analyticsData={analyticsData}/>
               <BlockStack gap="1000">
                 <DiscountBundlesTable fetcher={fetcher} discountBundles={bundles} pagination={bundlesPagination} />
-                { displaySupportBanner && <SupportBlock setDisplaySupportBanner={setDisplaySupportBanner} /> }
+                { displaySupportBanner && 
+                  <SupportBlock setDisplaySupportBanner={setDisplaySupportBanner} fetcher={fetcher} /> 
+                }
               </BlockStack>
             </BlockStack>
           ) }
