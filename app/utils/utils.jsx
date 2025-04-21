@@ -177,8 +177,8 @@ export const getDefaultBundleDiscountTypes = () => {
       discount: '',
       discount_type: 'percentage',
       description: 'Buy 2 & save',
-      label: '',
-      highlighted: false,
+      label: 'Most popular',
+      highlighted: true,
     },
     {
       quantity: 3,
@@ -186,7 +186,7 @@ export const getDefaultBundleDiscountTypes = () => {
       discount_type: 'percentage',
       description: 'Buy 3 & save',
       label: '',
-      highlighted: true,
+      highlighted: false,
     }
   ];
 }

@@ -250,7 +250,7 @@
       }
 
       span {
-        font-size: 13px;
+        font-size: 14px;
         text-align: center;
         background: white;
         padding: 0 15px;
@@ -259,7 +259,7 @@
     }
 
     .main-description {
-      font-size: 11px;
+      font-size: 10px;
       text-align: center;
     }
   }
@@ -270,7 +270,7 @@
   overflow: hidden;
   width: 100%;
   max-width: 600px;
-  border: 1px solid var(--barn2-bundles-border-color, #0E54E1);
+  border: 1px solid var(--barn2-bundles-border-color, #000000);
   background-color: white;
 }
 
@@ -280,7 +280,7 @@
   
   thead {
     th {
-      background-color: var(--barn2-bundles-table-color, #0E54E1);
+      background-color: var(--barn2-bundles-table-color, #000000);
       color: var(--barn2-bundles-header-text-color, #ffffff);
       padding: 5px;
       text-align: center;
@@ -294,9 +294,9 @@
       padding: 8px 10px;
       text-align: center;
       font-size: 12px;
-      border-bottom: 1px solid var(--barn2-bundles-border-color, #0E54E1);
+      border-bottom: 1px solid var(--barn2-bundles-border-color, #000000);
       background-color: var(--barn2-bundles-background-color, #ffffff);
-      color: var(--barn2-bundles-text-color, #121212bf);
+      color: var(--barn2-bundles-text-color, #000000);
     }
   }
 
@@ -305,8 +305,8 @@
   }
 
   .discount-pill {
-    background-color: var(--barn2-bundles-label-color, #E0F0FF);
-    color: var(--barn2-bundles-label-text-color, #002E6A);
+    background-color: var(--barn2-bundles-label-color, #EDEDED);
+    color: var(--barn2-bundles-label-text-color, #000000);
     border-radius: 20px;
     padding: 1px 15px;
     display: inline-block;
@@ -367,19 +367,20 @@
 
 
     &.selected {
-      background-color: var(--barn2-bundles-highlighted-color, #cdfee1);
-      border-color: var(--p-color-icon-success);
+      background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
+      border-color: var(--barn2-bundles-highlighted-border-color, #616161);
 
       .input-field {
         .input-circle {
-          border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
+          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+        background-color: #fff;;
           border-width: 2px;
         }
       }
     }
 
     &.highlighted {
-      background-color: var(--barn2-bundles-highlighted-color, #cdfee1);
+      background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
 
       .bundle-title,
       .bundle-discounted-price,

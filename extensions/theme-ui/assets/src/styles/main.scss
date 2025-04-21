@@ -21,7 +21,7 @@
     position: relative;
 
     span {
-      font-size: 12px;
+      font-size: 14px;
       text-align: center;
       background: white;
       padding: 0 15px;
@@ -173,13 +173,13 @@
         border-radius: 0 0 10px 10px;
         padding: 0px 5px;
         font-size: 9px;
-        width: 79px;
-        right: calc(50% - 35px);
+        width: 78px;
+        right: calc(50% - 39px);
         line-height: 2;
       }
 
       &.highlighted {
-        border-color: var(--barn2-bundles-highlighted-border-color, #29845a);
+        border-color: var(--barn2-bundles-highlighted-border-color, rgb(97, 97, 97));
 
         .barn2-dbs-bundle-title,
         .barn2-dbs-price,
