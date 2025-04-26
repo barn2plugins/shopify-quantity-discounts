@@ -20,9 +20,7 @@ import AppBlockEmbed from "../components/Notice/AppBlockEmbed.jsx";
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 
-import DiscountModals from "../components/Modals/DiscountModals.jsx";
-
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject, editPageHasChanges } from "../utils/utils.jsx";
+import { getDefaultPricingTiers, parseBundleObject, editPageHasChanges } from "../utils/utils.jsx";
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export const loader = async ({ request, params }) => {
@@ -272,9 +270,13 @@ export default function DiscountPage() {
                 formState={formState}
                 setFormState={setFormState}
                 selectedProducts={selectedProducts}
+                setSelectedProducts={setSelectedProducts}
                 selectedCollections={selectedCollections}
+                setSelectedCollections={setSelectedCollections}
                 excludedProducts={excludedProducts}
+                setExcludedProducts={setExcludedProducts}
                 excludedCollections={excludedCollections}
+                setExcludedCollections={setExcludedCollections}
                 volumeBundles={volumeBundles}
                 setVolumeBundles={setVolumeBundles}
                 pricingTiers={pricingTiers}
@@ -296,18 +298,6 @@ export default function DiscountPage() {
           </div>
         </BlockStack>
       </Page>
-
-      <DiscountModals
-        selectedProducts={selectedProducts}
-        selectedCollections={selectedCollections}
-        excludedProducts={excludedProducts}
-        excludedCollections={excludedCollections}
-        setSelectedProducts={setSelectedProducts}
-        setSelectedCollections={setSelectedCollections}
-        setExcludedProducts={setExcludedProducts}
-        setExcludedCollections={setExcludedCollections}
-        fetcher={fetcher}
-      />
     </div>
   );
 }

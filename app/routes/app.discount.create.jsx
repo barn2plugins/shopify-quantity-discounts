@@ -18,10 +18,9 @@ import { getCollections } from "../services/collection.service";
 
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
-import DiscountModals from "../components/Modals/DiscountModals.jsx";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../utils/utils";
-
+import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
@@ -29,16 +28,20 @@ export const loader = async ({ request }) => {
     currency: true,
     ianaTimezone: true,
     moneyFormat: true,
+    isPartnerDevelopment: true,
   });
 
   const defaultBundle = await getDefaultBundle({sessionId: session.id, timezone: store.ianaTimezone});
+  const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
   return {
     defaultBundle,
+    isSubscribed,
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
       moneyFormat: store.moneyFormat || '{{amount}} {{currency}}',
+      isPartnerDevelopment: store?.isPartnerDevelopment,
     }
   };
 };
@@ -100,7 +103,7 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
-  const { defaultBundle, store } = useLoaderData();
+  const { defaultBundle, isSubscribed, store } = useLoaderData();
   
   const [ formState, setFormState ] = useState(defaultBundle);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
@@ -170,14 +173,17 @@ export default function DiscountPage() {
               formState={formState}
               setFormState={setFormState}
               selectedProducts={selectedProducts}
+              setSelectedProducts={setSelectedProducts}
               selectedCollections={selectedCollections}
+              setSelectedCollections={setSelectedCollections}
               excludedProducts={excludedProducts}
+              setExcludedProducts={setExcludedProducts}
               excludedCollections={excludedCollections}
+              setExcludedCollections={setExcludedCollections}
               volumeBundles={volumeBundles}
               setVolumeBundles={setVolumeBundles}
               pricingTiers={pricingTiers}
               setPricingTiers={setPricingTiers}
-              discountBundle={defaultBundle}
               store={store}
               shopify={shopify}
             />
@@ -187,25 +193,13 @@ export default function DiscountPage() {
               formState={formState}
               setFormState={setFormState}
               volumeBundles={volumeBundles}
+              isSubscribed={isSubscribed}
               pricingTiers={pricingTiers}
               store={store}
             />
           </div>
         </div>
       </Page>
-
-      <DiscountModals
-        selectedProducts={selectedProducts}
-        selectedCollections={selectedCollections}
-        excludedProducts={excludedProducts}
-        excludedCollections={excludedCollections}
-        setSelectedProducts={setSelectedProducts}
-        setSelectedCollections={setSelectedCollections}
-        setExcludedProducts={setExcludedProducts}
-        setExcludedCollections={setExcludedCollections}
-        fetcher={fetcher}
-      />
-
     </div>
   );
 }

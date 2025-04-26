@@ -20,6 +20,12 @@ export const action = async ({ request }) => {
 }
 
 export default function SupportPage() {
+
+  const openDocumentationPage = () => {
+    const documentationUrl = 'https://barn2.com/kb-categories/barn2-bundles-discounts-documentation/'
+    window.open(documentationUrl, '_blank');
+  }
+
   return (
     <Page
       title="We're here to help"
@@ -49,7 +55,7 @@ export default function SupportPage() {
                     Explore our comprehensive documentation and step-by-step video tutorials to quickly find the answers you need.
                   </Text>
                   <ButtonGroup>
-                    <Button>Documentation</Button>
+                    <Button onClick={() => openDocumentationPage()}>Documentation</Button>
                     <Button>Getting started video</Button>
                   </ButtonGroup>
                 </BlockStack>

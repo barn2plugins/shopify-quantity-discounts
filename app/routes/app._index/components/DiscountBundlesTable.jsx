@@ -256,6 +256,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
                     {bundles.map(
                       (bundle, index) => 
                         <SortableRow
+                          key={index}
                           bundle={bundle}
                           index={index}
                           renderRowActions={renderRowActions}

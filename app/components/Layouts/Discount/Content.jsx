@@ -13,9 +13,13 @@ export default function Content({
   formState,
   setFormState,
   selectedProducts,
+  setSelectedProducts,
   selectedCollections,
+  setSelectedCollections,
   excludedProducts,
+  setExcludedProducts,
   excludedCollections,
+  setExcludedCollections,
   volumeBundles,
   setVolumeBundles,
   pricingTiers,
@@ -44,9 +48,16 @@ export default function Content({
           <ProductSelectionSection 
             formState={formState}
             setFormState={setFormState}
-            selectedCollections={selectedCollections}
             shopify={shopify}
             buttonLabels={buttonLabels}
+            selectedProducts={selectedProducts}
+            setSelectedProducts={setSelectedProducts}
+            selectedCollections={selectedCollections}
+            setSelectedCollections={setSelectedCollections}
+            excludedProducts={excludedProducts}
+            setExcludedProducts={setExcludedProducts}
+            excludedCollections={excludedCollections}
+            setExcludedCollections={setExcludedCollections}
           />
           <ActiveDatesSections
             formState={formState}
