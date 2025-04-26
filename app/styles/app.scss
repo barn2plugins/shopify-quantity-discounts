@@ -82,6 +82,31 @@
     }
     .discount-sidebar {
       flex: 0 0 calc(40% - 10px);
+
+      .pricing_card_bleed {
+        background-color: var(--p-color-bg-surface-success);
+        padding: 16px;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .pricing_card_inner {
+        padding: 20px;
+      }
+
+      .sidebar-preview-block {
+        position: relative;
+
+        &.should-disable::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: #ffffffa6;
+          top: 0;
+          left: 0px;
+          z-index: 999;
+        }
+      }
     }
   }
 

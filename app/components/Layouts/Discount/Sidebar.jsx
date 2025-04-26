@@ -4,10 +4,13 @@ import {
   Card,
 } from '@shopify/polaris';
 import { useEffect } from 'react';
+import classNames from 'classnames/dedupe';
 
 // Internal libraries and components
 import PreviewToggle from '../../Sections/PreviewToggle';
 import VolumeBundlePreview from '../../Sections/VolumeBundlePreview';
+import LayoutSection from "../../Sections/LayoutSection.jsx";
+import SidebarUpgraderBanner from "../../Sections/SidebarUpgraderBanner.jsx";
 import BulkPricingPreview from '../../Sections/BulkPricingPreview';
 import PreviewOptions from '../../Sections/PreviewOptions';
 import { setCustomDesignStyles } from '../../../utils/utils';
@@ -17,6 +20,7 @@ export default function Sidebar({
   setFormState,
   volumeBundles,
   pricingTiers,
+  isSubscribed,
   store
 }) {
 
@@ -55,41 +59,60 @@ export default function Sidebar({
   }, [formState]);
 
   return (
-    <Card>
-      <BlockStack gap={formState.previewEnabled ? 500 : 10}>
-        <BlockStack gap={formState.type === 'volume_bundle' ? 200 : 500}>
-          <PreviewToggle
-            formState={formState}
-            setFormState={setFormState}
-          />
+    <BlockStack gap={600}>
+      { !store.isPartnerDevelopment && !isSubscribed && <SidebarUpgraderBanner/> }
+      <Card>
+        <div 
+          className={classNames(
+            'sidebar-preview-block',
+            {
+              'should-disable': !store.isPartnerDevelopment && !isSubscribed,
+            }
+          )}
+        >
+          <BlockStack gap={formState.previewEnabled ? 500 : 10}>
+            <BlockStack gap={formState.type === 'volume_bundle' ? 200 : 500}>
+              <PreviewToggle
+                formState={formState}
+                setFormState={setFormState}
+              />
 
-          { formState.type === 'volume_bundle' && 
-            <VolumeBundlePreview
-              formState={formState}
-              setFormState={setFormState}
-              volumeBundles={volumeBundles}
-              store={store}
-            />
-          }
+              { formState.type === 'volume_bundle' && 
+                <VolumeBundlePreview
+                  formState={formState}
+                  setFormState={setFormState}
+                  volumeBundles={volumeBundles}
+                  store={store}
+                />
+              }
 
-          { formState.type === 'bulk_pricing' && 
-            <BulkPricingPreview
-              formState={formState}
-              setFormState={setFormState}
-              pricingTiers={pricingTiers}
-              store={store}
-            />
-          }
-        </BlockStack>
+              { formState.type === 'bulk_pricing' && 
+                <BulkPricingPreview
+                  formState={formState}
+                  setFormState={setFormState}
+                  pricingTiers={pricingTiers}
+                  store={store}
+                />
+              }
+            </BlockStack>
 
-        <BlockStack gap={500}>
-          <PreviewOptions 
-            formState={formState}
-            setFormState={setFormState}
-            volumeBundles={volumeBundles}
-          />
-        </BlockStack>
-      </BlockStack>
-    </Card>
+            <BlockStack gap={500}>
+              <PreviewOptions 
+                formState={formState}
+                setFormState={setFormState}
+                volumeBundles={volumeBundles}
+              />
+
+              { formState?.type === 'volume_bundle' && 
+                <LayoutSection
+                  formState={formState}
+                  setFormState={setFormState}
+                />
+              }
+            </BlockStack>
+          </BlockStack>
+        </div>
+      </Card>
+    </BlockStack>
   )
 }

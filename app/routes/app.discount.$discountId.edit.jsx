@@ -23,6 +23,7 @@ import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 import DiscountModals from "../components/Modals/DiscountModals.jsx";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, parseBundleObject, editPageHasChanges } from "../utils/utils.jsx";
+import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export const loader = async ({ request, params }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -36,6 +37,7 @@ export const loader = async ({ request, params }) => {
     volumeDiscountFunctionId: true,
     activeThemeGid: true,
     moneyFormat: true,
+    isPartnerDevelopment: true,
   });
 
   const appEmbedDisabled = await isAppEmbedDisabled({admin, store});
@@ -50,14 +52,18 @@ export const loader = async ({ request, params }) => {
     });
   }
 
+  const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
+
   return { 
     discountBundle: parsedDiscountBundle, 
     appEmbedDisabled,
+    isSubscribed,
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
       bundlesDiscountsExtensionId,
       moneyFormat: store.moneyFormat || '{{amount}} {{currency}}',
+      isPartnerDevelopment: store?.isPartnerDevelopment,
     }
   };
 }
@@ -120,7 +126,7 @@ export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();
-  const { discountBundle, appEmbedDisabled, store } = useLoaderData();
+  const { discountBundle, appEmbedDisabled, isSubscribed, store } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
@@ -283,6 +289,7 @@ export default function DiscountPage() {
                 setFormState={setFormState}
                 volumeBundles={volumeBundles}
                 pricingTiers={pricingTiers}
+                isSubscribed={isSubscribed}
                 store={store}
               />
             </div>

@@ -13,7 +13,7 @@ import {
 import {CheckIcon} from '@shopify/polaris-icons';
 import {useState} from 'react';
 
-export default function PlansReviews({
+export default function PricingBlock({
   currentSubscription, 
   defaultPlans, 
   fetcher, 

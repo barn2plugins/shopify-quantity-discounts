@@ -3,13 +3,8 @@ import { useNavigate } from "@remix-run/react";
 export default function PartnerDevelopment() {
   const navigate = useNavigate();
 
-  const styles = {
-
-  }
-
   const navigateToPlans = (e) => {
     e.preventDefault();
-    console.log('clicked'); 
     navigate('/app/plans')
   }
 

@@ -8,7 +8,7 @@ import { authenticate } from "../shopify.server";
 import { defaultPlans, userReviews } from "../utils/plans";
 import { getActiveSubscriptionForCurrentSession } from "../services/subscription.service";
 
-import PlansPricing from '../components/Sections/PlansPricing';
+import PricingBlock from '../components/Sections/PricingBlock';
 import PlansReviews from '../components/Sections/PlansReviews';
 import { useState, useEffect } from "react";
 
@@ -51,7 +51,7 @@ export default function PlansPage() {
         title={ 'My plan' }
       >
         <BlockStack gap={1000}>
-          <PlansPricing 
+          <PricingBlock 
             currentSubscription={currentSubscription}
             defaultPlans={defaultPlans} 
             fetcher={fetcher} 

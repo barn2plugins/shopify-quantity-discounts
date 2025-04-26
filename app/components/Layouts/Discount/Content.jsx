@@ -3,7 +3,6 @@ import { BlockStack, Card } from "@shopify/polaris";
 import DiscountNameSection from "../../Sections/DiscountNameSection.jsx";
 import DiscountTypeSection from "../../Sections/DiscountTypeSection.jsx";
 import ProductSelectionSection from "../../Sections/ProductSelectionSection.jsx";
-import LayoutSection from "../../Sections/LayoutSection.jsx";
 import ActiveDatesSections from "../../Sections/ActiveDatesSections.jsx";
 import VolumeBundleSection from "../../Sections/VolumeBundleSection.jsx";
 import BulkPricingTiers from "../../Sections/BulkPricingTiers.jsx";
@@ -54,12 +53,6 @@ export default function Content({
             setFormState={setFormState}
             timezone={store?.ianaTimezone}
           />
-          { formState?.type === 'volume_bundle' && 
-            <LayoutSection
-              formState={formState}
-              setFormState={setFormState}
-            />
-          }
         </BlockStack>
       </Card>
 
