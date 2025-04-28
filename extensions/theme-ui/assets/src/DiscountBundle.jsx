@@ -17,7 +17,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
    * @description Uses Shopify Analytics data to get product variants. Falls back to 0 if no variants are found
    */
   const getFirstVariant = () => {
-    const variants = window?.ShopifyAnalytics?.meta?.product?.variants || [];
+    const variants = window.b2ProductData?.product?.variants || [];
     if (variants.length > 0) {
       return variants[0];
     }
@@ -31,7 +31,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
    * @returns {void}
    */
   const setCurrentVariantById = (variantId) => {
-    const variants = window?.ShopifyAnalytics?.meta?.product?.variants || [];
+    const variants = window.b2ProductData?.product?.variants || [];
     const currentVariant = variants.find(v => v.id === Number(variantId));
 
     if (currentVariant) {

@@ -78,6 +78,7 @@ export default function VolumeBundleSection({
    */
   const addNewBundle = () => {
     const newBundle = {
+      id: volumeBundles.length + 1,
       quantity: volumeBundles.length + 1,
       discount: '',
       discount_type: 'percentage',

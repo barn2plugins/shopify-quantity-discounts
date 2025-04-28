@@ -118,7 +118,12 @@
         cursor: pointer;
       }
 
-      h4, p, span {
+      h4, p {
+        margin: 0px;
+        padding: 0px;
+      }
+      
+      span:not(.barn2-db-bar-number) {
         margin: 0px;
         padding: 0px;
       }
@@ -196,7 +201,7 @@
 
       .barn2-discount-bundle {
         flex-direction: row;
-        align-items: center;
+        align-items: self-start;
         justify-content: space-between;
         padding: var(--p-space-400) var(--p-space-500);
 
@@ -219,7 +224,7 @@
 
         &.highlighted {
           .barn2-highlighted-text {
-            right: 65px
+            right: 80px
           }
         }
       }
@@ -257,6 +262,82 @@
       }
       &.discount-columns-9 {
         grid-template-columns: repeat(9, 1fr);
+      }
+    }
+  }
+}
+
+.barn2-db-bars-wrapper {
+  border-top: 1px solid rgba(0,0,0,.4);
+  margin-top: 20px;
+
+  .barn2-db-bars {
+    margin-top: 18px; 
+  }
+}
+
+.barn2-db-bars {
+  margin-top: 20px;
+
+  .barn2-dbs-stock-unavailable {
+    color: #d00;
+    font-size: 12px;
+    margin-bottom: 10px;
+    padding-left: 30px;
+    margin-top: -5px;
+  }
+}
+
+.barn2-db-bar {
+  display: flex;
+  margin-bottom: 8px;
+  align-items: self-start;
+
+  .barn2-db-bar-number {
+    background-color: #001;
+    height: 20px;
+    width: 20px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    margin-right: 10px;
+    border-radius: 100px;
+    margin-top: 6px;
+  }
+
+  .barn2-dbs-select-variants {
+    display: grid;
+    gap: 8px;
+    width: calc(100% - 40px);
+    grid-template-columns: 50% 50%;
+
+    .barn2-dbs-variant {
+      width: 100%;
+
+      select {
+        height: 27px;
+        width: 100%;
+        border: 1px solid rgba(0,0,0,.4);
+        padding: 2px 4px;
+        color: #6b6868;
+        font-size: 12px;
+
+        &:focus {
+          outline: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  &[data-variant-available="false"] {
+    .barn2-dbs-select-variants {
+      .barn2-dbs-variant {
+        select {
+          border-color: #d00;
+        }
       }
     }
   }

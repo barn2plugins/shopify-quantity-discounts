@@ -13,12 +13,12 @@ if (barn2Block) {
   initializeApp(barn2Block);
 } else {
   // If block not found, look for quantity input
-  const quantityInput = document.querySelector('product-form.product-form');
-  if (quantityInput) {
+  const productForm = document.querySelector('product-form.product-form');
+  if (productForm) {
     const appContainer = document.createElement('div');
     appContainer.id = 'barn2_discounts';
     appContainer.classList.add('barn2_discounts');
-    quantityInput.parentNode.insertBefore(appContainer, quantityInput.nextSibling);
+    productForm.parentNode.insertBefore(appContainer, productForm.nextSibling);
     initializeApp(appContainer);
   }
 }

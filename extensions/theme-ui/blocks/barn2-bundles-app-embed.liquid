@@ -5,7 +5,9 @@
       id: {{ product.id }},
       price: {{ product.price | json }},
       compareAtPrice: {{ product.compare_at_price | json }},
-      collection: {{ product.collections | json }}
+      collection: {{ product.collections | json }},
+      variants: {{ product.variants | json }},
+      options: {{ product.options_with_values | json }},
     },
     storeCurrency: {{ shop.currency | json }},
     volumeBundles: {{ shop.metafields.barn2_bundles.product_discount.value | json }}

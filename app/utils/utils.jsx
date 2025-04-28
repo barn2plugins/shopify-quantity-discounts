@@ -165,6 +165,7 @@ export const currencyCodeToSymbol = (code) => {
 export const getDefaultBundleDiscountTypes = () => {
   return [
     {
+      id: 1,
       quantity: 1,
       discount: '',
       discount_type: 'percentage',
@@ -173,6 +174,7 @@ export const getDefaultBundleDiscountTypes = () => {
       highlighted: false,
     },
     {
+      id: 2,
       quantity: 2,
       discount: '',
       discount_type: 'percentage',
@@ -181,6 +183,7 @@ export const getDefaultBundleDiscountTypes = () => {
       highlighted: true,
     },
     {
+      id: 3,
       quantity: 3,
       discount: '',
       discount_type: 'percentage',

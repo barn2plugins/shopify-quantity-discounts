@@ -6,12 +6,9 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
   const [volumeBundles, setVolumeBundles] = useState([]);
   const [layout, setLayout] = useState();
   const [previewOptions, setPreviewOptions] = useState([]);
-
-  useEffect(() => {
-      setVolumeBundles(JSON.parse(bundleData.volumeBundles || []));
-      setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
-      setLayout(bundleData.layout)
-  }, [])
+  const [shopifyProductOptions, setShopifyProductOptions] = useState(window.b2ProductData?.product?.options || []);
+  const [shopifyProductVariants, setShopifyProductVariants] = useState(window.b2ProductData?.product?.variants || []);
+  const [selectedVariants, setSelectedVariants] = useState([]);
 
   const displayFormattedPrice = (price) => {
     return storeDetails.moneyFormat.replace('{{amount}}', price);
@@ -93,28 +90,193 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
   /**
    * Updates the product quantity input field with the selected bundle's quantity
    *
-   * @param {Object} bundle - The bundle object containing quantity information
-   * @param {number} bundle.quantity - The quantity of items in the bundle
+   * @param {number} quantity - The quantity of items in the bundle
    */
-  const updateProductQuantity = (bundle) => {
+  const updateProductQuantity = (quantity) => {
     const quantityInput = document.querySelector('.product-form__input.product-form__quantity input[type="number"]');
     if (quantityInput) {
-      quantityInput.value = bundle.quantity;
+      quantityInput.value = quantity;
       // Trigger change event to update any listeners
       quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
     }
   };
 
+  const isBundleSelected = (bundle) => {
+    if (!selectedBundle) return false;
+    return selectedBundle.id === bundle.id;
+  };
+
+  const getCurrentVariantValue = (barIndex, optionIndex) => {
+    if (!selectedVariants?.[barIndex]) return '';
+
+    const currentVariantOptions = selectedVariants[barIndex].options;
+
+    return currentVariantOptions?.[optionIndex] || '';
+  };
+
+  const setBundleSelectedVariants = () => {
+    if (selectedBundle === null) return;
+    // Get initial variant selections
+    const initialVariantSelection = {
+      available: currentVariant.available,
+      id: currentVariant.id,
+      options: currentVariant.options
+    };
+
+    // Create array with duplicated selections based on quantity
+    const duplicatedSelections = Array(selectedBundle.quantity)
+    .fill(null)
+    .map(() => ({...initialVariantSelection}));
+  
+    setSelectedVariants(duplicatedSelections);
+  }
+
+  const updateProductVariantOnPage = (variantId) => {
+    // Update the URL with the new variant ID
+    const url = new URL(window.location.href);
+    url.searchParams.set('variant', variantId);
+    window.history.replaceState({}, '', url.toString());
+    window.dispatchEvent(new Event('popstate'));
+
+    // Find and update hidden variant ID input if it exists
+    const variantInput = document.querySelector('.product-variant-id');
+    if (variantInput) {
+      variantInput.value = variantId;
+      variantInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  const handleVariantChange = (e, barIndex, optionIndex) => {
+    setSelectedVariants((prevSelectedVariants) => {
+      const updatedVariants = prevSelectedVariants.map((variant, index) => {
+        if (index === barIndex) {
+          return {
+            ...variant,
+            options: variant.options.map((opt, idx) => 
+              idx === optionIndex ? e.target.value : opt
+            )
+          };
+        }
+        return variant;
+      });
+                              
+      // Find matching variant
+      const matchingVariant = shopifyProductVariants.find(variant => {
+        return variant.options.every((option, index) => 
+          option === updatedVariants[barIndex].options[index]
+        );
+      });
+
+      updateProductVariantOnPage(matchingVariant.id);
+
+      // Update the availability status for the current variant and ID
+      updatedVariants[barIndex].id = matchingVariant.id;
+      updatedVariants[barIndex].available = matchingVariant.available;
+
+      return updatedVariants;
+    });
+  }
+
   useEffect(() => {
     // Find the highlighted bundle
     const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
     if (highlightedBundle) {
-      const bundleIndex = volumeBundles.indexOf(highlightedBundle);
-      setSelectedBundle(bundleIndex);
-      // Set product quantity to the highlighted bundle's quantity
-      updateProductQuantity(highlightedBundle);
+      setSelectedBundle(highlightedBundle);
+      updateProductQuantity(highlightedBundle.quantity);
     }
   }, [volumeBundles]);
+
+  useEffect(() => {
+    setBundleSelectedVariants();
+  }, [selectedBundle, currentVariant]);
+  
+  /**
+   * Updates the product quantity input field with the selected bundle's quantity
+   *
+   * @param {number} quantity - The quantity of items in the bundle
+   */
+  useEffect(() => {
+    if (selectedBundle === null) return;
+    updateProductQuantity(selectedBundle.quantity);
+  }, [selectedBundle]);
+
+  useEffect(() => {
+    // Check whether all variants match or not
+    const allVariantsMatch = selectedVariants.every((variant, _, array) => 
+      variant.id === array[0].id
+    );
+
+    const submitButton = document.querySelector('[type="submit"]');
+    const productForm = submitButton?.closest('form');
+
+    if (allVariantsMatch) {
+      updateProductQuantity(selectedVariants.length);
+      submitButton.classList.remove('b2-different-variants-selected');
+    } else {
+      updateProductQuantity(1);
+      submitButton.classList.add('b2-different-variants-selected');
+    }
+
+    // Add event listener to the submit button
+    const handleSubmit = async (e) => {
+      if (!submitButton.classList.contains('b2-different-variants-selected')) {
+        return;
+      }
+
+      e.preventDefault();
+      e.target.setAttribute('disabled', 'disabled');
+      
+      const variantInput = document.querySelector('.product-variant-id');
+      // Get all variant IDs except the current one
+      const otherVariants = selectedVariants
+        .filter(variant => variant.id !== parseInt(variantInput.value))
+        .filter(variant => variant.available)
+        .map(variant => variant.id);
+
+      const variantIds = {
+        items: [
+          ...otherVariants.map(variantId => ({
+            id: variantId,
+            quantity: 1
+          }))
+        ]
+      };
+
+      try {
+        // Add other variants to the cart before submitting the form
+        await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(variantIds)
+        }).then(() => {
+          e.target.removeAttribute('disabled');
+        });
+
+        // Then summit the form
+        const submitEvent = new SubmitEvent('submit', {
+          bubbles: true,
+          cancelable: true
+        });
+        productForm.dispatchEvent(submitEvent);
+      } catch (error) {
+      }
+    };
+
+    submitButton?.addEventListener('click', handleSubmit);
+
+    // Cleanup function to remove event listener
+    return () => {
+      submitButton?.removeEventListener('click', handleSubmit);
+    };
+  }, [selectedVariants]);
+
+  useEffect(() => {
+    setVolumeBundles(JSON.parse(bundleData.volumeBundles || []));
+    setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
+    setLayout(bundleData.layout);
+  }, []);
 
   return (
     <div className="barn2-discount-bundles">
@@ -146,30 +308,70 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
                 'barn2-discount-bundle',
                 {
                   'highlighted': bundle.highlighted,
-                  'selected': selectedBundle === index,
+                  'selected': isBundleSelected(bundle),
                 }
               )}
               onClick={() => {
-                setSelectedBundle(index);
-                updateProductQuantity(bundle);
+                setSelectedBundle(bundle);
+                updateProductQuantity(bundle.quantity);
               }}
             >
               { bundle.label.length > 0 && <span className="barn2-highlighted-text">{bundle.label}</span>}
               <div className="barn2-dbs-top">
                 <span className="barn2-input-circle"></span>
-                <div className="barn2-dbs-text-block">
-                  <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
-                  { previewOptions.amountSaved && <p>{discountText(bundle)}</p> }
+                <div className="barn2-dbs-text-block-wrapper">
+                  <div className="barn2-dbs-text-block">
+                    <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
+                    { previewOptions.amountSaved && <p>{discountText(bundle)}</p> }
+                  </div>
+                  { bundleData.layout === 'horizontal' && isBundleSelected(bundle) && (shopifyProductOptions[0].values.length > 1) && selectedBundle?.quantity > 1 && getVariantPickerBars() }
                 </div>
               </div>
               <div className="barn2-dbs-bottom">
                 <span className="barn2-dbs-price">{calculatePrice(bundle, 'discounted')}</span>
-                { previewOptions.showOriginalPrice && <span className="barn2-dbs-regular-price">{calculatePrice(bundle, 'regular')}</span> }
+                { previewOptions.showOriginalPrice && bundle.discount && <span className="barn2-dbs-regular-price">{calculatePrice(bundle, 'regular')}</span> }
               </div>
             </div>
           )
         })}
       </div>
+
+      { bundleData.layout === 'vertical' && (shopifyProductOptions[0].values.length > 1) && selectedBundle?.quantity > 1 && (
+        <div className="barn2-db-bars-wrapper">{getVariantPickerBars()}</div>
+      ) }
     </div>
   )
+
+  function getVariantPickerBars() {
+    return (
+      <div className="barn2-db-bars">
+        {Array.from({ length: selectedBundle.quantity }).map((_, barIndex) => (
+          <div key={barIndex}>
+            <div className="barn2-db-bar" data-variant-available={selectedVariants[barIndex]?.available}>
+              <span className="barn2-db-bar-number">{barIndex + 1}</span>
+              <div className="barn2-dbs-select-variants">
+              { shopifyProductOptions.map((option, optionIndex) => {
+                return (
+                  <div className="barn2-dbs-variant" key={optionIndex}>
+                    <select
+                      value={getCurrentVariantValue(barIndex, optionIndex)}
+                      onChange={(e) => {handleVariantChange(e, barIndex, optionIndex)}}
+                    >
+                      { option.values.map((value, optionIndex) => {
+                        return (
+                          <option key={optionIndex} value={value}>{value}</option>
+                        )
+                      })}
+                    </select>
+                  </div>
+                )
+              })}
+              </div>
+            </div>
+            { !selectedVariants[barIndex]?.available && <p className="barn2-dbs-stock-unavailable">Sorry, this is currently unavailable.</p> }
+          </div>
+        ))}
+      </div>
+    )
+  }
 }
