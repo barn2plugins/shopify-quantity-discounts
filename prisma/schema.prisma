@@ -131,13 +131,9 @@ model OrderAnalytics {
   storeId Int
   store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  cartLineId          BigInt
-  productId           BigInt
-  variantId           BigInt
-  productTitle        String
-  price               String
-  quantity            Int
-  totalDiscountAmount String
+  orderId               BigInt
+  lineItems             String
+  discountedOrderValue  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

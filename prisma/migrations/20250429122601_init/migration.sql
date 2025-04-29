@@ -96,13 +96,9 @@ CREATE TABLE "Subscription" (
 CREATE TABLE "OrderAnalytics" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "storeId" INTEGER NOT NULL,
-    "cartLineId" BIGINT NOT NULL,
-    "productId" BIGINT NOT NULL,
-    "variantId" BIGINT NOT NULL,
-    "productTitle" TEXT NOT NULL,
-    "price" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL,
-    "totalDiscountAmount" TEXT NOT NULL,
+    "orderId" BIGINT NOT NULL,
+    "lineItems" TEXT NOT NULL,
+    "discountedOrderValue" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "OrderAnalytics_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE CASCADE ON UPDATE CASCADE

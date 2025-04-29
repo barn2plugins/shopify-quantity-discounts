@@ -310,8 +310,11 @@
   .barn2-dbs-select-variants {
     display: grid;
     gap: 8px;
-    width: calc(100% - 40px);
-    grid-template-columns: 50% 50%;
+    
+    &:not(.barn2-dbs-variants-number-1) {
+      width: calc(100% - 40px);
+      grid-template-columns: 50% 50%;
+    }
 
     .barn2-dbs-variant {
       width: 100%;

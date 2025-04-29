@@ -41,15 +41,14 @@ export const loader = async ({ request, params }) => {
   const appEmbedDisabled = await isAppEmbedDisabled({admin, store});
 
   const discountBundle = await getBundle({storeId: store.id, bundleId: params.discountId});
-  const parsedDiscountBundle = await parseBundleObject({ discountBundle });
-
-  if (!parsedDiscountBundle) {
+  if (!discountBundle) {
     throw new Response("Discount bundle not found", {
       status: 404,
       statusText: "Not Found"
     });
   }
 
+  const parsedDiscountBundle = await parseBundleObject({ discountBundle });
   const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
   return { 

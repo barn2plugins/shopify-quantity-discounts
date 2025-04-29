@@ -24,27 +24,41 @@ export const action = async ({ request }) => {
 
   // Find the discount bundle lineItems from the payload
   const lineItems = payload.line_items;
-  const discountBundleLineItems = lineItems.map((lineItem) => {
+  
+  // Trim out the lineItems to save in the database only the necessary fields
+  const parsedLineItems = lineItems.map((lineItem) => {
+    return {
+      cartLineId: lineItem.id,
+      productId: lineItem.product_id,
+      variantId: lineItem.variant_id,
+      title: lineItem.title,
+      variantTitle: lineItem.name,
+      quantity: lineItem.quantity,
+      price: lineItem.price,
+      discountAllocations: lineItem.discount_allocations
+    };
+  });
+
+  // Calculate the discounted order value
+  const discountedOrderValue = lineItems.reduce((total, lineItem) => {
     if (lineItem.discount_allocations.length === 0) {
-      return false;
+      return total;
     }
     const totalDiscountAmount = lineItem.discount_allocations.reduce((sum, allocation) => {
       return sum + parseFloat(allocation.amount);
     }, 0);
 
-    return {
-      ...lineItem,
-      totalDiscountAmount
-    };
-  }).filter(Boolean);
+    const originalTotal = parseFloat(lineItem.price) * parseInt(lineItem.quantity);
+    const finalPrice = originalTotal - totalDiscountAmount;
 
-  /* todo: Save the discount analytics to the database */
+    return total + finalPrice;
+  }, 0);
 
-  if (discountBundleLineItems.length === 0) {
+  if (discountedOrderValue == 0) {
     return new Response();
   }
 
-  await saveOrderAnalytics({discountBundleLineItems, sessionId: session?.id});
+  await saveOrderAnalytics({orderId: payload.id, parsedLineItems, discountedOrderValue, sessionId: session?.id});
 
   return new Response();
 };

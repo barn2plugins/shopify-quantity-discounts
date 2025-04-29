@@ -349,7 +349,7 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
           <div key={barIndex}>
             <div className="barn2-db-bar" data-variant-available={selectedVariants[barIndex]?.available}>
               <span className="barn2-db-bar-number">{barIndex + 1}</span>
-              <div className="barn2-dbs-select-variants">
+              <div className={`barn2-dbs-select-variants barn2-dbs-variants-number-${shopifyProductOptions.length}`}>
               { shopifyProductOptions.map((option, optionIndex) => {
                 return (
                   <div className="barn2-dbs-variant" key={optionIndex}>

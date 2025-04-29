@@ -54,10 +54,10 @@ export const getOrderAnalytics = async (params) => {
   const discountedMonthlyOrders = currentMonthsOrderAnalytics.length;
   const discountedAllTimeOrders = allTimeOrderAnalytics.length;
   const discountedMonthlyRevenue = currentMonthsOrderAnalytics.reduce((total, order) => {
-    return Number((total + (parseFloat(order.price) * order.quantity)).toFixed(2));  
+    return Number(total + parseFloat(order.discountedOrderValue)).toFixed(2);  
   }, 0);
   const discountedAllTimeRevenue = allTimeOrderAnalytics.reduce((total, order) => {
-    return Number((total + (parseFloat(order.price) * order.quantity)).toFixed(2));
+    return Number(total + parseFloat(order.discountedOrderValue)).toFixed(2);  
   }, 0);
   
   return {
