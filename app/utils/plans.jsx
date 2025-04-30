@@ -41,7 +41,7 @@ export const userReviews = [
       name: 'Larissa',
       location: 'United Kingdom',
     },
-    title: 'Super Helpful',
+    title: 'Super helpful',
     description: 'A wonderful company that has helped me with all of my needs and has even gone the extra mile without charging extra. Special thanks to Adrian and the developers for sorting out our problems in a speedy and professional manner.',
     rating: 5,
   },

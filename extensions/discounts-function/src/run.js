@@ -46,6 +46,8 @@ export function run(input) {
   
   // Extract eligibility rules
   const targetMode = configuration.targetMode || "all_products";
+  const discountType = configuration.discountType || "volume_discount";
+  const discountCalculation = configuration.discountType === 'bulk_pricing' ? configuration.discountCalculation : "individual_products";
   const selectedProductIds = getObjectIds(configuration.selectedProductIds || []);
   const excludedProductIds = getObjectIds(configuration.excludedProductIds || '');
   
@@ -85,6 +87,48 @@ export function run(input) {
         return false;
     }
   });
+
+  /** @type {Discount[]} */
+  const discounts = [];
+
+  // Handle bulk pricing for entire cart
+  if (discountType === 'bulk_pricing' && discountCalculation === 'entire_cart') {
+    // Calculate total quantity across all eligible lines
+    const totalCartQuantity = eligibleLines.reduce((sum, line) => sum + line.quantity, 0);
+    
+    // Find applicable discount tier for total cart quantity
+    const applicableDiscount = configuration.discounts.find(discountTier => {
+      const quantityConfig = discountTier.targets?.[0]?.productVariant?.quantity;
+      
+      if (!quantityConfig) return false;
+      
+      const minQuantity = quantityConfig.min || 0;
+      const maxQuantity = quantityConfig.max || Infinity;
+      
+      return totalCartQuantity >= minQuantity && 
+             (maxQuantity === undefined || totalCartQuantity <= maxQuantity);
+    });
+    
+    if (applicableDiscount) {
+      // Apply the same discount to all eligible lines
+      const targets = eligibleLines.map(line => ({
+        cartLine: { id: line.id }
+      }));
+      
+      discounts.push({
+        targets,
+        value: applicableDiscount.value,
+        message: configuration.campaignName || ''
+      });
+      
+      return {
+        discounts,
+        discountApplicationStrategy: DiscountApplicationStrategy.Maximum,
+      };
+    }
+    
+    return EMPTY_DISCOUNT;
+  }
   
   // Group eligible cart lines by product ID
   const productGroups = {};
@@ -103,9 +147,6 @@ export function run(input) {
   });
   
   console.log(`Grouped into ${Object.keys(productGroups).length} product groups`);
-  
-  /** @type {Discount[]} */
-  const discounts = [];
   
   // Process each product group separately
   Object.entries(productGroups).forEach(([productId, group]) => {

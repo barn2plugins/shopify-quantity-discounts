@@ -25,8 +25,7 @@ export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   
   const page = 1;
-  
-  const limit = 20;
+  const limit = 25;
 
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
@@ -48,7 +47,7 @@ export const loader = async ({ request }) => {
 
   const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
 
-  const shouldHideSupportBanner = await getOptionValue({storeId: store.id, key: 'hideSupportBanner'});
+  const shouldHideSupportBanner = await getOptionValue({storeId: store.id, key: 'hide_support_banner'});
 
   return { 
     analyticsData,

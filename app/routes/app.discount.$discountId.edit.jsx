@@ -13,10 +13,10 @@ import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server.js"
 import { getBundle, updateBundle, getAllBundles } from "../services/bundle.service.js";
 import { getStoreDetails, isAppEmbedDisabled, updateStoreMetafieldForVolumeDiscount } from "../services/store.service.js";
-import { getProducts } from "../services/product.service";
-import { getCollections } from "../services/collection.service";
+import { setOrUpdateOption, getOptionValue } from "../services/options.service";
 
 import AppBlockEmbed from "../components/Notice/AppBlockEmbed.jsx";
+import AppBlockEmbedPopup from "../components/Notice/AppBlockEmbedPopup.jsx";
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 
@@ -51,10 +51,18 @@ export const loader = async ({ request, params }) => {
   const parsedDiscountBundle = await parseBundleObject({ discountBundle });
   const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
+  const appEmbedPopupDisplayed = await getOptionValue({storeId: store.id, key: 'app_embed_popup_displayed'})
+
+  const shouldDisplayAppEmbedPopup =
+    !appEmbedPopupDisplayed && 
+    appEmbedDisabled && 
+    ( discountBundle.type === 'volume_bundle' || discountBundle.type === 'bulk_pricing' && discountBundle.previewEnabled);
+
   return { 
     discountBundle: parsedDiscountBundle, 
     appEmbedDisabled,
     isSubscribed,
+    shouldDisplayAppEmbedPopup,
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
@@ -97,25 +105,13 @@ export const action = async ({ request }) => {
 
     return discountData;
   }
-  
-  // When the request is to load the products from Shopify
-  if ( fetcherData.intent === 'loadProducts' ) {
-    const response = await getProducts({admin})
-    if (response?.success === false) {
-      return null;
-    }
 
-    return response;
-  }
- 
-  // When the request is to load the collections from Shopify
-  if ( fetcherData.intent === 'loadCollections' ) {
-    const response = await getCollections({admin})
-    if (response?.success === false) {
-      return null;
-    }
+  if (fetcherData.intent === 'closeAppEmbedPopup') {
+    const key = 'app_embed_popup_displayed';
+    const value = 'true';
+    const option = await setOrUpdateOption({sessionId: session.id, key, value});
 
-    return response;
+    return null;
   }
 }
 
@@ -123,7 +119,7 @@ export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();
-  const { discountBundle, appEmbedDisabled, isSubscribed, store } = useLoaderData();
+  const { discountBundle, appEmbedDisabled, isSubscribed, shouldDisplayAppEmbedPopup, store } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
@@ -256,13 +252,15 @@ export default function DiscountPage() {
         <button variant="primary" onClick={handleSave} disabled={isLoading} loading={isLoading ? "" : undefined}></button>
         <button onClick={handleDiscard}></button>
       </SaveBar>
-
+  
       <Page
         backAction={{content: 'Home', onAction: handleBackAction}}
         title='Update discount'
       >
         <BlockStack gap="500">
-          { isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId} />}
+          {!shouldDisplayAppEmbedPopup && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}/>}
+          {shouldDisplayAppEmbedPopup && <AppBlockEmbedPopup fetcher={fetcher} bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}/>}
+
           <div className="discount-layout">
             <div className="discount-content">
               <Content

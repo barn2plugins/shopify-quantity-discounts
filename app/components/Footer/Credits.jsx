@@ -6,7 +6,7 @@ export default function Credits() {
     },
     {
       label: 'Need help?',
-      href: 'https://barn2.com/support'
+      href: 'https://barn2.com/support-center/'
     }
   ];
 

@@ -35,7 +35,7 @@ export default function SupportPage() {
           <Card roundedAbove="sm">
             <BlockStack gap={200}>
               <Text as="h2" variant="headingMd">Contact our support 😀</Text>
-                <BlockStack gap={800}>
+                <BlockStack gap={500}>
                   <Text as="p" variant="bodyMd">
                     Need assistance? We're here to help with anything related to the app and want to make sure you're getting the most from it.
                   </Text>
@@ -50,7 +50,7 @@ export default function SupportPage() {
           <Card roundedAbove="sm">
             <BlockStack gap={200}>
               <Text as="h2" variant="headingMd">Find answers 📄</Text>
-                <BlockStack gap={800}>
+                <BlockStack gap={500}>
                   <Text as="p" variant="bodyMd">
                     Explore our comprehensive documentation and step-by-step video tutorials to quickly find the answers you need.
                   </Text>
@@ -66,7 +66,7 @@ export default function SupportPage() {
           <Card roundedAbove="sm">
             <BlockStack gap={200}>
               <Text as="h2" variant="headingMd">Write a review 🌟</Text>
-                <BlockStack gap={800}>
+                <BlockStack gap={500}>
                   <Text as="p" variant="bodyMd">
                     Your feedback helps others discover the app and supports ongoing improvements. We’d love to hear what you think.
                   </Text>
@@ -81,9 +81,9 @@ export default function SupportPage() {
           <Card roundedAbove="sm">
             <BlockStack gap={200}>
               <Text as="h2" variant="headingMd">Request a feature 💡</Text>
-                <BlockStack gap={300}>
+                <BlockStack gap={500}>
                   <Text as="p" variant="bodyMd">
-                    Have an idea for improving the app? We're always open to suggestions and love hearing what would make it even more useful for you.
+                    Have an idea for improving the app? We're always open to suggestions and love hearing what would make it even better.
                   </Text>
                   <InlineStack>
                     <Button url="https://barn2.com/support-center/app-feature-request/" target='_blank'>Suggest a feature</Button>
