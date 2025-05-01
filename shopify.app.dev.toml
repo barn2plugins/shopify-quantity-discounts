@@ -1,10 +1,10 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "858c89ba09011b7be4c42d83ef959102"
-name = "Barn2 Bundles & Bulk Discounts"
-handle = "barn2-bundles-bulk-discounts"
-application_url = "https://shopify-quantity-discounts.fly.dev"
+client_id = "9c05806f2eae9872a5fa1f33628282fb"
+application_url = "https://barn2-discounts.supersections.store"
 embedded = true
+name = "Barn2 Bundles $ Bulk... (dev)"
+handle = "barn2-bundles-bulk-discounts"
 
 [build]
 automatically_update_urls_on_dev = true
@@ -22,6 +22,10 @@ api_version = "2025-01"
   uri = "/webhooks/app/uninstalled"
 
   [[webhooks.subscriptions]]
+  topics = [ "themes/update" ]
+  uri = "/webhooks/themes/update"
+
+  [[webhooks.subscriptions]]
   topics = [ "orders/create" ]
   uri = "/webhooks/orders/create"
 
@@ -29,23 +33,19 @@ api_version = "2025-01"
   topics = [ "shop/update" ]
   uri = "/webhooks/shop/update"
 
-  [[webhooks.subscriptions]]
-  topics = [ "themes/update" ]
-  uri = "/webhooks/themes/update"
-
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
 scopes = "read_orders,read_products,read_themes,unauthenticated_read_product_listings,write_discounts,write_orders,write_products,write_script_tags"
 
 [auth]
 redirect_urls = [
-  "https://shopify-quantity-discounts.fly.dev/auth/callback",
-  "https://shopify-quantity-discounts.fly.dev/auth/shopify/callback",
-  "https://shopify-quantity-discounts.fly.dev/api/auth/callback"
+  "https://barn2-discounts.supersections.store/auth/callback",
+  "https://barn2-discounts.supersections.store/auth/shopify/callback",
+  "https://barn2-discounts.supersections.store/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://shopify-quantity-discounts.fly.dev/api"
+url = "https://barn2-discounts.supersections.store/api"
 subpath = "barn2-bundles-bulk-discounts"
 prefix = "apps"
 
