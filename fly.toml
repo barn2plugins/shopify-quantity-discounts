@@ -1,0 +1,23 @@
+app = 'shopify-quantity-discounts'
+primary_region = 'cdg'
+
+[env]
+  PORT = '3000'
+  SHOPIFY_APP_URL = 'https://shopify-quantity-discounts.fly.dev'
+  SHOPIFY_API_KEY = '858c89ba09011b7be4c42d83ef959102'
+  SCOPES = 'read_orders,read_products,read_themes,unauthenticated_read_product_listings,write_discounts,write_orders,write_products,write_script_tags'
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
