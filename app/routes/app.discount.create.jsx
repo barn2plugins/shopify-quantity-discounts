@@ -80,24 +80,6 @@ export const action = async ({ request }) => {
     // Once the discount bundle successfully created, redirect to the edit page
     return redirect(`/app/discount/${bundle.shopifyDiscountid}/edit`);
   } 
-  
-  if ( fetcherData.intent === 'loadProducts' ) {
-    const response = await getProducts({admin})
-    if (response?.success === false) {
-      return null;
-    }
-
-    return response;
-  }
- 
-  if ( fetcherData.intent === 'loadCollections' ) {
-    const response = await getCollections({admin})
-    if (response?.success === false) {
-      return null;
-    }
-
-    return response;
-  }
 }
 
 export default function DiscountPage() {

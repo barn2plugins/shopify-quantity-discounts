@@ -8,7 +8,6 @@ import {
 import { useState, useEffect } from "react";
 import {Modal, TitleBar, useAppBridge} from '@shopify/app-bridge-react';
 
-
 export default function AppBlockEmbedPopup({fetcher, bundlesDiscountsExtensionId}) {
   const [editorOpened, setEditorOpened] = useState(false);
   const shopify = useAppBridge();
@@ -19,7 +18,6 @@ export default function AppBlockEmbedPopup({fetcher, bundlesDiscountsExtensionId
   }
 
   const handleClose = () => {
-    console.log('closing');
     setEditorOpened(false);
     fetcher.submit(
       {
@@ -51,6 +49,7 @@ export default function AppBlockEmbedPopup({fetcher, bundlesDiscountsExtensionId
           <Text variant="headingSm" as="h4">👉 Click below to open your theme editor, then hit Save. That's it!</Text>
           <BlockStack gap={200}>
             <Button variant="primary" onClick={() => handleAction()}>Open theme editor</Button>
+            {editorOpened && <Button onClick={() => handleClose()}>I have done it</Button>}
           </BlockStack>
         </BlockStack>
       </Box>

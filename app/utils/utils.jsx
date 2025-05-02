@@ -386,11 +386,12 @@ export const isBarn2AppEmbedDisabled = (themeConfig) => {
     const configJSON = parseThemeConfig(themeConfig); // TODO: Implement this helpe
     
     const barn2AppEmbed = "shopify://apps/barn2-bundles-bulk-discounts/blocks/barn2-bundles-app-embed";
+    const barn2DevAppEmbed = "shopify://apps/barn2-bundles-bulk-dev/blocks/barn2-bundles-app-embed";
     
     let foundBlock = false;
     if (configJSON.current?.blocks) {
       Object.values(configJSON.current.blocks).forEach(block => {
-        if (block.type.startsWith(barn2AppEmbed)) {
+        if (block.type.startsWith(barn2AppEmbed) || block.type.startsWith(barn2DevAppEmbed)) {
           isDisabled = block.disabled;
           foundBlock = true;
         }
@@ -468,7 +469,7 @@ export const parseObjectId = (object) => {
 export const getBarn2VolumeDiscountFunctionId = (storedata) => {
   const shopifyFunctions = storedata.data.shopifyFunctions.nodes;
   const barn2VolumeDiscountFunction = shopifyFunctions.find(
-    (func) => func.app.title === 'Barn2 Bundles & Bulk Discounts' && func.apiType === 'product_discounts'
+    (func) => (func.app.title === 'Barn2 Bundles & Bulk Discounts' || func.app.title === 'Barn2 Bundles $ Bulk... (dev)') && func.apiType === 'product_discounts'
   );
   return barn2VolumeDiscountFunction ? barn2VolumeDiscountFunction.id : null;
 };

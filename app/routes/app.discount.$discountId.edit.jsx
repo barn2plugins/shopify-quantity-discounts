@@ -1,7 +1,6 @@
 // External libraries and components
 import {
   Page,
-  Button,
   BlockStack
 } from "@shopify/polaris";
 
@@ -38,8 +37,6 @@ export const loader = async ({ request, params }) => {
     isPartnerDevelopment: true,
   });
 
-  const appEmbedDisabled = await isAppEmbedDisabled({admin, store});
-
   const discountBundle = await getBundle({storeId: store.id, bundleId: params.discountId});
   if (!discountBundle) {
     throw new Response("Discount bundle not found", {
@@ -49,10 +46,10 @@ export const loader = async ({ request, params }) => {
   }
 
   const parsedDiscountBundle = await parseBundleObject({ discountBundle });
+  const appEmbedDisabled = await isAppEmbedDisabled({admin, store});
   const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
-
   const appEmbedPopupDisplayed = await getOptionValue({storeId: store.id, key: 'app_embed_popup_displayed'})
-
+  
   const shouldDisplayAppEmbedPopup =
     !appEmbedPopupDisplayed && 
     appEmbedDisabled && 
@@ -122,7 +119,6 @@ export default function DiscountPage() {
   const { discountBundle, appEmbedDisabled, isSubscribed, shouldDisplayAppEmbedPopup, store } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
-  const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
   const [ selectedCollections, setSelectedCollections ] = useState([]);
   const [ excludedProducts, setExcludedProducts ] = useState([]);
@@ -258,8 +254,17 @@ export default function DiscountPage() {
         title='Update discount'
       >
         <BlockStack gap="500">
-          {!shouldDisplayAppEmbedPopup && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}/>}
-          {shouldDisplayAppEmbedPopup && <AppBlockEmbedPopup fetcher={fetcher} bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}/>}
+          {!shouldDisplayAppEmbedPopup && 
+            appEmbedDisabled && 
+            <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}/>
+          }
+          
+          {shouldDisplayAppEmbedPopup && 
+            <AppBlockEmbedPopup 
+              fetcher={fetcher} 
+              bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}
+            />
+          }
 
           <div className="discount-layout">
             <div className="discount-content">
