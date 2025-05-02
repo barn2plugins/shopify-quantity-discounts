@@ -1,4 +1,5 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
 client_id = "9c05806f2eae9872a5fa1f33628282fb"
 name = "Barn2 Bundles $ Bulk... (dev)"
 handle = "barn2-bundles-bulk-dev"

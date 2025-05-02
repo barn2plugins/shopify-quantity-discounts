@@ -1,7 +1,7 @@
 api_version = "2025-01"
 
 [[extensions]]
-name = "BarBarn2 Bundles & Bulk Discounts Function"
+name = "Barn2 Bundles & Bulk Discounts Function"
 handle = "barn2-bundles-and-bulk-discounts-function"
 type = "function"
 

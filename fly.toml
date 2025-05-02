@@ -1,5 +1,5 @@
 app = 'shopify-quantity-discounts'
-primary_region = 'cdg'
+primary_region = 'iad'
 
 [env]
   PORT = '3000'
