@@ -25,7 +25,6 @@ export default function ProductSelectionSection({
       type: 'product',
       multiple: true,
       filter: {
-        query: "(gift_card:false) AND (inventory_total:>1)",
         variants: false
       },
       selectionIds: selectedProducts
@@ -51,7 +50,6 @@ export default function ProductSelectionSection({
       type: 'product',
       multiple: true,
       filter: {
-        query: "(gift_card:false) AND (inventory_total:>1)",
         variants: false
       },
       selectionIds: excludedProducts
