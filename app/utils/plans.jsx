@@ -1,37 +1,49 @@
 export const defaultPlans = [
   {
-    id: 1,
-    name: 'Basic',
-    price: {monthly: 9.99, yearly: 99},
+    id: 0,
+    name: 'Free',
+    price: {monthly: 0.00, yearly: 0.00},
     features: [
-      'Up to <strong>$1000</strong> offer revenue from app per month',
-      'Multiple discount types to choose from',
-      'Adjust and refine your discount design',
-      '24/7 Expert assistance available'
+      'Perfect for Development Stores',
+      'Test drive all features before launch',
+      'All features included',
+      'Email & live chat support'
+    ]
+  },
+  {
+    id: 1,
+    name: 'Starter',
+    price: {monthly: 12.99, yearly: 119},
+    features: [
+      'Up to <strong>$1,000/month</strong> in additional revenue',
+      'All features included',
+      'Unlimited bundles & discounts',
+      'Email & live chat support'
     ]
   },
   {
     id: 2,
-    name: 'Plus',
-    price: {monthly: 19.99, yearly: 190},
+    name: 'Growth',
+    price: {monthly: 24.99, yearly: 239},
     features: [
-      'Up to <strong>$5000</strong> offer revenue from app per month',
-      'Multiple discount types to choose from',
-      'Adjust and refine your discount design',
-      '24/7 Expert assistance available'
+      'Up to <strong>$5,000/month</strong> in additional revenue',
+      'All features included',
+      'Unlimited bundles & discounts',
+      'Email & live chat support'
     ]
   },
   {
     id: 3,
-    name: 'Premium',
-    price: {monthly: 29.99, yearly: 290},
+    name: 'Pro',
+    price: {monthly: 49.99, yearly: 479},
     features: [
-      'Unlimited offer revenue from app per month',
-      'Multiple discount types to choose from',
-      'Adjust and refine your discount design',
-      '24/7 Expert assistance available'
+      '<strong>No revenue limits</strong>',
+      'All features included',
+      'Unlimited bundles & discounts',
+      'Email & live chat support',
+      'Annual strategy consultation'
     ]
-  }
+  },
 ];
 
 export const userReviews = [

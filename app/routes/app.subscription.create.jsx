@@ -14,12 +14,18 @@ export const action = async ({ request }) => {
 
   const returnUrl = fetcherData?.returnUrl;
 
+  const trialDays = parseInt(process.env.SHOPIFY_SUBSCRIPTION_TRIAL_DAYS) || 14;
+
+  const testPayment = process.env.SHOPIFY_SUBSCRIPTION_TEST === 'true' ? true : false;
+
   const subscription = await shopifyCreateSubscription({
     admin, 
     billingName, 
     billingAmount, 
     billingInterval, 
-    returnUrl
+    returnUrl,
+    trialDays,
+    testPayment
   });
 
   return {

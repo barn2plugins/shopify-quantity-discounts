@@ -136,8 +136,8 @@ export async function getBundleByBundleId({storeId, bundleId}) {
  */
 export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) {
    // Get the highest priority discount
-  const latestDiscount = await getLatestDiscount(storeId);
-  const newPriority = latestDiscount ? latestDiscount.priority + 1 : 1;
+  const bundlesCount = await countAllDiscountBundles({storeId});
+  const newPriority = bundlesCount + 1;
 
   return await prisma.discountBundle.create({
     data: {
@@ -255,6 +255,20 @@ export const getLatestDiscount = async ({storeId}) => {
     },
     orderBy: {
       priority: 'desc'
+    }
+  });
+}
+
+/**
+ * Counts all discount bundles for a given store
+ * 
+ * @param {string} storeId - The ID of the store
+ * @returns {Promise<number>} Total count of discount bundles
+ */
+export async function countAllDiscountBundles({storeId}) {
+  return await prisma.discountBundle.count({
+    where: {
+      storeId: storeId
     }
   });
 }

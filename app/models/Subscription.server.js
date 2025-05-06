@@ -36,7 +36,9 @@ export const createShopifySubscription = async ({
   billingName, 
   billingAmount, 
   billingInterval, 
-  returnUrl
+  returnUrl,
+  trialDays,
+  testPayment
 }) => {
   const response = await admin.graphql(
     `#graphql
@@ -68,8 +70,8 @@ export const createShopifySubscription = async ({
       variables: {
         name: billingName,
         returnUrl: returnUrl,
-        trialDays: 14,
-        test: true,
+        trialDays: trialDays,
+        test: testPayment,
         lineItems: [
           {
             plan: {

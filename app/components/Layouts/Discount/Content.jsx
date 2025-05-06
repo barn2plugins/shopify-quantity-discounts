@@ -1,4 +1,8 @@
-import { BlockStack, Card } from "@shopify/polaris";
+import { 
+  BlockStack, 
+  Card,
+  Box
+} from "@shopify/polaris";
 
 import DiscountNameSection from "../../Sections/DiscountNameSection.jsx";
 import DiscountTypeSection from "../../Sections/DiscountTypeSection.jsx";
@@ -35,15 +39,30 @@ export default function Content({
     excludedCollections
   );
 
+  const boxStyles = {
+    backgroundColor: 'var(--p-color-bg-surface)',
+    padding: '1rem 1rem 1.4rem',
+    borderRadius: '0.8rem',
+    boxShadow: 'var(--p-shadow-bevel-100)'
+  }
+  const boxStylesWithEndingChoiceComponent = {
+    backgroundColor: 'var(--p-color-bg-surface)',
+    padding: '1rem 1rem 0.9rem',
+    borderRadius: '0.8rem',
+    boxShadow: 'var(--p-shadow-bevel-100)'
+  }
+
   return (
     <BlockStack gap={600}>
-      <Card>
+      <Box
+        style={boxStyles}
+      >
         <BlockStack gap={600}>
           <DiscountNameSection formState={formState} setFormState={setFormState} />
           <DiscountTypeSection formState={formState} setFormState={setFormState} />
         </BlockStack>
-      </Card>
-      <Card>
+      </Box>
+      <Box style={boxStylesWithEndingChoiceComponent}>
         <BlockStack gap={600}>
           <ProductSelectionSection 
             formState={formState}
@@ -65,17 +84,17 @@ export default function Content({
             timezone={store?.ianaTimezone}
           />
         </BlockStack>
-      </Card>
+      </Box>
 
       { formState.type === 'volume_bundle' && (
-        <Card>
+        <Box style={boxStyles}>
           <VolumeBundleSection 
             formState={formState}
             currencyCode={store?.currencyCode}
             volumeBundles={volumeBundles}
             setVolumeBundles={setVolumeBundles}
           />
-        </Card>
+        </Box>
       ) }
 
       { formState.type === 'bulk_pricing' && (
@@ -87,10 +106,12 @@ export default function Content({
           store={store}
         />
       ) }
-      <DesignOptions
-        formState={formState}
-        setFormState={setFormState}
-      />
+      <Box style={boxStylesWithEndingChoiceComponent}>
+        <DesignOptions
+          formState={formState}
+          setFormState={setFormState}
+        />
+      </Box>
     </BlockStack>
   )
 }

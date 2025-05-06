@@ -2,6 +2,8 @@ import { authenticate } from "../shopify.server";
 import { getEligibleDiscountBundle, getLatestDiscountBundle } from "../services/bundle.service";
 import { getStoreDetails } from "../services/store.service";
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
+import { getOrderAnalytics } from "../services/analytics.service";
+import { getActiveSubscriptionForCurrentSession } from "../services/subscription.service";
 
 export async function action({ request }) {
     if (request.method !== 'POST') {
@@ -48,6 +50,9 @@ export async function action({ request }) {
         }));
       }
 
+      const currentSubscription = await getActiveSubscriptionForCurrentSession({sessionId: session.id});
+      const {discountedMonthlyRevenue} = await getOrderAnalytics({sessionId: session.id});
+
       return new Response(JSON.stringify({
         success: true,
         eligibleProductBundle,
@@ -57,6 +62,6 @@ export async function action({ request }) {
     } catch (e) {
       return new Response(JSON.stringify({
         success: false
-      }));  
+      }));
     }
 }

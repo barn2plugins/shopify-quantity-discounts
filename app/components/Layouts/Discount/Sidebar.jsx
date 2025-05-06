@@ -1,7 +1,8 @@
 // External libraries and components
 import {
   BlockStack,
-  Card,
+  Box,
+  PageActions
 } from '@shopify/polaris';
 import { useEffect } from 'react';
 import classNames from 'classnames/dedupe';
@@ -21,7 +22,11 @@ export default function Sidebar({
   volumeBundles,
   pricingTiers,
   isSubscribed,
-  store
+  store,
+  handleSave,
+  handleDiscard,
+  isLoading,
+  hasUnsavedChanges,
 }) {
 
   useEffect(() => {
@@ -58,10 +63,17 @@ export default function Sidebar({
     };
   }, [formState]);
 
+  const boxStyles = {
+    backgroundColor: 'var(--p-color-bg-surface)',
+    padding: formState.type === 'volume_bundle' ? '1rem 1rem 0.9rem' : '1rem 1rem 1.4rem',
+    borderRadius: '0.8rem',
+    boxShadow: 'var(--p-shadow-bevel-100)'
+  }
+
   return (
     <BlockStack gap={600}>
       { !store.isPartnerDevelopment && !isSubscribed && <SidebarUpgraderBanner/> }
-      <Card>
+      <Box style={boxStyles}>
         <div 
           className={classNames(
             'sidebar-preview-block',
@@ -112,7 +124,25 @@ export default function Sidebar({
             </BlockStack>
           </BlockStack>
         </div>
-      </Card>
+      </Box>
+        
+      <div className="edit-page-actions">
+          <PageActions
+            primaryAction={{
+              content: 'Save',
+              onClick: handleSave,
+              disabled: hasUnsavedChanges? false : true,
+              loading: isLoading? true : undefined,
+            }}
+            secondaryActions={[
+              {
+                content: 'Discard',
+                disabled: hasUnsavedChanges? false : true,
+                onClick: handleDiscard
+              },
+            ]}
+          />
+        </div>
     </BlockStack>
   )
 }

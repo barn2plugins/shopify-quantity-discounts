@@ -40,7 +40,7 @@ export default function SupportPage() {
                     Need assistance? We're here to help with anything related to the app and want to make sure you're getting the most from it.
                   </Text>
                   <InlineStack>
-                    <Button>Get in touch</Button>
+                    <Button onClick={() => window.open('https://barn2.com/support-center/', '_blank')}>Get in touch</Button>
                   </InlineStack>
                 </BlockStack>
             </BlockStack>

@@ -30,7 +30,7 @@ export async function getDefaultBundle({sessionId, timezone}) {
     name: 'Bundle',
     type: 'volume_bundle',
     whichProducts: 'all_products',
-    layout: 'vertical',
+    layout: 'horizontal',
     previewEnabled: true,
     active: false,
     currencyCode: currency || '$',
@@ -60,8 +60,8 @@ export async function getDefaultBundle({sessionId, timezone}) {
       highlightedColor: '#f1f1f1',
     },
     previewOptions: {
-      title: '',
-      description: '',
+      title: 'Buy More, Save More',
+      description: 'Time-limited offer!',
       showOriginalPrice: true,
       amountSaved: true
     }

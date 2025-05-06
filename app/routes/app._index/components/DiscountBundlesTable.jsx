@@ -10,6 +10,7 @@ import {
 import {EditIcon, DuplicateIcon, DeleteIcon} from '@shopify/polaris-icons';
 import {useState, useEffect} from "react";
 import {useAppBridge} from "@shopify/app-bridge-react";
+import classNames from 'classnames/dedupe';
 
 import {
 	DndContext,
@@ -30,7 +31,12 @@ import DeleteConfirmationModal from "../../../components/Modals/DeleteConfirmati
 import IndexTable from "../../../components/Fields/IndexTable";
 import SortableRow from "./SortableRow";
 
-export default function DiscountBundlesTable({ fetcher, discountBundles, pagination }) {
+export default function DiscountBundlesTable({ 
+  fetcher, 
+  discountBundles, 
+  pagination,
+  shouldDisplaySortIcon
+}) {
   const shopify = useAppBridge();
   const [bundleToDelete, setBundleToDelete] = useState({});
   const [bundles, setBundles] = useState([]);
@@ -208,6 +214,23 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
     );
   };
 
+  const tableHeadings = () => {
+    const baseHeadings = [
+      {title: 'Priority'},
+      {title: 'Discount name'},
+      {title: 'Type'},
+      {title: 'Apply to'},
+      {title: 'Enabled'},
+      {title: 'Actions', alignment: 'left'},
+    ];
+
+    if (shouldDisplaySortIcon) {
+      baseHeadings.unshift({title: '', alignment: 'center'});
+    }
+
+    return baseHeadings;
+  }
+
   useEffect(() => {
     setBundles(discountBundles);
   }, [discountBundles])
@@ -233,16 +256,14 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
               <IndexTable
                 resourceName={resourceName}
                 itemCount={bundles.length}
-                headings={[
-                  {title: '', alignment: 'center'},
-                  {title: 'Priority'},
-                  {title: 'Discount name'},
-                  {title: 'Type'},
-                  {title: 'Apply to'},
-                  {title: 'Enabled'},
-                  {title: 'Actions', alignment: 'left'},
-                ]}
+                headings={tableHeadings()}
                 selectable={false}
+                classes={classNames(
+                  'barn2-index-table',
+                  {
+                    'barn2-index-table-no-sort-icon': !shouldDisplaySortIcon
+                  }
+                )}
               >
                 <DndContext
                   sensors={sensors}
@@ -261,6 +282,7 @@ export default function DiscountBundlesTable({ fetcher, discountBundles, paginat
                           index={index}
                           renderRowActions={renderRowActions}
                           handleBundleToggle={handleBundleToggle}
+                          shouldDisplaySortIcon={shouldDisplaySortIcon}
                         />
                       )
                     }

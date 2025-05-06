@@ -6,8 +6,8 @@ export default function LayoutSection({ formState, setFormState }) {
       <Text as="p" variant="bodyLg" fontWeight="medium">Layout</Text>
       <ChoiceList
         choices={[
-          {label: 'Vertical', value: 'vertical'},
           {label: 'Horizontal', value: 'horizontal'},
+          {label: 'Vertical', value: 'vertical'},
         ]}
         selected={[formState?.layout || 'vertical']}
         onChange={(value) => setFormState({...formState, layout: value[0]})}

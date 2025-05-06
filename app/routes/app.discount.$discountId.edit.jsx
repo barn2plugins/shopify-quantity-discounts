@@ -5,7 +5,7 @@ import {
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
-import { useLoaderData, useFetcher, useNavigate } from "@remix-run/react";
+import { useLoaderData, useFetcher, useNavigate, useLocation } from "@remix-run/react";
 import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 
 // Internal services and components
@@ -116,6 +116,7 @@ export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();
+  const location = useLocation();
   const { discountBundle, appEmbedDisabled, isSubscribed, shouldDisplayAppEmbedPopup, store } = useLoaderData();
 
   const [ formState, setFormState ] = useState(discountBundle);
@@ -129,6 +130,9 @@ export default function DiscountPage() {
   const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
 
   const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
+
+  // Check if the edit discount page redirected from the create discount page
+  const redirectedAfterDiscountCreated = location.state?._isRedirect;
 
   /**
    * Handles the save action for the discount bundle
@@ -151,7 +155,7 @@ export default function DiscountPage() {
    */
   const handleDiscard = () => {
     setHasUnsavedChanges(false);
-    shopify.saveBar.hide('edit-discount-save-bar');
+    shopify.saveBar.hide('discount-edit-save-bar');
   };
 
   /**
@@ -193,11 +197,17 @@ export default function DiscountPage() {
   const handleBackAction = () => {
     if (hasUnsavedChanges) {
       // Show the save bar if there are unsaved changes
-      shopify.saveBar.leaveConfirmation('edit-discount-save-bar');
+      shopify.saveBar.leaveConfirmation('discount-edit-save-bar');
       return;
     }
     navigate('/app');
   };
+
+  useEffect(() => {
+    if (redirectedAfterDiscountCreated) {
+      shopify.toast.show('Discount saved');
+    }
+  }, []);
 
   /**
    * Effect to set the initial state of the form
@@ -230,21 +240,21 @@ export default function DiscountPage() {
 
     setHasUnsavedChanges(hasChanges);
 
-    hasChanges ? shopify.saveBar.show('edit-discount-save-bar') : shopify.saveBar.hide('edit-discount-save-bar');
+    hasChanges ? shopify.saveBar.show('discount-edit-save-bar') : shopify.saveBar.hide('discount-edit-save-bar');
 
   }, [formState, selectedProducts, selectedCollections, excludedProducts, excludedCollections, volumeBundles, pricingTiers]);
 
   useEffect(() => {
     if (fetcher.data?.success === true) {
       setHasUnsavedChanges(false);
-      shopify.saveBar.hide('edit-discount-save-bar');
-      shopify.toast.show("Discount bundle has been updated");
+      shopify.saveBar.hide('discount-edit-save-bar');
+      shopify.toast.show("Discount updated");
     }
   }, [fetcher.data]);
 
   return (
-    <div className="barn2-discounts-page-wrapper">
-      <SaveBar id="edit-discount-save-bar">
+    <div className="barn2-discounts-page-wrapper barn2-discount-edit-page-wrapper">
+      <SaveBar id="discount-edit-save-bar">
         <button variant="primary" onClick={handleSave} disabled={isLoading} loading={isLoading ? "" : undefined}></button>
         <button onClick={handleDiscard}></button>
       </SaveBar>
@@ -295,6 +305,10 @@ export default function DiscountPage() {
                 pricingTiers={pricingTiers}
                 isSubscribed={isSubscribed}
                 store={store}
+                handleSave={handleSave}
+                isLoading={isLoading}
+                hasUnsavedChanges={hasUnsavedChanges}
+                handleDiscard={handleDiscard}
               />
             </div>
           </div>

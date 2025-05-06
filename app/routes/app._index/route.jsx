@@ -12,13 +12,11 @@ import { useFetcher } from "@remix-run/react";
 import DiscountAnalytics from "./components/DiscountAnalytics.jsx";
 import DiscountBundlesTable from "./components/DiscountBundlesTable";
 import EmptyStateComponent from "./components/EmptyStateComponent";
-import SupportBlock from "./components/SupportBlock";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getStoreDetails, isAppEmbedDisabled } from "../../services/store.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
-import { getOptionValue } from "../../services/options.service"
 import { getStoreAnalyticsData } from "../../utils/analytics"
 
 export const loader = async ({ request }) => {
@@ -47,15 +45,12 @@ export const loader = async ({ request }) => {
 
   const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
 
-  const shouldHideSupportBanner = await getOptionValue({storeId: store.id, key: 'hide_support_banner'});
-
   return { 
     analyticsData,
     discountBundles: discountBundles.bundles,
     appEmbedDisabled,
     bundlesDiscountsExtensionId,
-    pagination: discountBundles.pagination,
-    shouldHideSupportBanner
+    pagination: discountBundles.pagination
   };
 };
 
@@ -91,16 +86,16 @@ export default function Index() {
     appEmbedDisabled, 
     bundlesDiscountsExtensionId, 
     pagination,
-    shouldHideSupportBanner
   } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
-  const [ displaySupportBanner, setDisplaySupportBanner ] = useState(!shouldHideSupportBanner);
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
   const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
 
   const updatedBundles = fetcher.data?.bundles;
   const updatedPagination = fetcher.data?.pagination;
+
+  const shouldDisplaySortIcon = bundles.length > 1;
 
   useEffect(() => {
     if (updatedBundles) {
@@ -124,10 +119,12 @@ export default function Index() {
               { bundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
               <DiscountAnalytics analyticsData={analyticsData}/>
               <BlockStack gap="1000">
-                <DiscountBundlesTable fetcher={fetcher} discountBundles={bundles} pagination={bundlesPagination} />
-                { displaySupportBanner && 
-                  <SupportBlock setDisplaySupportBanner={setDisplaySupportBanner} fetcher={fetcher} /> 
-                }
+                <DiscountBundlesTable 
+                  fetcher={fetcher} 
+                  discountBundles={bundles} 
+                  pagination={bundlesPagination} 
+                  shouldDisplaySortIcon={shouldDisplaySortIcon}
+                />
               </BlockStack>
             </BlockStack>
           ) }

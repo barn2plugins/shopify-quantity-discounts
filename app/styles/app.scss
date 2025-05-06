@@ -49,7 +49,14 @@
   }
 
   .col-bundle-name {
-      width: 16%
+    width: 16%;
+    cursor: pointer;
+    
+    a {
+      text-decoration: none;
+      color: var(--p-color-text);
+      font-weight: var(--p-font-weight-semibold);
+    }
   }
 
   .col-bundle-type {
@@ -85,7 +92,7 @@
       width: 400px;
       flex-shrink: 0; // Prevent sidebar from shrinking
       position: sticky;
-      top: 20px; // Add some spacing from top
+      top: 0px;
       align-self: flex-start;
       height: fit-content;
 
@@ -115,7 +122,10 @@
       }
     }
   }
+}
 
+.barn2-discount-edit-page-wrapper {
+  padding-bottom: 0px;
 }
 
 .discount-empty-state {
@@ -147,9 +157,11 @@
 
 // Create Page
 @media screen and (min-width: 30.625em) {
-  .barn2-discounts-page-wrapper .Polaris-Page,
-  .barn2-plans-page .Polaris-Page {
+  .barn2-discounts-page-wrapper .Polaris-Page{
     max-width: 1080px;
+  }
+  .barn2-plans-page .Polaris-Page {
+    max-width: 1200px;
   }
 }
 
@@ -250,6 +262,12 @@
   }
 }
 
+.barn2-index-table-no-sort-icon {
+  thead th:first-child,
+  .discounts_table_row .col-priority {
+    padding-left: 20px !important;
+  }
+}
 
 .checkbox-wrapper {
   label:hover {
@@ -372,7 +390,7 @@
       color: var(--barn2-bundles-bundle-text-color, #303030);
     }
 
-    .bundle-regular-price {
+    .price-strike-through {
       text-decoration: line-through;
     }
 
@@ -527,6 +545,30 @@
 }
 
 .barn2-plans-page {
+  .pricing_blocks_wrapper {
+    display: flex;
+    gap: 20px;
+
+    .pricing_block_item {
+      flex: 1;
+
+      .pricing_amount {
+        gap: 4px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        padding: 10px 0 0;
+
+        .pricing_value {
+          font-size: 30px;
+          font-weight: 700;
+        }
+        .pricing_duration {
+          font-size: 12px;
+        }
+      }
+    }
+  }
   .pricing_card_bleed {
     background-color: var(--p-color-bg-surface-success);
     padding: 16px; 
@@ -534,6 +576,7 @@
   }
   .pricing_card_inner {
     padding: 20px;
+    min-height: 320px;
   }
   .pricing_features {
     list-style: none;
@@ -603,7 +646,7 @@
       text-decoration: none;
 
       &:not(:last-child) {
-        margin-right: 25px;
+        margin-right: 30px;
         position: relative;
 
         &:after {

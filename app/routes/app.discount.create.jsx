@@ -6,15 +6,13 @@ import {
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
-import { useLoaderData, useFetcher } from "@remix-run/react";
-import { useAppBridge } from "@shopify/app-bridge-react";
+import { useLoaderData, useFetcher, useNavigate } from "@remix-run/react";
+import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 
 // Internal services and components
 import { authenticate } from "../shopify.server"
-import { getDefaultBundle, createBundle, getAllBundles } from "../services/bundle.service";
-import { getStoreDetails, updateStoreMetafieldForVolumeDiscount } from "../services/store.service";
-import { getProducts } from "../services/product.service";
-import { getCollections } from "../services/collection.service";
+import { getDefaultBundle, createBundle } from "../services/bundle.service";
+import { getStoreDetails } from "../services/store.service";
 
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
@@ -71,11 +69,11 @@ export const action = async ({ request }) => {
       return null;
     }
 
-    const allDiscounts = await getAllBundles(session.id);
-    if (allDiscounts?.success === false) {
-      return null;
-    }
-    await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
+    // const allDiscounts = await getAllBundles(session.id);
+    // if (allDiscounts?.success === false) {
+    //   return null;
+    // }
+    // await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
     // Once the discount bundle successfully created, redirect to the edit page
     return redirect(`/app/discount/${bundle.shopifyDiscountid}/edit`);
@@ -86,6 +84,7 @@ export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const { defaultBundle, isSubscribed, store } = useLoaderData();
+  const navigate = useNavigate();
   
   const [ formState, setFormState ] = useState(defaultBundle);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
@@ -100,6 +99,19 @@ export default function DiscountPage() {
     && (fetcher.formData?.get("intent") === "create");
 
   const discountBundleId = fetcher.data?.discountBundle?.id;
+
+  /**
+   * Handles the discard action for unsaved changes
+   * Resets the unsaved changes state and hides the save bar
+   * 
+   * @function
+   * @returns {void}
+   */
+  const handleDiscard = () => {
+    shopify.saveBar.hide('discount-create-save-bar');
+    navigate('/app');
+  };
+
 
   useEffect(() => {
     if ( discountBundleId ) {
@@ -133,19 +145,28 @@ export default function DiscountPage() {
     fetcher.submit(formData, { method: "POST" })
   };
 
+  useEffect(() => {
+    shopify.saveBar.show('discount-create-save-bar');
+  }, [formState])
+
   return (
     <div className="barn2-discounts-page-wrapper">
+      <SaveBar id="discount-create-save-bar">
+        <button variant="primary" onClick={() => discountBundleAction()} loading={isLoading ? "" : undefined}></button>
+        <button onClick={handleDiscard}></button>
+      </SaveBar>
+
       <Page
         fullWidth={true}
         backAction={{content: 'Home', url: '/app'}}
-        title={ discountBundleId ? 'Update discount' : 'Create discount' }
+        title='Create discount'
         primaryAction={
           <Button 
             variant="primary"
             loading={isLoading}
             onClick={discountBundleAction}
           >
-              { discountBundleId ? 'Update' : 'Create' }
+              Save
           </Button>
         }
       >

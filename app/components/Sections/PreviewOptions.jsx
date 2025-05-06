@@ -41,7 +41,7 @@ export default function PreviewOptions({
         />
 
         { formState.type === 'volume_bundle' && (
-          <>
+          <BlockStack>
             <Checkbox
               label="Show original price"
               checked={formState.previewOptions?.showOriginalPrice}
@@ -55,8 +55,7 @@ export default function PreviewOptions({
                 onChange={(value) => setFormState({...formState, previewOptions: {...formState.previewOptions, amountSaved: value}})}
               />
             }
-
-          </>
+          </BlockStack>
         )}
       </BlockStack>
     </BlockStack>

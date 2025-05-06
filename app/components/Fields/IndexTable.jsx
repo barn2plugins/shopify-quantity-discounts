@@ -1,6 +1,6 @@
-export default function IndexTable({ headings, children }) {
+export default function IndexTable({ headings, children, classes }) {
   return (
-    <table className="barn2-index-table">
+    <table className={classes}>
       <thead>
         <tr>
           {headings.map((header, index) => (

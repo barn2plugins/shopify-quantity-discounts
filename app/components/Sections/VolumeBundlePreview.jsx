@@ -71,14 +71,14 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
   
   return (
     <div className="bundle-preview">
-      { formState.previewOptions?.title && (
-        <div className="bundle-header">
+      <div className="bundle-header">
+        { formState.previewOptions?.title && (
           <div className="main-title">
             <span>{formState.previewOptions?.title}</span>
           </div>
-          <p className="main-description">{formState.previewOptions?.description}</p>
-        </div>
-      ) }
+        ) }
+        <p className="main-description">{formState.previewOptions?.description}</p>
+      </div>
 
       <div className={`bundles-list layout-${formState?.layout}`}>
         <InlineGrid columns={formState?.layout === 'horizontal' ? '1' : volumeBundles.length} gap={300}>
@@ -121,7 +121,18 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                     alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
                   }}>
                   <h4 className='bundle-discounted-price'>{displayCalculatedPrice(bundle)}</h4>
-                  { formState.previewOptions?.showOriginalPrice && <p className="bundle-regular-price">{displayOriginalPrice(bundle)}</p> }
+                  { formState.previewOptions?.showOriginalPrice && bundle.discount &&
+                    <p 
+                      className={classNames(
+                        'bundle-regular-price',
+                        {
+                          'price-strike-through': bundle.discount,
+                        }
+                      )}
+                    >
+                      {displayOriginalPrice(bundle)}
+                    </p> 
+                  }
                 </BlockStack>
               </div>
             ) })}

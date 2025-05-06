@@ -5,7 +5,7 @@ import {
   Text,
   ButtonGroup,
   Card,
-  Layout,
+  Box,
   Bleed,
   Divider,
   Icon
@@ -51,6 +51,10 @@ export default function PricingBlock({
   }
 
   const isActivePlan = (plan) => {
+    // Check for free plan
+    if (!currentSubscription && plan.name === 'Free') return true;
+
+    // Check for active plan
     if (currentSubscription && currentSubscription?.active && currentSubscription?.plan === plan.name) {
       return true;
     }
@@ -79,36 +83,22 @@ export default function PricingBlock({
         </InlineStack>
       </BlockStack>
 
-      <Layout>
+      <div className="pricing_blocks_wrapper">
         {defaultPlans.map((plan, index) => (
-          <Layout.Section variant="oneThird" key={index}>
+          <div className="pricing_block_item" key={index}>
             <Card padding={0}>
               <Bleed marginInline="400">
                 <div className="pricing_card_bleed">
                   <Text variant="headingLg" alignment="center">{plan.name}</Text>
                 </div>
               </Bleed>
-              <div className="pricing_card_inner">
+              <Box className="pricing_card_inner">
                 <BlockStack gap={600}>
                   <BlockStack gap={500}>
-                    <InlineStack align="center" blockAlign="end" gap={100} className="pricing_amount">
-                      <Text 
-                        as="p" 
-                        fontWeight="semibold" 
-                        variant="heading2xl"
-                      >
-                        ${plan.price[subscriptionType]}
-                      </Text>
-
-                      <Text 
-                        as="span" 
-                        fontWeight="regular" 
-                        variant="headingXs" 
-                        tone="subdued"
-                      >
-                        { subscriptionType === 'monthly' ? '/per month' : '/per annum'}
-                      </Text>
-                    </InlineStack>
+                    <div className="pricing_amount">
+                      <span className="pricing_value">${plan.price[subscriptionType]}</span>
+                      <span className="pricing_duration">{ subscriptionType === 'monthly' ? '/ per month' : '/ per annum'}</span>
+                    </div>
                     <Button 
                       variant="primary"
                       onClick={() => handleBilling(plan, index)}
@@ -135,11 +125,11 @@ export default function PricingBlock({
                     </ul>
                   </BlockStack>
                 </BlockStack>
-              </div>
+              </Box>
             </Card>
-          </Layout.Section>
+          </div>
         ))}
-      </Layout>
+      </div>
     </BlockStack>
   );
 }
