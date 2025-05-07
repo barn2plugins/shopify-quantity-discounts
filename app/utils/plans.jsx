@@ -64,7 +64,7 @@ export const userReviews = [
       location: 'Netherlands',
     },
     title: 'Very good customer service',
-    description: 'This company has really good customer support. If you face a problem they are very cooperative in finding a solution. You can feel that it\'s not only about earning money - it\'s all about satisfied customers. They make very good products!',
+    description: 'This company has really good customer support. If you face a problem they are very cooperative in finding a solution. You can feel that it\'s not only about earning money - it\'s all about satisfied customers.',
     rating: 5,
   }
 ];
