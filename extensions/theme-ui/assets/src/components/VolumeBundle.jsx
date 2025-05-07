@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import classNames from 'classnames/dedupe';
 
-export default function VolumeBundle({bundleData, isInEditor, currentVariant, storeDetails}) {
+export default function VolumeBundle({
+  bundleData, 
+  isInEditor, 
+  currentVariant, 
+  storeDetails,
+  productCartAddedEvent
+}) {
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [volumeBundles, setVolumeBundles] = useState([]);
   const [layout, setLayout] = useState();
@@ -207,14 +213,20 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
     );
 
     const submitButton = document.querySelector('[type="submit"]');
-    const productForm = submitButton?.closest('form');
+    const paymentButton = document.querySelector('.shopify-payment-button');
 
     if (allVariantsMatch) {
       updateProductQuantity(selectedVariants.length);
       submitButton.classList.remove('b2-different-variants-selected');
+      if (paymentButton) {
+        paymentButton.style.display = '';
+      }
     } else {
       updateProductQuantity(1);
       submitButton.classList.add('b2-different-variants-selected');
+      if (paymentButton) {
+        paymentButton.style.display = 'none';
+      }
     }
 
     // Add event listener to the submit button
@@ -223,17 +235,21 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
         return;
       }
 
-      e.preventDefault();
-      e.target.setAttribute('disabled', 'disabled');
-      
       const variantInput = document.querySelector('.product-variant-id');
       // Get all variant IDs except the current one
+      let hasRemovedCurrentVariant = false;
       const otherVariants = selectedVariants
-        .filter(variant => variant.id !== parseInt(variantInput.value))
+        .filter(variant => {
+          if (variant.id === parseInt(variantInput.value) && !hasRemovedCurrentVariant) {
+            hasRemovedCurrentVariant = true;
+            return false;
+          }
+          return true;
+        })
         .filter(variant => variant.available)
         .map(variant => variant.id);
 
-      const variantIds = {
+      const data = {
         items: [
           ...otherVariants.map(variantId => ({
             id: variantId,
@@ -249,28 +265,15 @@ export default function VolumeBundle({bundleData, isInEditor, currentVariant, st
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(variantIds)
-        }).then(() => {
-          e.target.removeAttribute('disabled');
-        });
-
-        // Then summit the form
-        const submitEvent = new SubmitEvent('submit', {
-          bubbles: true,
-          cancelable: true
-        });
-        productForm.dispatchEvent(submitEvent);
+          body: JSON.stringify(data)
+        })
       } catch (error) {
       }
     };
-
-    submitButton?.addEventListener('click', handleSubmit);
-
-    // Cleanup function to remove event listener
-    return () => {
-      submitButton?.removeEventListener('click', handleSubmit);
-    };
-  }, [selectedVariants]);
+    if (productCartAddedEvent) {
+      handleSubmit();
+    }
+  }, [selectedVariants, productCartAddedEvent]);
 
   useEffect(() => {
     setVolumeBundles(JSON.parse(bundleData.volumeBundles || []));

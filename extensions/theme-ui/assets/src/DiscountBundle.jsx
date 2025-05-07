@@ -9,6 +9,7 @@ import { setCustomDesignStyles } from './utils'
 export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   const [currentVariant, setCurrentVariant] = useState(null);
   const [storeCurrency, setStoreCurrency] = useState('$');
+  const [productCartAddedEvent, setProductCartAddedEvent] = useState(false);
 
    /**
    * Gets the first variant from the product's variants list
@@ -46,6 +47,12 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     }
   }
 
+  /**
+   * Initializes and manages product variant selection and form observation.
+   * Sets up MutationObserver to track changes in the product form and URL parameters.
+   * 
+   * @returns {void}
+   */
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const variantId = urlParams.get("variant");
@@ -73,6 +80,49 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     if (targetNode) {
         observer.observe(targetNode, { attributes: true, childList: true, subtree: true });
     }
+    
+    // Cleanup function to disconnect the observer when component unmounts
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  /**
+   * Observes the cart form submission process and updates the component state accordingly.
+   * Uses MutationObserver to track the form's loading state changes during product addition to cart.
+   * 
+   * @returns {void}
+   */
+  useEffect(() => {
+    const cartFormObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const form = mutation.target.closest('form[action*="/cart/add"]');
+        if (!form) return;
+
+        // Check if the form submission completed
+        if (
+          mutation.type === "attributes" && 
+          mutation.attributeName === "class" && 
+          !mutation.target.classList.contains('loading') && 
+          mutation.oldValue?.includes('loading')
+        ) {
+          setProductCartAddedEvent(true);
+        }
+      });
+    });
+
+    const cartForm = document.querySelector('form[action*="/cart/add"] button[type="submit"]');
+    if (cartForm) {
+      cartFormObserver.observe(cartForm, { 
+        attributes: true, 
+        attributeOldValue: true 
+      });
+    }
+
+     // Cleanup function to disconnect the observer when component unmounts
+     return () => {
+      cartFormObserver.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -99,6 +149,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
         isInEditor={isInEditor} 
         currentVariant={currentVariant} 
         storeDetails={storeDetails}
+        productCartAddedEvent={productCartAddedEvent}
       />
     )
   }
