@@ -448,6 +448,9 @@
       width: 70px;
       right: calc(50% - 35px);
       line-height: 2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
   }
