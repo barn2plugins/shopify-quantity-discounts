@@ -522,3 +522,78 @@ export const getSpecificDates = (timezone) => {
     end: endDate
   };
 }
+
+
+// Convert HSB to Hex
+export const hsbToHex = (hsb) => {
+  const { hue, saturation, brightness } = hsb;
+  let h = hue / 360;
+  let s = saturation;
+  let v = brightness;
+  
+  let r, g, b;
+  
+  let i = Math.floor(h * 6);
+  let f = h * 6 - i;
+  let p = v * (1 - s);
+  let q = v * (1 - f * s);
+  let t = v * (1 - (1 - f) * s);
+  
+  switch (i % 6) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+  }
+  
+  r = Math.round(r * 255);
+  g = Math.round(g * 255);
+  b = Math.round(b * 255);
+  
+  const toHex = (x) => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
+// Convert Hex to HSB
+export const hexToHsb = (hex) => {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Convert to RGB
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+  
+  let h = 0;
+  let s = max === 0 ? 0 : delta / max;
+  let v = max;
+  
+  if (delta !== 0) {
+    if (max === r) {
+      h = ((g - b) / delta) % 6;
+    } else if (max === g) {
+      h = (b - r) / delta + 2;
+    } else {
+      h = (r - g) / delta + 4;
+    }
+    
+    h = Math.round(h * 60);
+    if (h < 0) h += 360;
+  }
+  
+  return {
+    hue: h,
+    saturation: s,
+    brightness: v
+  };
+};
