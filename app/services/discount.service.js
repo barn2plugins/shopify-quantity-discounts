@@ -152,7 +152,7 @@ export async function updateShopifyVolumeDiscount({admin, fetcherData, metafield
         automaticAppDiscount: {
           title: `Barn2 Bundles & Bulk Discounts - ${fetcherData.name}`,
           startsAt: JSON.parse(fetcherData.specificDates).start,
-          endsAt: JSON.parse(fetcherData.specificDates).end,
+          endsAt: fetcherData.activeDates === 'specific_dates' ? JSON.parse(fetcherData.specificDates).end : null,
           metafields: [
             {
               id: metafieldId,
