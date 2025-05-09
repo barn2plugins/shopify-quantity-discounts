@@ -24,6 +24,12 @@ export default function ActiveDatesSections({ formState, setFormState, timezone 
     }
   }, [formState.activeDates]);
 
+  useEffect(() => {
+    if (selectedDates.start) {
+      setFormState({...formState, specificDates: JSON.stringify(selectedDates)});
+    }
+  }, [selectedDates])
+
   return (
     <BlockStack gap={200}>
       <Text as="p" variant="bodyLg" fontWeight="medium">Active dates</Text>
