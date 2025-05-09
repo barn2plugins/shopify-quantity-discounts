@@ -64,7 +64,7 @@ export const loader = async ({ request, params }) => {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
       bundlesDiscountsExtensionId,
-      moneyFormat: store.moneyFormat || '{{amount}} {{currency}}',
+      moneyFormat: store.moneyFormat || '${{amount}}',
       isPartnerDevelopment: store?.isPartnerDevelopment,
     }
   };

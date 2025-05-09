@@ -333,8 +333,8 @@ export const simplifyDiscountData = (discounts) => {
  */
 export const parseObjectId = (object) => {
   const matches = object.match(/\/([^\/]+)$/);
-  return matches ? matches[1] : null;
-}
+  return matches ? parseInt(matches[1], 10) : null;
+};
 
 /**
  * Retrieves the ID of the Barn2 volume discount function from Shopify store data

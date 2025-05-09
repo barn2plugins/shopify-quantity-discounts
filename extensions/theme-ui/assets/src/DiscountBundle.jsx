@@ -47,6 +47,14 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     }
   }
 
+  const hideVariantSelector = () => {
+    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
+
+    if (variantSelector) {
+      variantSelector.style.display = 'none';
+    }
+  }
+
   /**
    * Initializes and manages product variant selection and form observation.
    * Sets up MutationObserver to track changes in the product form and URL parameters.
@@ -85,6 +93,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     return () => {
       observer.disconnect();
     };
+
   }, []);
 
   /**
@@ -135,6 +144,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     // Hide quantity picker
     if (bundleData.type === 'volume_bundle') {
       hideQuantityPicker();
+      hideVariantSelector();
     }
   }, [])
 

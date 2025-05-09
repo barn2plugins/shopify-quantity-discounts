@@ -31,7 +31,7 @@ export default function VolumeBundle({
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(bundle.discount)}</span>
+      outputText = <span>Save {displayFormattedPrice(bundle.quantity * bundle.discount)}</span>
     } else {
       outputText = <span>Save {bundle.discount}%</span>
     }
@@ -72,7 +72,7 @@ export default function VolumeBundle({
       const discount = (totalPrice * bundle.discount) / 100;
       finalPrice = totalPrice - discount;
     } else if (bundle.discount_type === 'amount' && bundle.discount) {
-      finalPrice = totalPrice - bundle.discount;
+      finalPrice = totalPrice - (bundle.quantity * bundle.discount);
     }
 
     return formatPricing(finalPrice);
@@ -327,7 +327,7 @@ export default function VolumeBundle({
                     <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
                     { previewOptions.amountSaved && <p>{discountText(bundle)}</p> }
                   </div>
-                  { bundleData.layout === 'horizontal' && isBundleSelected(bundle) && (shopifyProductOptions[0].values.length > 1) && selectedBundle?.quantity > 1 && getVariantPickerBars() }
+                  { bundleData.layout === 'horizontal' && isBundleSelected(bundle) && getVariantPickerBars() }
                 </div>
               </div>
               <div className="barn2-dbs-bottom">
@@ -339,7 +339,7 @@ export default function VolumeBundle({
         })}
       </div>
 
-      { bundleData.layout === 'vertical' && (shopifyProductOptions[0].values.length > 1) && selectedBundle?.quantity > 1 && (
+      { bundleData.layout === 'vertical' && (
         <div className="barn2-db-bars-wrapper">{getVariantPickerBars()}</div>
       ) }
     </div>
@@ -348,7 +348,7 @@ export default function VolumeBundle({
   function getVariantPickerBars() {
     return (
       <div className="barn2-db-bars">
-        {Array.from({ length: selectedBundle.quantity }).map((_, barIndex) => (
+        {Array.from({ length: selectedBundle?.quantity }).map((_, barIndex) => (
           <div key={barIndex}>
             <div className="barn2-db-bar" data-variant-available={selectedVariants[barIndex]?.available}>
               <span className="barn2-db-bar-number">{barIndex + 1}</span>

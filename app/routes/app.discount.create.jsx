@@ -38,7 +38,7 @@ export const loader = async ({ request }) => {
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
-      moneyFormat: store.moneyFormat || '{{amount}} {{currency}}',
+      moneyFormat: store.moneyFormat || '${{amount}}',
       isPartnerDevelopment: store?.isPartnerDevelopment,
     }
   };
@@ -160,15 +160,6 @@ export default function DiscountPage() {
         fullWidth={true}
         backAction={{content: 'Home', url: '/app'}}
         title='Create discount'
-        primaryAction={
-          <Button 
-            variant="primary"
-            loading={isLoading}
-            onClick={discountBundleAction}
-          >
-              Save
-          </Button>
-        }
       >
         <div className="discount-layout">
           <div className="discount-content">

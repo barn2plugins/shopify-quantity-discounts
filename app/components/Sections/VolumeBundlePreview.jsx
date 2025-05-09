@@ -4,28 +4,27 @@ import { useEffect, useState } from 'react';
 import classNames from 'classnames/dedupe';
 
 export default function VolumeBundlePreview({ formState, volumeBundles, store }) {
-  const [currencyCode, setCurrencyCode] = useState('$');
   const [selectedBundle, setSelectedBundle] = useState(null);
 
   const demoProductPrice = 50;
 
-  const prefixCurrency = (value) => {
-    return `${currencyCode}${value}`;
+  const displayFormattedPrice = (price) => {
+    return store.moneyFormat.replace('{{amount}}', price);
   }
 
   const displayCalculatedPrice = ( bundle ) => {
     if ( bundle.discount_type === 'amount' ) {
-      const price = bundle.quantity * demoProductPrice - bundle.discount
-      return prefixCurrency(price);
+      const price = (bundle.quantity * demoProductPrice) - (bundle.quantity * bundle.discount);
+      return displayFormattedPrice(price);
     } else if ( bundle.discount_type === 'percentage' ) {
       const totalPrice = bundle.quantity * demoProductPrice;
       const discountAmount = (totalPrice * bundle.discount) / 100;
-      return prefixCurrency(totalPrice - discountAmount);
+      return displayFormattedPrice(totalPrice - discountAmount);
     }
   }
 
   const displayOriginalPrice = ( bundle ) => {
-    return prefixCurrency(bundle.quantity * demoProductPrice)
+    return displayFormattedPrice(bundle.quantity * demoProductPrice)
   }
   
   /**
@@ -39,7 +38,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {currencyCode}{bundle.discount}</span>
+      outputText = <span>Save {displayFormattedPrice(bundle.quantity * bundle.discount)}</span>
     } else {
       outputText = <span>Save {bundle.discount}%</span>
     }
@@ -50,11 +49,6 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
 
     return outputText;
   }
-
-  useEffect(() => {
-    setCurrencyCode(currencyCodeToSymbol(store.currencyCode));
-  }, [formState.currencyCode])
-
 
   useEffect(() => {
     // Find the highlighted bundle

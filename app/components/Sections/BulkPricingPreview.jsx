@@ -1,43 +1,5 @@
-import { InlineGrid, BlockStack, Text } from '@shopify/polaris';
-import {currencyCodeToSymbol} from '../../utils/utils';
-import { useEffect, useState } from 'react';
-import classNames from 'classnames/dedupe';
-
 export default function BulkPricingPreview({ formState, pricingTiers, store }) {
-  const [currencyCode, setCurrencyCode] = useState('$');
-
   const demoProductPrice = 50;
-
-  const prefixCurrency = (value) => {
-    return `${currencyCode}${value}`;
-  }
-  
-  /**
-   * Generates formatted discount text based on the bundle's discount type and value.
-   * 
-   * @param {Object} bundle - The bundle object containing discount information
-   * @param {string} bundle.discount_type - The type of discount ('amount' or 'percentage')
-   * @param {number|string} bundle.discount - The discount value
-   */
-  const discountText = (bundle) => {
-    let outputText = ''
-
-    if ( bundle.discount_type === 'amount' ) {
-      outputText = <Text as='span' variant='bodyXs'>Save {currencyCode}{bundle.discount}</Text>
-    } else {
-      outputText = <Text as='span' variant='bodyXs'>Save {bundle.discount}%</Text>
-    }
-
-    if (!bundle.discount) {
-      outputText = <Text as='span' variant='bodyXs'>Regular price</Text>
-    }
-
-    return outputText;
-  }
-
-  useEffect(() => {
-    setCurrencyCode(currencyCodeToSymbol(store.currencyCode));
-  }, [formState.currencyCode])
 
   /**
    * Generates formatted discount text based on the pricing tier's discount type and value
