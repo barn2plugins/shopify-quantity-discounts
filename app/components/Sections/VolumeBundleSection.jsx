@@ -124,10 +124,14 @@ export default function VolumeBundleSection({
                     <TextField
                       type="number"
                       min="1"
-                      value={bundle.quantity.toString()}
+                      value={bundle.quantity?.toString() || ''}
                       onChange={(value) => {
-                        const numericValue = Math.max(1, parseInt(value) || 1);
-                        handleVolumeChange(index, 'quantity', numericValue);
+                        if (value === '') {
+                          handleVolumeChange(index, 'quantity', '');
+                        } else {
+                          const numericValue = parseInt(value) || 0;
+                          handleVolumeChange(index, 'quantity', numericValue);
+                        }
                       }}
                       autoComplete="off"
                     />

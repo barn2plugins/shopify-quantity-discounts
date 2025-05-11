@@ -125,7 +125,7 @@
         padding: 0px;
       }
       
-      span:not(.barn2-db-bar-number) {
+      .barn2-db-bar span:not(.barn2-db-bar-number) {
         margin: 0px;
         padding: 0px;
       }
@@ -178,9 +178,9 @@
         color: var(--barn2-bundles-badge-text-color, #ffffff);
         top: 0;
         border-radius: 0 0 10px 10px;
-        padding: 0px 5px;
+        padding: 0px 7px;
         font-size: 9px;
-        width: 78px;
+        min-width: 78px;
         right: calc(50% - 39px);
         line-height: 2;
       }

@@ -50,7 +50,7 @@ export async function getDefaultBundle({sessionId, timezone}) {
       cartNoticeTextColor: '#FFFFFF',
       badgeColor: '#303030',
       borderColor: '#303030',
-      cornerRadius: 'square',
+      cornerRadius: 'slightlyRounded',
       bundleTextColor: '#303030',
       highlightedTextColor: '#303030',
       bundleBorderColor: '#616161',

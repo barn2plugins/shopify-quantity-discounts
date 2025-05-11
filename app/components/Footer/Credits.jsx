@@ -1,14 +1,11 @@
 export default function Credits() {
-  const footerLinks = [
-    {
-      label: 'Documentation',
-      href: 'https://barn2.com/kb-categories/barn2-bundles-discounts-documentation/'
-    },
-    {
-      label: 'Need help?',
-      href: 'https://barn2.com/support-center/'
-    }
-  ];
+  const documentationLink = 'https://barn2.com/kb-categories/barn2-bundles-discounts-documentation/';
+  const supportLink = 'https://barn2.com/support-center/';
+
+  const handleOpenSupport = (e) => {
+    e.preventDefault();
+    window.open(supportLink, '_blank');
+  };
 
   return (
     <div className="barn2_credits">
@@ -20,9 +17,8 @@ export default function Credits() {
         Barn2
       </p>
       <p className="footer_links">
-        {footerLinks.map((link, index) => (
-          <a key={index} href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
-        ))}
+        <a href={documentationLink} target="_blank" rel="noopener noreferrer">Documentation</a>
+        <a href="#" onClick={(e) => handleOpenSupport(e)} target="_blank" rel="noopener noreferrer">Need help?</a>
       </p>
     </div>
   )
