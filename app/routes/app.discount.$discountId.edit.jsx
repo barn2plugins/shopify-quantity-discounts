@@ -213,6 +213,7 @@ export default function DiscountPage() {
    * Effect to set the initial state of the form
    */
   useEffect(() => {
+    setVolumeBundles(discountBundle.volumeBundles ? JSON.parse(discountBundle.volumeBundles) : getDefaultBundleDiscountTypes())
     setPricingTiers(discountBundle.pricingTiers ? JSON.parse(discountBundle.pricingTiers) : getDefaultPricingTiers())
     setSelectedProducts(JSON.parse(discountBundle.selectedProducts))
     setSelectedCollections(JSON.parse(discountBundle.selectedCollections))

@@ -158,7 +158,13 @@ export default function DiscountPage() {
 
       <Page
         fullWidth={true}
-        backAction={{content: 'Home', url: '/app'}}
+        backAction={{
+          content: 'Home', 
+          onAction: () => {
+            shopify.saveBar.hide('discount-create-save-bar');
+            navigate('/app');
+          }
+        }}
         title='Create discount'
       >
         <div className="discount-layout">
