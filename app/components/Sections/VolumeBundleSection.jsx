@@ -144,9 +144,9 @@ export default function VolumeBundleSection({
                         if (value === '') {
                           handleVolumeChange(index, 'discount', '');
                         } else {
-                          const numericValue = parseFloat(value);
-                          if (!isNaN(numericValue)) {
-                            handleVolumeChange(index, 'discount', numericValue);
+                          // Only allow numbers and a single decimal point
+                          if (/^\d*\.?\d*$/.test(value)) {
+                            handleVolumeChange(index, 'discount', value);
                           }
                         }
                       }}/>

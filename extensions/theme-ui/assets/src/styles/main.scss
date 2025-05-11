@@ -58,17 +58,17 @@
     overflow: hidden;
     width: 100%;
     max-width: 600px;
-    border: 1px solid var(--barn2-bundles-border-color, #0E54E1);
+    border: 1px solid var(--barn2-bundles-border-color, #000000);
     background-color: white;
   }
-
+ 
   .barn2-bulk-table {
     width: 100%;
     border-collapse: collapse;
     
     thead {
       th {
-        background-color: var(--barn2-bundles-table-color, #0E54E1);
+        background-color: var(--barn2-bundles-table-color, #000000);
         color: var(--barn2-bundles-header-text-color, #ffffff);
         padding: 5px;
         text-align: center;
@@ -82,9 +82,9 @@
         padding: 8px 10px;
         text-align: center;
         font-size: 14px;
-        border-bottom: 1px solid var(--barn2-bundles-border-color, #0E54E1);
+        border-bottom: 1px solid var(--barn2-bundles-border-color, #000000);
         background-color: var(--barn2-bundles-background-color, #ffffff);
-        color: var(--barn2-bundles-text-color, #121212bf);
+        color: var(--barn2-bundles-text-color, #000000);
       }
     }
 
@@ -93,8 +93,8 @@
     }
 
     .discount-pill {
-      background-color: var(--barn2-bundles-label-color, #E0F0FF);
-      color: var(--barn2-bundles-label-text-color, #002E6A);
+      background-color: var(--barn2-bundles-label-color, #EDEDED);
+      color: var(--barn2-bundles-label-text-color, #000000);
       border-radius: 20px;
       padding: 1px 15px;
       display: inline-block;
