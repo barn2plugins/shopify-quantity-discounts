@@ -10,8 +10,8 @@ function DataCard({data}) {
   }
 
   return (
-    <BlockStack gap="100">
-      <p style={{color: 'var(--p-color-text-secondary)'}}>
+    <BlockStack gap="200">
+      <p className="analytics-card-title">
         <Text as="span" variant="bodySm">{data.title}</Text>
       </p>
       <Text variant="headingXl" as="h4" fontWeight="bold">

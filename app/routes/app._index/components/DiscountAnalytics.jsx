@@ -20,44 +20,28 @@ export default function DiscountAnalytics({analyticsData}) {
             <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
               <Card>
                 <Box>
-                  <Grid>
-                    <Grid.Cell columnSpan={{xs: 6}}>
-                      <Box 
-                        paddingInlineEnd="400" 
-                        borderInlineEndWidth={{xs: 0, sm: 200, md: 200, lg: 200, xl: 200}} 
-                        borderColor={{xs: 'transparent', sm: 'border', md: 'border', lg: 'border', xl: 'border'}}
-                      >
-                        <DataCard data={analyticsData.discountedMonthlyOrders}/>
-                      </Box>
-                    </Grid.Cell>
-                    <Grid.Cell columnSpan={{xs: 6}}>
-                      <Box paddingInlineStart={{xs: '0', sm: '400', md: '400', lg: '400', xl: '400'}}>
-                        <DataCard data={analyticsData.discountedAllTimeOrders}/>
-                      </Box>
-                    </Grid.Cell>
-                  </Grid>
+                  <div className="analytics-card-boxes">
+                    <div className="analytics-card-box analytics-card-box-first">
+                      <DataCard data={analyticsData.discountedMonthlyOrders}/>
+                    </div>
+                    <div className="analytics-card-box analytics-card-box-last">
+                      <DataCard data={analyticsData.discountedMonthlyOrders}/>
+                    </div>
+                  </div>
                 </Box>
               </Card>
             </Grid.Cell>
             <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 6, xl: 6}}>
               <Card>
                 <Box>
-                  <Grid>
-                    <Grid.Cell columnSpan={{xs: 6}}>
-                      <Box 
-                        paddingInlineEnd="400" 
-                        borderInlineEndWidth={{xs: 0, sm: 200, md: 200, lg: 200, xl: 200}} 
-                        borderColor={{xs: 'transparent', sm: 'border', md: 'border', lg: 'border', xl: 'border'}}
-                      >
-                        <DataCard data={analyticsData.discountedMonthlyRevenue}/>
-                      </Box>
-                    </Grid.Cell>
-                    <Grid.Cell columnSpan={{xs: 6}}>
-                      <Box paddingInlineStart={{xs: '0', sm: '400', md: '400', lg: '400', xl: '400'}}>
-                        <DataCard data={analyticsData.discountedAllTimeRevenue}/>
-                      </Box>
-                    </Grid.Cell>
-                  </Grid>
+                  <div className="analytics-card-boxes">
+                    <div className="analytics-card-box analytics-card-box-first">
+                      <DataCard data={analyticsData.discountedMonthlyRevenue}/>
+                    </div>
+                    <div className="analytics-card-box analytics-card-box-last">
+                      <DataCard data={analyticsData.discountedAllTimeRevenue}/>
+                    </div>
+                  </div>
                 </Box>
               </Card>
             </Grid.Cell>

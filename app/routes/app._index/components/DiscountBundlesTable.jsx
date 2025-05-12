@@ -119,7 +119,7 @@ export default function DiscountBundlesTable({
    * @returns {JSX.Element} Returns an InlineStack component containing action buttons
    */
   const renderRowActions = (bundle) => (
-    <InlineStack gap="200">
+    <InlineStack gap="200" wrap={false}>
       <Button 
         icon={EditIcon} 
         plain 
