@@ -1,4 +1,4 @@
-import {getOption} from "../models/Options.server"
+import { getOption } from "../models/Options.server"
 import { setOption } from "../models/Options.server";
 
 export async function setOrUpdateOption(params) {

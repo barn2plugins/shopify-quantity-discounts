@@ -11,7 +11,7 @@ import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 // Internal services and components
 import { authenticate } from "../shopify.server.js"
 import { getBundle, updateBundle, getAllBundles } from "../services/bundle.service.js";
-import { getStoreDetails, isAppEmbedDisabled, updateStoreMetafieldForVolumeDiscount } from "../services/store.service.js";
+import { getStoreDetails, updateStoreMetafieldForVolumeDiscount } from "../services/store.service.js";
 import { setOrUpdateOption, getOptionValue } from "../services/options.service";
 
 import AppBlockEmbed from "../components/Notice/AppBlockEmbed.jsx";
@@ -23,7 +23,7 @@ import { getDefaultPricingTiers, parseBundleObject, editPageHasChanges } from ".
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export const loader = async ({ request, params }) => {
-  const { admin, session } = await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
   // Get the app embed block extension id
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
@@ -46,20 +46,13 @@ export const loader = async ({ request, params }) => {
   }
 
   const parsedDiscountBundle = await parseBundleObject({ discountBundle });
-  const appEmbedDisabled = await isAppEmbedDisabled({admin, store});
   const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
   const appEmbedPopupDisplayed = await getOptionValue({storeId: store.id, key: 'app_embed_popup_displayed'})
   
-  const shouldDisplayAppEmbedPopup =
-    !appEmbedPopupDisplayed && 
-    appEmbedDisabled && 
-    ( discountBundle.type === 'volume_bundle' || discountBundle.type === 'bulk_pricing' && discountBundle.previewEnabled);
-
   return { 
     discountBundle: parsedDiscountBundle, 
-    appEmbedDisabled,
     isSubscribed,
-    shouldDisplayAppEmbedPopup,
+    appEmbedPopupDisplayed: appEmbedPopupDisplayed === 'true',
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store.ianaTimezone || 'UTC',
@@ -117,8 +110,9 @@ export default function DiscountPage() {
   const shopify = useAppBridge();
   const navigate = useNavigate();
   const location = useLocation();
-  const { discountBundle, appEmbedDisabled, isSubscribed, shouldDisplayAppEmbedPopup, store } = useLoaderData();
+  const { discountBundle, isSubscribed, appEmbedPopupDisplayed, store } = useLoaderData();
 
+  const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(false);
   const [ formState, setFormState ] = useState(discountBundle);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
   const [ selectedCollections, setSelectedCollections ] = useState([]);
@@ -130,6 +124,11 @@ export default function DiscountPage() {
   const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
 
   const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
+
+  const shouldDisplayAppEmbedPopup =
+  !appEmbedPopupDisplayed && 
+  isAppEmbedDisabled && 
+  ( discountBundle.type === 'volume_bundle' || discountBundle.type === 'bulk_pricing' && discountBundle.previewEnabled);
 
   // Check if the edit discount page redirected from the create discount page
   const redirectedAfterDiscountCreated = location.state?._isRedirect;
@@ -251,7 +250,27 @@ export default function DiscountPage() {
       shopify.saveBar.hide('discount-edit-save-bar');
       shopify.toast.show("Discount updated");
     }
+    
+    if (fetcher.data?.appEmbedDisabled) {
+      setIsAppEmbedDisabled(true);
+    }
   }, [fetcher.data]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      // Check app embed enabled or not
+      fetcher.submit(
+        {},
+        {
+          method: 'POST',
+          action: '/app/check-app-embed-status'
+        }
+      )
+    }, 500);
+
+    // Cleanup function to clear the timeout on unmount
+    return () => clearTimeout(timeoutId);
+  }, [])
 
   return (
     <div className="barn2-discounts-page-wrapper barn2-discount-edit-page-wrapper">
@@ -266,7 +285,7 @@ export default function DiscountPage() {
       >
         <BlockStack gap="500">
           {!shouldDisplayAppEmbedPopup && 
-            appEmbedDisabled && 
+            isAppEmbedDisabled && 
             <AppBlockEmbed bundlesDiscountsExtensionId={store.bundlesDiscountsExtensionId}/>
           }
           

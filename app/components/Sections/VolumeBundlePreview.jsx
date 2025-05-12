@@ -9,7 +9,11 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
   const demoProductPrice = 50;
 
   const displayFormattedPrice = (price) => {
-    return store.moneyFormat.replace('{{amount}}', price);
+    const formattedPrice = typeof price === 'number' ? 
+      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
+      price;
+
+    return store.moneyFormat.replace('{{amount}}', formattedPrice);
   }
 
   const displayCalculatedPrice = ( bundle ) => {

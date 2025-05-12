@@ -57,7 +57,11 @@ export default function BulkPricing({bundleData, isInEditor, currentVariant, sto
   }
 
   const displayFormattedPrice = (price) => {
-    return storeDetails.moneyFormat.replace('{{amount}}', price);
+    const formattedPrice = typeof price === 'number' ? 
+      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
+      price;
+
+    return storeDetails.moneyFormat.replace('{{amount}}', formattedPrice);
   }
 
   return (

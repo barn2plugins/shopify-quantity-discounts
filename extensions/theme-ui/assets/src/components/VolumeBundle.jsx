@@ -17,7 +17,11 @@ export default function VolumeBundle({
   const [selectedVariants, setSelectedVariants] = useState([]);
 
   const displayFormattedPrice = (price) => {
-    return storeDetails.moneyFormat.replace('{{amount}}', price);
+    const formattedPrice = typeof price === 'number' ? 
+      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
+      price;
+
+    return storeDetails.moneyFormat.replace('{{amount}}', formattedPrice);
   } 
 
   /**

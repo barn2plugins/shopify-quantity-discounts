@@ -50,17 +50,19 @@ export default function PlansPage() {
         backAction={{content: 'Home', url: '/app'}}
         title={ 'My plan' }
       >
-        <BlockStack gap={1000}>
-          <PricingBlock 
-            currentSubscription={currentSubscription}
-            defaultPlans={defaultPlans} 
-            fetcher={fetcher} 
-            appUrl={appUrl} 
-            loading={loading}
-            setLoading={setLoading}
-          />
-          <PlansReviews reviews={reviews} />
-        </BlockStack>
+        <div className="barn2-page-inner">
+          <BlockStack gap={1000}>
+            <PricingBlock 
+              currentSubscription={currentSubscription}
+              defaultPlans={defaultPlans} 
+              fetcher={fetcher} 
+              appUrl={appUrl} 
+              loading={loading}
+              setLoading={setLoading}
+            />
+            <PlansReviews reviews={reviews} />
+          </BlockStack>
+        </div>
       </Page>
     </div>
   );

@@ -4,7 +4,6 @@ import {
   BlockStack,
   Button,
   InlineStack,
-  LegacyCard,
   Pagination
 } from "@shopify/polaris";
 import {EditIcon, DuplicateIcon, DeleteIcon} from '@shopify/polaris-icons';
@@ -252,23 +251,23 @@ export default function DiscountBundlesTable({
               </Text>
               <Button variant="primary" url="/app/discount/create">New discount</Button>
             </InlineStack>
-            <LegacyCard>
-              <IndexTable
-                resourceName={resourceName}
-                itemCount={bundles.length}
-                headings={tableHeadings()}
-                selectable={false}
-                classes={classNames(
-                  'barn2-index-table',
-                  {
-                    'barn2-index-table-no-sort-icon': !shouldDisplaySortIcon
-                  }
-                )}
+            <div className="discounts-table-wrapper">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
+                <IndexTable
+                  resourceName={resourceName}
+                  itemCount={bundles.length}
+                  headings={tableHeadings()}
+                  selectable={false}
+                  classes={classNames(
+                    'barn2-index-table',
+                    {
+                      'barn2-index-table-no-sort-icon': !shouldDisplaySortIcon
+                    }
+                  )}
                 >
                   <SortableContext
                     items={bundles}
@@ -287,9 +286,9 @@ export default function DiscountBundlesTable({
                       )
                     }
                   </SortableContext>
-                </DndContext>
-              </IndexTable>
-            </LegacyCard>
+                </IndexTable>
+              </DndContext>
+            </div>
             {pagination.totalPages > 1 && (
               <InlineStack align="center" fullWidth>
                 <Pagination

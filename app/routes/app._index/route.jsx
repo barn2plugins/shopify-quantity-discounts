@@ -15,7 +15,6 @@ import EmptyStateComponent from "./components/EmptyStateComponent";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
 import { getAllBundles } from "../../services/bundle.service.js";
-import { getStoreDetails, isAppEmbedDisabled } from "../../services/store.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
 import { getStoreAnalyticsData } from "../../utils/analytics"
 
@@ -26,10 +25,6 @@ export const loader = async ({ request }) => {
   const limit = 25;
 
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
-
-  const store = await getStoreDetails(session.id, { id: true, activeThemeGid: true });
-
-  const appEmbedDisabled = store ? await isAppEmbedDisabled({admin, store}) : true;
 
   const discountBundles = await getAllBundles(session.id, page, limit);
 
@@ -48,7 +43,6 @@ export const loader = async ({ request }) => {
   return { 
     analyticsData,
     discountBundles: discountBundles.bundles,
-    appEmbedDisabled,
     bundlesDiscountsExtensionId,
     pagination: discountBundles.pagination
   };
@@ -83,11 +77,10 @@ export default function Index() {
   const { 
     analyticsData, 
     discountBundles, 
-    appEmbedDisabled, 
     bundlesDiscountsExtensionId, 
     pagination,
   } = useLoaderData();
-  const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(appEmbedDisabled);
+  const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(false);
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
   const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
@@ -105,6 +98,28 @@ export default function Index() {
       setBundlesPagination(updatedPagination);
     }
   }, [updatedBundles, updatedPagination]);
+
+  useEffect(() => {
+    if (fetcher.data?.appEmbedDisabled) {
+      setIsAppEmbedDisabled(true);
+    }
+  }, [fetcher.data])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      // Check app embed enabled or not
+      fetcher.submit(
+        {},
+        {
+          method: 'POST',
+          action: '/app/check-app-embed-status'
+        }
+      )
+    }, 100);
+
+    // Cleanup function to clear the timeout on unmount
+    return () => clearTimeout(timeoutId);
+  }, [])
 
   return (
     <div className="barn2-app-home">
