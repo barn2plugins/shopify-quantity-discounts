@@ -198,8 +198,6 @@
   background-color: var(--p-color-bg-surface);
   padding: 0;
   border-radius: 0.8rem;
-  box-shadow: var(--p-shadow-bevel-100);
-  border: 1px solid var(--p-color-border);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   position: relative;
@@ -212,8 +210,11 @@
     right: 0;
     bottom: 0;
     pointer-events: none;
-    border: 1px solid var(--p-color-border);
     border-radius: 0.8rem;
+
+    @media screen and (min-width: 580px) {
+      box-shadow: var(--p-shadow-bevel-100);
+    }
   }
 }
   
