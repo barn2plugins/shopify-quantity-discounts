@@ -86,13 +86,19 @@ export default function DiscountPage() {
   const { defaultBundle, isSubscribed, store } = useLoaderData();
   const navigate = useNavigate();
   
-  const [ formState, setFormState ] = useState(defaultBundle);
+  const [ formState, setFormStateOriginal ] = useState(defaultBundle);
   const [ selectedProducts, setSelectedProducts ] = useState([]);
   const [ selectedCollections, setSelectedCollections ] = useState([]);
   const [ excludedProducts, setExcludedProducts ] = useState([]);
   const [ excludedCollections, setExcludedCollections ] = useState([]);
   const [ volumeBundles, setVolumeBundles ] = useState([]);
   const [ pricingTiers, setPricingTiers ] = useState([]);
+  const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
+
+  const setFormState = (...args) => {
+    setHasUnsavedChanges(true);
+    return setFormStateOriginal(...args);
+  };
 
   const isLoading = ["loading", "submitting"].includes(fetcher.state) 
     && fetcher.formMethod === "POST" 
@@ -112,6 +118,17 @@ export default function DiscountPage() {
     navigate('/app');
   };
 
+  /**
+   * Handles the save action for the discount bundle
+   * Triggers the submission of form data to update the discount
+   * 
+   * @function
+   * @returns {void}
+   * @fires discountBundleAction
+   */
+  const handleSave = () => {
+    discountBundleAction();
+  };
 
   useEffect(() => {
     if ( discountBundleId ) {
@@ -191,11 +208,15 @@ export default function DiscountPage() {
           <div className="discount-sidebar">
             <Sidebar
               formState={formState}
-              setFormState={setFormState}
+              setFormState={setFormState} 
               volumeBundles={volumeBundles}
               isSubscribed={isSubscribed}
               pricingTiers={pricingTiers}
               store={store}
+              handleSave={handleSave}
+              isLoading={isLoading}
+              hasUnsavedChanges={hasUnsavedChanges}
+              handleDiscard={handleDiscard}
             />
           </div>
         </div>
