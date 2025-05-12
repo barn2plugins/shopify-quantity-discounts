@@ -8,7 +8,8 @@ export const defaultPlans = [
       'Test drive all features before launch',
       'All features included',
       'Email & live chat support'
-    ]
+    ],
+    revenueLimit: 0
   },
   {
     id: 1,
@@ -19,7 +20,8 @@ export const defaultPlans = [
       'All features included',
       'Unlimited bundles & discounts',
       'Email & live chat support'
-    ]
+    ],
+    revenueLimit: 1000
   },
   {
     id: 2,
@@ -30,7 +32,8 @@ export const defaultPlans = [
       'All features included',
       'Unlimited bundles & discounts',
       'Email & live chat support'
-    ]
+    ],
+    revenueLimit: 5000
   },
   {
     id: 3,
@@ -42,7 +45,7 @@ export const defaultPlans = [
       'Unlimited bundles & discounts',
       'Email & live chat support',
       'Annual strategy consultation'
-    ]
+    ],
   },
 ];
 
