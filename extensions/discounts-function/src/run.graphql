@@ -1,4 +1,4 @@
-query Input($selectedCollectionIds: [ID!], $excludedCollectionIds: [ID!]) {
+query RunInput {
   cart {
     lines {
       id
@@ -9,11 +9,33 @@ query Input($selectedCollectionIds: [ID!], $excludedCollectionIds: [ID!]) {
           id
           product {
             id
-            inSelectedCollection: inAnyCollection(ids: $selectedCollectionIds)
-            inExcludedCollection: inAnyCollection(ids: $excludedCollectionIds)
           }
         }
       }
+      _barn2_discount_campaign_name: attribute(key: "_barn2_discount_campaign_name") {
+        value
+      }
+      _barn2_discount_bundle_type: attribute(key: "_barn2_discount_bundle_type") {
+        value
+      }
+      _barn2_discount_quantity: attribute(key: "_barn2_discount_quantity") {
+        value
+      }
+      _barn2_discount_value: attribute(key: "_barn2_discount_value") {
+        value
+      }
+      _barn2_discount_type: attribute(key: "_barn2_discount_type") {
+        value
+      }
+      _barn2_discount_pricing_tiers: attribute(key: "_barn2_discount_pricing_tiers") {
+        value
+      }
+      _barn2_discount_applies_to: attribute(key: "_barn2_discount_applies_to") {
+        value
+      }
+    }
+    cartBarn2DiscountApplied: attribute(key: "barn2_discount_applied") {
+      value
     }
   }
   discountNode {

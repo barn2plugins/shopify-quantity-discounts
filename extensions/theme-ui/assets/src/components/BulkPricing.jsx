@@ -7,6 +7,9 @@ export default function BulkPricing({bundleData, isInEditor, currentVariant, sto
   useEffect(() => {
       setPricingTiers(JSON.parse(bundleData.pricingTiers || []));
       setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
+      if (bundleData) {
+        addDiscountBundleToForm();
+      }
   }, [])
 
   /**
@@ -63,6 +66,55 @@ export default function BulkPricing({bundleData, isInEditor, currentVariant, sto
 
     return storeDetails.moneyFormat.replace('{{amount}}', formattedPrice);
   }
+
+  /**
+   * Adds or updates hidden form inputs for bulk pricing discount configuration.
+   * This function handles the creation and updating of hidden input fields in the product form
+   * to store discount-related data that will be used when the product is added to cart.
+   */
+  const addDiscountBundleToForm = () => {
+    const form = document.querySelector('product-form.product-form form');
+    if (!form) {
+      return;
+    }
+    // Helper function to update or create input
+    const updateOrCreateInput = (name, value) => {
+      let input = form.querySelector(`input[name="${name}"]`);
+      if (input) {
+        input.value = value;
+      } else {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+    };
+
+    // Update or create bundle type input
+    updateOrCreateInput(
+      'properties[_barn2_discount_campaign_name]',
+      bundleData.name || ''
+    );
+
+    // Update or create bundle type input
+    updateOrCreateInput(
+      'properties[_barn2_discount_bundle_type]',
+      'bulk_pricing'
+    );
+
+    // Update or create discount quantity input
+    updateOrCreateInput(
+      'properties[_barn2_discount_pricing_tiers]',
+      bundleData.pricingTiers || ''
+    );
+
+    // Update or create discount value input
+    updateOrCreateInput(
+      'properties[_barn2_discount_applies_to]',
+      bundleData.discountCalculation || 'individual_products'
+    );
+  };
 
   return (
     <div className="barn2-bulk-table-wrapper">

@@ -208,6 +208,7 @@ export default function VolumeBundle({
   useEffect(() => {
     if (selectedBundle === null) return;
     updateProductQuantity(selectedBundle.quantity);
+    addDiscountBundleToForm(selectedBundle);
   }, [selectedBundle]);
 
   useEffect(() => {
@@ -252,14 +253,25 @@ export default function VolumeBundle({
         })
         .filter(variant => variant.available)
         .map(variant => variant.id);
+      
+      // Group variants by ID and count quantities
+      const groupedVariants = otherVariants.reduce((acc, variantId) => {
+        acc[variantId] = (acc[variantId] || 0) + 1;
+        return acc;
+      }, {});
 
       const data = {
-        items: [
-          ...otherVariants.map(variantId => ({
-            id: variantId,
-            quantity: 1
-          }))
-        ]
+        items: Object.entries(groupedVariants).map(([variantId, quantity]) => ({
+          id: parseInt(variantId),
+          quantity,
+          properties: {
+            '_barn2_discount_campaign_name': bundleData.name,
+            '_barn2_discount_bundle_type': 'volume_discount',
+            '_barn2_discount_quantity': selectedBundle.quantity,
+            '_barn2_discount_value': selectedBundle.discount,
+            '_barn2_discount_type': selectedBundle.discount_type,
+          }
+        }))
       };
 
       try {
@@ -284,6 +296,62 @@ export default function VolumeBundle({
     setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
     setLayout(bundleData.layout);
   }, []);
+
+  /**
+   * Adds or updates hidden form inputs for bulk pricing discount configuration.
+   * This function handles the creation and updating of hidden input fields in the product form
+   * to store discount-related data that will be used when the product is added to cart.
+   */
+  const addDiscountBundleToForm = (selectedBundle) => {
+    const form = document.querySelector('product-form.product-form form');
+    if (!form) {
+      return;
+    }
+
+    // Helper function to update or create input
+    const updateOrCreateInput = (name, value) => {
+      let input = form.querySelector(`input[name="${name}"]`);
+      if (input) {
+        input.value = value;
+      } else {
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+    };
+
+    // Update or create bundle type input
+    updateOrCreateInput(
+      'properties[_barn2_discount_campaign_name]',
+      bundleData.name || ''
+    );
+
+    // Update or create bundle type input
+    updateOrCreateInput(
+      'properties[_barn2_discount_bundle_type]',
+      'volume_discount'
+    );
+
+    // Update or create discount quantity input
+    updateOrCreateInput(
+      'properties[_barn2_discount_quantity]',
+      selectedBundle.quantity || 0
+    );
+
+    // Update or create discount value input
+    updateOrCreateInput(
+      'properties[_barn2_discount_value]',
+      selectedBundle.discount || 0
+    );
+
+    // Update or create discount type input
+    updateOrCreateInput(
+      'properties[_barn2_discount_type]',
+      selectedBundle.discount_type || 'percentage'
+    );
+  };
 
   return (
     <div className="barn2-discount-bundles">

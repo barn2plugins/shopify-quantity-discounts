@@ -5,10 +5,6 @@ name = "Barn2 Bundles & Bulk Discounts Function"
 handle = "barn2-bundles-and-bulk-discounts-function"
 type = "function"
 
-[extensions.input.variables]
-namespace = "$app:barn2-bundles-bulk-discount"
-key = "function-configuration"
-
 description = "t:description"
 
   [[extensions.targeting]]

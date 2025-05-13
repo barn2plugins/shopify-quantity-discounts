@@ -1,138 +1,25 @@
-// @ts-check
 import { DiscountApplicationStrategy } from "../generated/api";
 
 /**
- * @typedef {import("../generated/api").Input} Input
- * @typedef {import("../generated/api").FunctionRunResult} FunctionRunResult
- * @typedef {import("../generated/api").Target} Target
- * @typedef {import("../generated/api").ProductVariant} ProductVariant
- * @typedef {import("../generated/api").Discount} Discount
+ * @typedef {import('@shopify/discount-functions').RunInput} RunInput
+ * @typedef {import('@shopify/discount-functions').FunctionResult} FunctionResult
+ * @typedef {import('@shopify/discount-functions').Target} Target
  */
 
 /**
- * @type {FunctionRunResult}
- */
-const EMPTY_DISCOUNT = {
-  discountApplicationStrategy: DiscountApplicationStrategy.Maximum,
-  discounts: [],
-};
-
-const getObjectIds = (input) => {
-  if (!input || typeof input === 'string') return [];
-
-  return input
-    .map(id => {
-      if (typeof id !== 'string') return null;
-      const matches = id.match(/\/([^\/]+)$/);
-      return matches ? matches[1] : null;
-    })
-    .filter(Boolean);
-};
-
-/**
- * @param {Input} input
- * @returns {FunctionRunResult}
+ * @param {RunInput} input
+ * @returns {FunctionResult}
  */
 export function run(input) {
-  // Parse the configuration from the metafield
-  const configuration = JSON.parse(
-    input?.discountNode?.metafield?.value ?? "{}"
-  );
+  // Get cart lines from the input
+  const { cart } = input;
   
-  if (!configuration.discounts || !Array.isArray(configuration.discounts)) {
-    console.error("Invalid configuration: discounts array is missing");
-    return EMPTY_DISCOUNT;
-  }
-  
-  // Extract eligibility rules
-  const targetMode = configuration.targetMode || "all_products";
-  const discountType = configuration.discountType || "volume_discount";
-  const discountCalculation = configuration.discountType === 'bulk_pricing' ? configuration.discountCalculation : "individual_products";
-  const selectedProductIds = getObjectIds(configuration.selectedProductIds || []);
-  const excludedProductIds = getObjectIds(configuration.excludedProductIds || '');
-  
-  // Filter cart lines based on eligibility rules
-  const eligibleLines = input.cart.lines.filter(line => {
-    const globalProductId = line.merchandise?.product?.id;
-    // Extract the ID number from the global ID
-    const productId = globalProductId ? globalProductId.match(/\/([^\/]+)$/)?.[1] : null;
-    
-    if (!productId) return false;
-    
-    // Determine if the product is eligible based on the target mode
-    switch (targetMode) {
-      case "all_products":
-        return true;
-        
-      case "all_products_except_selected":
-        // Check if product is not in excluded collections list
-        if (excludedProductIds.includes(productId) || line.merchandise?.product?.inExcludedCollection) {
-          return false;
-        }
-        
-        return true;
-      case "selected_products":
-        return selectedProductIds.includes(productId);
-        
-      case "selected_collections": {
-        // Check productId against excludedProductIds
-        if (excludedProductIds.includes(productId)) {
-          return false;
-        }
-        
-        return line.merchandise?.product?.inSelectedCollection;
-      }
-      
-      default:
-        return false;
-    }
-  });
-
-  /** @type {Discount[]} */
+  // Initialize the discounts array that will be returned
   const discounts = [];
 
-  // Handle bulk pricing for entire cart
-  if (discountType === 'bulk_pricing' && discountCalculation === 'entire_cart') {
-    // Calculate total quantity across all eligible lines
-    const totalCartQuantity = eligibleLines.reduce((sum, line) => sum + line.quantity, 0);
-    
-    // Find applicable discount tier for total cart quantity
-    const applicableDiscount = configuration.discounts.find(discountTier => {
-      const quantityConfig = discountTier.targets?.[0]?.productVariant?.quantity;
-      
-      if (!quantityConfig) return false;
-      
-      const minQuantity = quantityConfig.min || 0;
-      const maxQuantity = quantityConfig.max || Infinity;
-      
-      return totalCartQuantity >= minQuantity && 
-             (maxQuantity === undefined || totalCartQuantity <= maxQuantity);
-    });
-    
-    if (applicableDiscount) {
-      // Apply the same discount to all eligible lines
-      const targets = eligibleLines.map(line => ({
-        cartLine: { id: line.id }
-      }));
-      
-      discounts.push({
-        targets,
-        value: applicableDiscount.value,
-        message: configuration.campaignName || ''
-      });
-      
-      return {
-        discounts,
-        discountApplicationStrategy: DiscountApplicationStrategy.Maximum,
-      };
-    }
-    
-    return EMPTY_DISCOUNT;
-  }
-  
   // Group eligible cart lines by product ID
   const productGroups = {};
-  eligibleLines.forEach(line => {
+  cart.lines.forEach(line => {
     const productId = line.merchandise?.product?.id;
     if (productId) {
       if (!productGroups[productId]) {
@@ -145,74 +32,126 @@ export function run(input) {
       productGroups[productId].lines.push(line);
     }
   });
-  
-  console.log(`Grouped into ${Object.keys(productGroups).length} product groups`);
-  
-  // Process each product group separately
-  Object.entries(productGroups).forEach(([productId, group]) => {
-    console.log(`Processing product ${productId} with quantity ${group.totalQuantity}`);
-    
-    // Find all discount tiers that apply to this quantity
-    const applicableDiscounts = configuration.discounts.filter(discountTier => {
-      const quantityConfig = discountTier.targets?.[0]?.productVariant?.quantity;
-      
-      if (!quantityConfig) return false;
-      
-      const minQuantity = quantityConfig.min || 0;
-      const maxQuantity = quantityConfig.max || Infinity;
-      
-      const isApplicable = group.totalQuantity >= minQuantity && 
-                          (maxQuantity === undefined || group.totalQuantity <= maxQuantity);
-      
-      console.log(`Discount tier min=${minQuantity}, max=${maxQuantity}, applicable=${isApplicable}`);
-      return isApplicable;
+
+  const hasEntireCartDiscount = cart.lines.some(line => 
+    line?._barn2_discount_applies_to?.value === 'entire_cart'
+  )
+
+  if (hasEntireCartDiscount) {
+    const totalCartQuantity = cart.lines.reduce((sum, line) => sum + line.quantity, 0);
+    const discountCampaignName = cart.lines[0]?._barn2_discount_campaign_name?.value;
+    const bulkPricingTiers = JSON.parse(cart.lines[0]?._barn2_discount_pricing_tiers?.value) || [];
+
+    // Find the applicable pricing tier based on total quantity
+    const applicableTier = bulkPricingTiers.find(tier => 
+      totalCartQuantity >= tier.min_quantity && 
+      totalCartQuantity <= tier.max_quantity
+    );
+
+    if (!applicableTier) {
+      return;
+    }
+
+    // Create targets for each line of this product (all variants)
+    const targets = cart.lines.map(line => ({
+      cartLine: { id: line.id }
+    }));
+
+    const discountAmount = {
+      value: applicableTier.discount_type === "amount" 
+        ? { fixedAmount: { amount: parseFloat(applicableTier.discount) } }
+        : { percentage: { value: parseFloat(applicableTier.discount) } }
+    };
+
+    // Apply discount based on the tier's discount type
+    discounts.push({
+      targets,
+      value: discountAmount.value,
+      message: discountCampaignName
     });
-    
-    console.log(`Found ${applicableDiscounts.length} applicable discounts`);
-    
-    if (applicableDiscounts.length > 0) {
-      // Get the most beneficial discount for this product group
-      const appliedDiscount = applicableDiscounts.reduce((best, current) => {
-        // Simple logic to determine the best discount
-        if (current.value.percentage && best.value.percentage) {
-          return parseFloat(current.value.percentage.value) > 
-                 parseFloat(best.value.percentage.value) ? current : best;
-        }
-        if (current.value.fixedAmount && best.value.fixedAmount) {
-          return parseFloat(current.value.fixedAmount.amount) > 
-                 parseFloat(best.value.fixedAmount.amount) ? current : best;
-        }
-        // If different types, prefer percentage discount
-        if (current.value.percentage && best.value.fixedAmount) {
-          return current;
-        }
-        return best;
-      }, applicableDiscounts[0]);
-      
+
+    return {
+      discounts,
+      discountApplicationStrategy: DiscountApplicationStrategy.Maximum,
+    };
+  }
+
+
+  // Process each product group separately
+  for (const [productId, group] of Object.entries(productGroups)) {
+    const firstItem = group.lines[0];
+
+    const bundleType = firstItem?._barn2_discount_bundle_type?.value;
+
+    if (bundleType === "volume_discount") {
+      // Get discount attributes
+      const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
+      const discountQuantity = parseInt(firstItem?._barn2_discount_quantity?.value) || 0;
+      const discountValue = firstItem?._barn2_discount_value?.value || 0;
+      const discountType = firstItem?._barn2_discount_type?.value || "percentage";
+
+      // Check if the line quantity matches the discount quantity
+      if (group.totalQuantity === discountQuantity && discountValue && discountType) {
+        // Create a target for this specific line item
+        // Create targets for each line of this product (all variants)
+        const targets = group.lines.map(line => ({
+          cartLine: { id: line.id }
+        }));
+        
+        // Create the discount based on discount type
+        const discountAmount = {
+          value: discountType === "amount" 
+            ? { fixedAmount: { amount: parseFloat(discountValue) } }
+            : { percentage: { value: parseFloat(discountValue) } }
+        };
+
+        discounts.push({
+          targets: targets,
+          value: discountAmount.value,
+          message: discountCampaignName
+        });
+
+        break;
+      }
+    }
+
+    if (bundleType === "bulk_pricing") {
+      const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
+      const bulkPricingTiers = JSON.parse(firstItem?._barn2_discount_pricing_tiers?.value) || [];
+
+      // Find the applicable pricing tier based on total quantity
+      const applicableTier = bulkPricingTiers.find(tier => 
+        group.totalQuantity >= tier.min_quantity && 
+        group.totalQuantity <= tier.max_quantity
+      );
+
+      if (!applicableTier) {
+        return;
+      }
+
       // Create targets for each line of this product (all variants)
       const targets = group.lines.map(line => ({
         cartLine: { id: line.id }
       }));
-      
-      // Add the discount for this product group
+
+      // Create the discount based on discount type
+      const discountAmount = {
+        value: applicableTier.discount_type === "amount" 
+          ? { fixedAmount: { amount: parseFloat(applicableTier.discount) } }
+          : { percentage: { value: parseFloat(applicableTier.discount) } }
+      };
+
       discounts.push({
-        targets,
-        value: appliedDiscount.value,
-        message: configuration.campaignName || ''
+        targets: targets,
+        value: discountAmount.value,
+        message: discountCampaignName
       });
     }
-  });
-  
-  if (!discounts.length) {
-    console.error("No cart lines qualify for volume discount.");
-    return EMPTY_DISCOUNT;
   }
-  
-  // Use the application strategy from configuration, defaulting to Maximum
-  const strategy = configuration.discountApplicationStrategy || DiscountApplicationStrategy.Maximum;
-  
+
+  // Return the correctly formatted result object
   return {
-    discounts,
-    discountApplicationStrategy: strategy,
+    discounts: discounts,
+    discountApplicationStrategy: DiscountApplicationStrategy.First,
   };
 }
