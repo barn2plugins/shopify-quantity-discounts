@@ -11,7 +11,7 @@ export async function action({ request }) {
   if (request.method !== 'POST') {
     return new Response();
   }
-  console.log('request logged');
+  
   const {storefront, session} = await authenticate.public.appProxy(request);
 
   if (!storefront) {

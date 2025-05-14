@@ -11,7 +11,6 @@ export default function DeleteConfirmationModal({ bundleToDelete, fetcher, pagin
     fetcher.submit(
       { 
         bundleId: bundleToDelete.id, 
-        shopifyDiscountId: bundleToDelete.shopifyDiscountId,
         limit: pagination.limit,
         page: pagination.page
       },

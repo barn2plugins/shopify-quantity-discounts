@@ -73,23 +73,6 @@ export async function getAllActiveDiscountBundles(sessionId) {
 }
 
 /**
- * Retrieves a specific discount bundle from the database using session ID and discount ID
- * 
- * @param {Object} params - The parameters object
- * @param {string} params.sessionId - The session ID of the current user
- * @param {string} params.discount - The ID of the discount bundle to retrieve
- * @returns {Promise<Object|null>} The discount bundle object if found, null if not found or error occurs
- */
-export async function getBundleByDiscountId({storeId, bundleId}) {
-  return await prisma.discountBundle.findFirst({
-    where: {
-      id: parseInt(bundleId),
-      storeId: storeId
-    }
-  });
-}
-
-/**
  * Retrieves a specific discount bundle from the database using session ID and bundle ID
  * 
  * @param {Object} params - The parameters object
@@ -194,7 +177,7 @@ export async function createDiscountBundle({storeId, data}) {
  * @returns {Promise<{success: boolean, discountBundle: Object}>} Object containing success status and updated discount bundle
  */
 export async function updateDiscountBundleById({data}) {
-  const discountId = parseInt(fetcherData.id);
+  const discountId = parseInt(data.id);
 
   return await prisma.discountBundle.update({
     where: { id: discountId },

@@ -13,13 +13,10 @@ export const action = async ({ request }) => {
   }
 
   const bundleId = parseInt(fetcherData?.bundleId);
-  const shopifyDiscountId = fetcherData?.shopifyDiscountId;
   const limit = parseInt(fetcherData?.limit);
   const page = parseInt(fetcherData?.page);
 
   try {
-    await deleteShopifyVolumeDiscount(admin, shopifyDiscountId);
-
     await prisma.discountBundle.delete({
       where: {
         id: bundleId,

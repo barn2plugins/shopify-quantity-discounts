@@ -63,9 +63,9 @@ export const action = async ({ request }) => {
 
     if (!store) return null;
 
-    const bundle = await createBundle({ admin, store, fetcherData });
+    const discountBundle = await createBundle({ admin, store, fetcherData });
 
-    if (bundle?.success === false) {
+    if (discountBundle?.success === false) {
       return null;
     }
 
@@ -75,8 +75,7 @@ export const action = async ({ request }) => {
     // }
     // await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
-    // Once the discount bundle successfully created, redirect to the edit page
-    return redirect(`/app/discount/${bundle.id}/edit`);
+    return discountBundle;
   } 
 }
 
@@ -104,7 +103,7 @@ export default function DiscountPage() {
     && fetcher.formMethod === "POST" 
     && (fetcher.formData?.get("intent") === "create");
 
-  const discountBundleId = fetcher.data?.discountBundle?.id;
+  const discountBundleId = fetcher.data?.bundle?.id;
 
   /**
    * Handles the discard action for unsaved changes
@@ -132,8 +131,12 @@ export default function DiscountPage() {
 
   useEffect(() => {
     if ( discountBundleId ) {
-      shopify.toast.show("Discount bundle has been created");
-      setFormState({...formState, discountBundleId: discountBundleId});
+      shopify.saveBar.hide('discount-create-save-bar');
+      shopify.toast.show('Discount saved');
+      setTimeout(() => {
+        navigate(`/app/discount/${discountBundleId}/edit`);
+        fetcher.load(`/app/discount/${discountBundleId}/edit`);
+      }, 100);
     }
   }, [discountBundleId, shopify]);
 

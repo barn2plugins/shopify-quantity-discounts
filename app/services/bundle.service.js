@@ -5,7 +5,6 @@ import {
   createDiscountBundle, 
   getAllDiscountBundles, 
   getAllActiveDiscountBundles,
-  getBundleByDiscountId, 
   getBundleByBundleId,
   updateDiscountBundleById, 
   finyManyByNames,
@@ -143,7 +142,7 @@ export async function getAllActiveBundles(sessionId) {
  */
 export async function getBundle({storeId, bundleId}) {
   try {
-    return await getBundleByDiscountId({storeId, bundleId});
+    return await getBundleByBundleId({storeId, bundleId: parseInt(bundleId)});
   } catch (error) {
     console.log(error);
     return {
