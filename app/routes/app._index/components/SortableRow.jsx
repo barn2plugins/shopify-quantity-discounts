@@ -22,7 +22,7 @@ export default function SortableRow({ bundle, index, handleBundleToggle, renderR
 
   const handleClick = (e) => {
     e.preventDefault();
-    navigate(`/app/discount/${bundle.shopifyDiscountId.split('/').pop()}/edit`);
+    navigate(`/app/discount/${bundle.id}/edit`);
   };
 
   const style = {
@@ -42,7 +42,7 @@ export default function SortableRow({ bundle, index, handleBundleToggle, renderR
       </td>
       <td className="col-bundle-name" onClick={handleClick}>
         <a
-          href={`/app/discount/${bundle.shopifyDiscountId.split('/').pop()}/edit`}
+          href={`/app/discount/${bundle.id}/edit`}
         >{bundle.name}</a>
       </td>
       <td className="col-bundle-type">

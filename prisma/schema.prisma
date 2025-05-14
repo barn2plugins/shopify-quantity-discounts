@@ -14,13 +14,13 @@ datasource db {
 }
 
 model Session {
-  id          String    @id
-  shop        String
-  state       String
-  isOnline    Boolean   @default(false)
-  scope       String?
-  expires     DateTime?
-  accessToken String
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
 
   // User Information
   userId        String?
@@ -33,28 +33,28 @@ model Session {
   emailVerified Boolean? @default(false)
 
   // Relations
-  store Store?
+  store         Store?
 }
 
 model Store {
-  id        Int     @id @default(autoincrement())
-  sessionId String  @unique
+  id                              Int     @id @default(autoincrement())
+  sessionId                       String  @unique
   session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   // Shop Information
-  storeName            String?
-  url                  String?
-  shopOwnerName        String?
-  currency             String?
-  ianaTimezone         String?
-  planDisplayName      String?
-  isPartnerDevelopment Boolean? @default(false)
-  isShopifyPlus        Boolean? @default(false)
-  activeThemeGid       String?
-  appEmbedDisabled     Boolean? @default(true)
+  storeName                       String?
+  url                             String?
+  shopOwnerName                   String?
+  currency                        String?
+  ianaTimezone                    String?
+  planDisplayName                 String?
+  isPartnerDevelopment            Boolean? @default(false)
+  isShopifyPlus                   Boolean? @default(false)
+  activeThemeGid                  String?
+  appEmbedDisabled                Boolean? @default(true)
 
-  volumeDiscountFunctionId String?
-  storeDiscountMetaFieldId String?
+  volumeDiscountFunctionId        String?
+  shopifyAutomaticDiscountId      String?
 
   // Money Formats
   moneyFormat                     String?
@@ -63,22 +63,22 @@ model Store {
   moneyWithCurrencyInEmailsFormat String?
 
   // API Support
-  checkoutApiSupported Boolean? @default(false)
+  checkoutApiSupported            Boolean? @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
 
   // Relations
-  discountBundles DiscountBundle[]
-  subscriptions   Subscription[]
-  orderAnalytics  OrderAnalytics[]
-  options         Options[]
+  discountBundles                 DiscountBundle[]
+  subscriptions                   Subscription[]
+  orderAnalytics                  OrderAnalytics[]
+  options                         Options[]
 }
 
 model DiscountBundle {
-  id      Int   @id @default(autoincrement())
-  storeId Int
-  store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id                  Int   @id @default(autoincrement())
+  storeId             Int
+  store               Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   name                String
   type                String  @default("")
@@ -87,7 +87,6 @@ model DiscountBundle {
   layout              String  @default("")
   priority            Int     @default(0)
   active              Boolean @default(false)
-  shopifyDiscountId   String?
   selectedProducts    String?
   selectedCollections String?
   excludedProducts    String?
@@ -102,14 +101,14 @@ model DiscountBundle {
   customDesigns       String?
   previewOptions      String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model Subscription {
-  id      Int   @id @default(autoincrement())
-  storeId Int
-  store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id                Int   @id @default(autoincrement())
+  storeId           Int
+  store            Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   chargeId         String
   plan             String
@@ -122,21 +121,21 @@ model Subscription {
   billingOn        DateTime?
   billingPeriodEnd DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model OrderAnalytics {
-  id      Int   @id @default(autoincrement())
-  storeId Int
-  store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  id                    Int   @id @default(autoincrement())
+  storeId               Int
+  store                 Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   orderId               BigInt
   lineItems             String
   discountedOrderValue  String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model Options {

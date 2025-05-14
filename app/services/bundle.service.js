@@ -197,24 +197,12 @@ export async function getBundleById({storeId, bundleId}) {
  */
 export async function createBundle({admin, store, fetcherData}) {
   try {
-    // Create the discount function
-    const shopifyDiscountGID = await createShopifyVolumeDiscount({admin, fetcherData, discountFunctionId: store.volumeDiscountFunctionId});
-    if (!shopifyDiscountGID) {
-      return {
-        success: false,
-        error: 'Failed to create discount',
-        displayError: 'Failed to create discount'
-      }
-    }
-    const shopifyDiscountid = shopifyDiscountGID.split('/').pop();
-
-    // Create the bundle
-    const bundle = await createDiscountBundle({storeId: store.id, shopifyDiscountGID, data: fetcherData});
+    // Create the bundle in app database
+    const bundle = await createDiscountBundle({storeId: store.id, data: fetcherData});
 
     return {
       success: true,
-      bundle,
-      shopifyDiscountid
+      bundle
     }
   } catch (error) {
     console.log(error);
@@ -242,15 +230,14 @@ export async function createBundle({admin, store, fetcherData}) {
  */
 export async function updateBundle({admin, fetcherData}) {
   try {
-    // Get the metafield ID for the discount function
-    const metafieldId = await getDiscountMetafieldId({admin, shopifyDiscountId: fetcherData.shopifyDiscountId});
+    // // Get the metafield ID for the discount function
+    // const metafieldId = await getDiscountMetafieldId({admin, shopifyDiscountId: fetcherData.shopifyDiscountId});
 
-    // Update the discount function
-    await updateShopifyVolumeDiscount({admin, fetcherData, metafieldId});
+    // // Update the discount function
+    // await updateShopifyVolumeDiscount({admin, fetcherData, metafieldId});
 
     // Update the bundle
-    const discountId = parseInt(fetcherData.id);
-    const bundle = await updateDiscountBundleById({discountId, data: fetcherData});
+    const bundle = await updateDiscountBundleById({data: fetcherData});
 
     return {
       success: true,

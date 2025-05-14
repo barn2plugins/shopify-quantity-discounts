@@ -6,7 +6,8 @@ import {
 } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
-import { fetchStoreDetails, saveStoreDetails } from "./shopify.service";
+import { fetchStoreDetails, saveStoreDetails, createShopifyVolumeDiscount } from "./shopify.service";
+import { getBarn2VolumeDiscountFunctionId } from "./utils/utils"
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -22,8 +23,12 @@ const shopify = shopifyApp({
       try {
         // Fetch store details using GraphQL
         const storeData = await fetchStoreDetails(admin);
+        
+        const volumeDiscountFunctionId = getBarn2VolumeDiscountFunctionId(storeData);
+        const shopifyAutomaticDiscountId = await createShopifyVolumeDiscount({admin, volumeDiscountFunctionId, storeData});
+
         // Save store details to the database
-        await saveStoreDetails( session.id, storeData );
+        await saveStoreDetails({sessionId: session.id, storeData, volumeDiscountFunctionId, shopifyAutomaticDiscountId});
       } catch (error) {
       }
     },

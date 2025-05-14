@@ -83,7 +83,7 @@ export async function getAllActiveDiscountBundles(sessionId) {
 export async function getBundleByDiscountId({storeId, bundleId}) {
   return await prisma.discountBundle.findFirst({
     where: {
-      shopifyDiscountId: `gid://shopify/DiscountAutomaticNode/${bundleId}`,
+      id: parseInt(bundleId),
       storeId: storeId
     }
   });
@@ -134,7 +134,7 @@ export async function getBundleByBundleId({storeId, bundleId}) {
  * @param {string} params.data.previewOptions - Preview options settings
  * @returns {Promise<Object>} The created discount bundle object
  */
-export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) {
+export async function createDiscountBundle({storeId, data}) {
    // Get the highest priority discount
   const bundlesCount = await countAllDiscountBundles({storeId});
   const newPriority = bundlesCount + 1;
@@ -149,7 +149,6 @@ export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) 
       layout: data.layout,
       previewEnabled: data.previewEnabled ? true : false,
       active: data.active ? true : false,
-      shopifyDiscountId: shopifyDiscountGID,
       selectedProducts: data.selectedProducts,
       selectedCollections: data.selectedCollections,
       excludedProducts: data.excludedProducts,
@@ -194,7 +193,9 @@ export async function createDiscountBundle({storeId, shopifyDiscountGID, data}) 
  * @param {string} params.data.previewOptions - Preview options settings
  * @returns {Promise<{success: boolean, discountBundle: Object}>} Object containing success status and updated discount bundle
  */
-export async function updateDiscountBundleById({discountId, data}) {
+export async function updateDiscountBundleById({data}) {
+  const discountId = parseInt(fetcherData.id);
+
   return await prisma.discountBundle.update({
     where: { id: discountId },
     data: {

@@ -18,4 +18,4 @@ description = "t:description"
 
   [extensions.ui.paths]
   create = "/app/discount/create"
-  details = "/app/discount/:id/edit"
+  details = "/app"

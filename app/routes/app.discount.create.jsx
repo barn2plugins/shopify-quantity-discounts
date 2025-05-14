@@ -76,7 +76,7 @@ export const action = async ({ request }) => {
     // await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
 
     // Once the discount bundle successfully created, redirect to the edit page
-    return redirect(`/app/discount/${bundle.shopifyDiscountid}/edit`);
+    return redirect(`/app/discount/${bundle.id}/edit`);
   } 
 }
 

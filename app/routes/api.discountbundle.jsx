@@ -11,7 +11,7 @@ export async function action({ request }) {
   if (request.method !== 'POST') {
     return new Response();
   }
-
+  console.log('request logged');
   const {storefront, session} = await authenticate.public.appProxy(request);
 
   if (!storefront) {
@@ -41,32 +41,38 @@ export async function action({ request }) {
   const shouldSendDummyBundleData = typeof productId === 'undefined' && isInEditor;
 
   try {
-    const {plan} = await getActiveSubscriptionForCurrentSession({sessionId: session.id});
-    const {name, revenueLimit} = defaultPlans.find(p => p.name === plan);
+    let eligibleProductBundle = shouldSendDummyBundleData ? 
+      await getLatestDiscountBundle({storeId: store.id}) : 
+      await getEligibleDiscountBundle({storefront, session, productId});
+
+    if (!eligibleProductBundle) {
+      return new Response(JSON.stringify({
+        success: true,
+        response: 'no_discounts',
+        productId
+      }));
+    }
+
+    const activeSubscription = await getActiveSubscriptionForCurrentSession({sessionId: session.id});
+
+    // If the user is a partner and doesn't have active subscription, we don't need to check the revenue limit
+    if (!activeSubscription && isPartnerDevelopment) {
+      return new Response(JSON.stringify({
+        success: true,
+        eligibleProductBundle,
+        productId,
+        store
+      }));
+    }
+
+    const {name, revenueLimit} = defaultPlans.find(p => p.name === activeSubscription?.plan);
     const {discountedMonthlyRevenue} = await getOrderAnalytics({sessionId: session.id});
     const convertedRevenueLimit = convertUSDValuetoShopLocalCurrency(1000, store.currency);
 
-    if ((store.currency === 'USD' && discountedMonthlyRevenue >= revenueLimit && name !== 'Pro') || name === 'Free') {
-      return new Response(JSON.stringify({
-        success: true,
-        response: 'no_discounts',
-        productId
-      }));
-    }
-    
-    if ((store.currency !== 'USD' && discountedMonthlyRevenue >= convertedRevenueLimit && name !== 'Pro')) {
-      return new Response(JSON.stringify({
-        success: true,
-        response: 'no_discounts',
-        productId
-      }));
-    }
-
-    let eligibleProductBundle = shouldSendDummyBundleData ? 
-    await getLatestDiscountBundle({storeId: store.id}) : 
-    await getEligibleDiscountBundle({storefront, session, productId});
-  
-    if (!eligibleProductBundle) {
+    if (
+      (store.currency === 'USD' && discountedMonthlyRevenue >= revenueLimit && name !== 'Pro') || 
+      (store.currency !== 'USD' && discountedMonthlyRevenue >= convertedRevenueLimit && name !== 'Pro')
+    ) {
       return new Response(JSON.stringify({
         success: true,
         response: 'no_discounts',
