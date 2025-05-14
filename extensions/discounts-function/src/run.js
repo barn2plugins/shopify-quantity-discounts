@@ -11,6 +11,7 @@ import { DiscountApplicationStrategy } from "../generated/api";
  * @returns {FunctionResult}
  */
 export function run(input) {
+  console.log('input function runnning');
   // Get cart lines from the input
   const { cart } = input;
   
@@ -32,6 +33,9 @@ export function run(input) {
       productGroups[productId].lines.push(line);
     }
   });
+
+  console.log('productGroups');
+  console.log(JSON.stringify(productGroups, null, 2));
 
   const hasEntireCartDiscount = cart.lines.some(line => 
     line?._barn2_discount_applies_to?.value === 'entire_cart'

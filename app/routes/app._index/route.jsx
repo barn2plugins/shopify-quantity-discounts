@@ -100,6 +100,8 @@ export default function Index() {
   }, [updatedBundles, updatedPagination]);
 
   useEffect(() => {
+    console.log('fetcher.data');
+    console.log(fetcher.data);
     if (fetcher.data?.appEmbedDisabled) {
       setIsAppEmbedDisabled(true);
     }
