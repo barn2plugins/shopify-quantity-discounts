@@ -1,7 +1,6 @@
 import { authenticate } from "../shopify.server";
 import { getStoreDetails } from "../services/store.service";
 import { getBundleById, getAllBundles } from "../services/bundle.service";
-import { createShopifyVolumeDiscount, deactivateShopifyVolumeDiscount } from "../services/discount.service";
 import { 
   createDiscountBundle, 
 } from '../models/Discount.server';
@@ -25,22 +24,9 @@ export const action = async ({ request }) => {
     originalBundle.name = `${originalBundle.name} (Copy)`;
     originalBundle.active = false;
     
-    const shopifyDiscountGID = await createShopifyVolumeDiscount({
-      admin, 
-      fetcherData: originalBundle, 
-      discountFunctionId: store.volumeDiscountFunctionId
-    });
+    const duplicatedBundle = await createDiscountBundle({storeId: store.id, data: originalBundle});
 
-    if (!shopifyDiscountGID) {
-      return {
-        success: false,
-        error: 'Failed to duplicate discount',
-        displayError: 'Failed to duplicate discount'
-      }
-    }
-
-    const duplicatedBundle = await createDiscountBundle({storeId: store.id, shopifyDiscountGID, data: originalBundle});
-    await deactivateShopifyVolumeDiscount({admin, shopifyDiscountId: shopifyDiscountGID});
+    // Get the updated list of bundles after duplication
     const discountBundles = await getAllBundles(session.id, page, limit);
 
     return { 

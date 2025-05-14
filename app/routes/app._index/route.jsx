@@ -22,7 +22,7 @@ export const loader = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
   
   const page = 1;
-  const limit = 25;
+  const limit = 20;
 
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
@@ -100,8 +100,6 @@ export default function Index() {
   }, [updatedBundles, updatedPagination]);
 
   useEffect(() => {
-    console.log('fetcher.data');
-    console.log(fetcher.data);
     if (fetcher.data?.appEmbedDisabled) {
       setIsAppEmbedDisabled(true);
     }

@@ -434,9 +434,6 @@ export const getThemeColorSchemes = async (data) => {
     Object.assign(colorSchemes, colors);
   });
 
-  // console.log('colorSchemes');
-  console.log(colorSchemes);
-
   return colorSchemes;
 };
 
@@ -596,4 +593,18 @@ export const hexToHsb = (hex) => {
     saturation: s,
     brightness: v
   };
+};
+
+/**
+ * Validates form data for discount bundle creation/editing
+ */
+export const validateDiscountForm = (formData) => {
+  const errors = {};
+
+  if (!formData.name) {
+    errors.name = 'Name is required';
+  }
+
+  // Return null if no errors, otherwise return errors object
+  return Object.keys(errors).length > 0 ? errors : null;
 };

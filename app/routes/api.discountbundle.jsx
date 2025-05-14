@@ -22,7 +22,8 @@ export async function action({ request }) {
     id: true,
     currency: true,
     moneyFormat: true,
-    isPartnerDevelopment: true
+    isPartnerDevelopment: true,
+    ianaTimezone: true,
   });
 
   const isPartnerDevelopment = store?.isPartnerDevelopment;
@@ -43,7 +44,7 @@ export async function action({ request }) {
   try {
     let eligibleProductBundle = shouldSendDummyBundleData ? 
       await getLatestDiscountBundle({storeId: store.id}) : 
-      await getEligibleDiscountBundle({storefront, session, productId});
+      await getEligibleDiscountBundle({storefront, session, productId, store});
 
     if (!eligibleProductBundle) {
       return new Response(JSON.stringify({

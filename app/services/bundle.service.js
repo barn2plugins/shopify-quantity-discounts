@@ -264,7 +264,7 @@ export async function updateBundle({admin, fetcherData}) {
  *                                             - false if product is explicitly excluded
  *                                             - undefined if no matching bundle found
  */
-export async function getEligibleDiscountBundle({storefront, session, productId}) {
+export async function getEligibleDiscountBundle({storefront, session, productId, store}) {
   const discountBundles = await getAllActiveBundles(session.id);
   if (!discountBundles?.success) {
     return false;
@@ -278,13 +278,43 @@ export async function getEligibleDiscountBundle({storefront, session, productId}
       selectedCollections, 
       excludedProducts, 
       excludedCollections,
-      active
+      active,
+      activeDates,
+      specificDates,
     } = bundle;
 
     if (!active) {
       continue;
     }
 
+    /**
+     * Checks if the discount bundle is valid for the current date based on specified date range
+     * Validates bundle availability using store's timezone for accurate date comparison
+     */
+    if (activeDates === 'specific_dates') {
+      const { start, end } = JSON.parse(specificDates);
+
+      // Create dates in store's timezone
+      const storeNow = new Date().toLocaleString('en-US', { timeZone: store.ianaTimezone });
+      const storeDate = new Date(storeNow);
+      const startDate = new Date(start);
+
+      // Check if the bundle's start date is in the future
+      if (startDate > storeDate) {
+        continue;
+      }
+
+      // If end date exists, check if the bundle has expired
+      if (end) {
+        const endDate = new Date(end);
+        if (storeDate > endDate) {
+          continue;
+        }
+      }
+    }
+
+
+    // Check for product eligibility
     if (whichProducts === 'all_products') {
       return bundle;
     }

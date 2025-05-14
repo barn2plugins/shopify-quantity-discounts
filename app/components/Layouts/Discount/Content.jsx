@@ -29,7 +29,8 @@ export default function Content({
   pricingTiers,
   setPricingTiers,
   store,
-  shopify
+  shopify,
+  formErrors
 }) {
 
   const buttonLabels = useButtonLabels(
@@ -58,7 +59,7 @@ export default function Content({
         style={boxStyles}
       >
         <BlockStack gap={600}>
-          <DiscountNameSection formState={formState} setFormState={setFormState} />
+          <DiscountNameSection formState={formState} setFormState={setFormState} formErrors={formErrors} />
           <DiscountTypeSection formState={formState} setFormState={setFormState} />
         </BlockStack>
       </Box>

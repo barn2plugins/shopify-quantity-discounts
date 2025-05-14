@@ -41,8 +41,6 @@ export default function DiscountBundlesTable({
   const [bundles, setBundles] = useState([]);
   const [duplicatingId, setDuplicatingId] = useState(null);
 
-  const bundleDeleted = fetcher.data?.bundleDeleted;
-
   const fetcherIsSubmitting = fetcher.state === 'loading' || fetcher.state === 'submitting';
 
   /**
@@ -75,10 +73,10 @@ export default function DiscountBundlesTable({
   };
 
   useEffect(() => {
-    if ( bundleDeleted ) {
+    if ( fetcher.data?.bundleDeleted ) {
       shopify.toast.show("Discount bundle has been deleted");
     }
-  }, [bundleDeleted, shopify]);
+  }, [fetcher.data, shopify]);
 
   /**
    * Handles the toggle state of a discount bundle's active status.
@@ -100,7 +98,6 @@ export default function DiscountBundlesTable({
       { 
         bundleId: bundle.id, 
         active: event.target.checked, 
-        shopifyDiscountId: bundle.shopifyDiscountId 
       },
       {
         method: "POST",
@@ -115,7 +112,6 @@ export default function DiscountBundlesTable({
    * 
    * @param {Object} bundle - The discount bundle object
    * @param {number} bundle.id - The unique identifier of the bundle
-   * @param {string} bundle.shopifyDiscountId - The Shopify discount ID associated with the bundle
    * @returns {JSX.Element} Returns an InlineStack component containing action buttons
    */
   const renderRowActions = (bundle) => (

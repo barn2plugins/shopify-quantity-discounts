@@ -8,7 +8,7 @@ import {
 } from "@shopify/polaris";
 import { QuestionCircleIcon } from '@shopify/polaris-icons';
 
-export default function DiscountNameSection({ formState, setFormState }) {
+export default function DiscountNameSection({ formState, setFormState, formErrors }) {
   return (
     <BlockStack gap={200}>
       <InlineStack blockAlign="center" gap={100}>
@@ -30,6 +30,7 @@ export default function DiscountNameSection({ formState, setFormState }) {
         value={formState?.name}
         onChange={(value) => setFormState({...formState, name: value})}
         autoComplete="off"
+        error={formErrors?.name}
       />
     </BlockStack>
   );

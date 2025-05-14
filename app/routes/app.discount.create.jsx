@@ -17,7 +17,7 @@ import { getStoreDetails } from "../services/store.service";
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 
-import { getDefaultBundleDiscountTypes, getDefaultPricingTiers } from "../utils/utils";
+import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, validateDiscountForm } from "../utils/utils";
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -45,12 +45,18 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { admin, session, redirect } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
 
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
 
   if (fetcherData.intent === 'create') {
+    // Validate form data
+    const errors = validateDiscountForm(fetcherData);
+    if (errors) {
+      return { errors };
+    }
+
     const store = await getStoreDetails(session.id, {
       id: true,
       volumeDiscountFunctionId: true,
@@ -104,6 +110,7 @@ export default function DiscountPage() {
     && (fetcher.formData?.get("intent") === "create");
 
   const discountBundleId = fetcher.data?.bundle?.id;
+  const errors = fetcher.data?.errors;
 
   /**
    * Handles the discard action for unsaved changes
@@ -206,6 +213,7 @@ export default function DiscountPage() {
               setPricingTiers={setPricingTiers}
               store={store}
               shopify={shopify}
+              formErrors={errors}
             />
           </div>
           <div className="discount-sidebar">

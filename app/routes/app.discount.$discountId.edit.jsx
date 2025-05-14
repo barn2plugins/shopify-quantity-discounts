@@ -5,7 +5,7 @@ import {
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";
-import { useLoaderData, useFetcher, useNavigate, useLocation } from "@remix-run/react";
+import { useLoaderData, useFetcher, useNavigate } from "@remix-run/react";
 import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 
 // Internal services and components
@@ -19,7 +19,7 @@ import AppBlockEmbedPopup from "../components/Notice/AppBlockEmbedPopup.jsx";
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 
-import { getDefaultPricingTiers, parseBundleObject, editPageHasChanges } from "../utils/utils.jsx";
+import { getDefaultPricingTiers, parseBundleObject, editPageHasChanges, validateDiscountForm } from "../utils/utils.jsx";
 import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export const loader = async ({ request, params }) => {
@@ -71,6 +71,12 @@ export const action = async ({ request }) => {
 
   // When the request is to update the discount function and bundles
   if (fetcherData.intent === 'update') {
+    // Validate form data
+    const errors = validateDiscountForm(fetcherData);
+    if (errors) {
+      return { errors };
+    }
+
     const store = await getStoreDetails(session.id, {
       session: {
         select: {
@@ -109,7 +115,6 @@ export default function DiscountPage() {
   const fetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();
-  const location = useLocation();
   const { discountBundle, isSubscribed, appEmbedPopupDisplayed, store } = useLoaderData();
 
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(false);
@@ -124,14 +129,12 @@ export default function DiscountPage() {
   const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
 
   const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
+  const errors = fetcher.data?.errors;
 
   const shouldDisplayAppEmbedPopup =
   !appEmbedPopupDisplayed && 
   isAppEmbedDisabled && 
   ( discountBundle.type === 'volume_bundle' || discountBundle.type === 'bulk_pricing' && discountBundle.previewEnabled);
-
-  // Check if the edit discount page redirected from the create discount page
-  const redirectedAfterDiscountCreated = location.state?._isRedirect;
 
   /**
    * Handles the save action for the discount bundle
@@ -201,12 +204,6 @@ export default function DiscountPage() {
     }
     navigate('/app');
   };
-
-  useEffect(() => {
-    if (redirectedAfterDiscountCreated) {
-      shopify.toast.show('Discount saved');
-    }
-  }, []);
 
   /**
    * Effect to set the initial state of the form
@@ -315,6 +312,7 @@ export default function DiscountPage() {
                 setPricingTiers={setPricingTiers}
                 store={store}
                 shopify={shopify}
+                formErrors={errors}
               />
             </div>
             <div className="discount-sidebar">
