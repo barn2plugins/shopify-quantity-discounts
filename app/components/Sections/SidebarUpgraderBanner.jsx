@@ -20,14 +20,14 @@ export default function SidebarUpgraderBanner() {
     <Card padding={0}>
       <Bleed marginInline="400">
         <div className="pricing_card_bleed">
-          <Text variant="headingLg" alignment="center">Choose your plan</Text>
+          <Text variant="headingLg" alignment="center">Upgrade needed</Text>
         </div>
       </Bleed>
       <div className="pricing_card_inner">
         <BlockStack gap={600}>
           <BlockStack gap={500}>
             <Text alignment="center">
-              Your website is now live! To activate your discounts, simply choose one of our plans. Starting at just $9.99.
+            You're currently on our development plan, which is free while building your store. Now that your site is live, discounts will no longer appear on the front end. Please upgrade to a paid plan - all include a 14-day free trial
             </Text>
             <Button 
               variant="primary"

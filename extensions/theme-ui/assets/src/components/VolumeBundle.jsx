@@ -35,7 +35,7 @@ export default function VolumeBundle({
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(bundle.quantity * bundle.discount)}</span>
+      outputText = <span>Save {displayFormattedPrice(bundle.discount)}</span>
     } else {
       outputText = <span>Save {bundle.discount}%</span>
     }
@@ -84,7 +84,7 @@ export default function VolumeBundle({
       const discount = (totalPrice * bundle.discount) / 100;
       finalPrice = totalPrice - discount;
     } else if (bundle.discount_type === 'amount' && bundle.discount) {
-      finalPrice = totalPrice - (bundle.quantity * bundle.discount);
+      finalPrice = totalPrice - bundle.discount;
     }
 
     return formatPricing(finalPrice);

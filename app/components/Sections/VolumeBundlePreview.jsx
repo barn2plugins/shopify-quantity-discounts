@@ -18,7 +18,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
 
   const displayCalculatedPrice = ( bundle ) => {
     if ( bundle.discount_type === 'amount' ) {
-      const price = (bundle.quantity * demoProductPrice) - (bundle.quantity * bundle.discount);
+      const price = (bundle.quantity * demoProductPrice) - bundle.discount;
       return displayFormattedPrice(price);
     } else if ( bundle.discount_type === 'percentage' ) {
       const totalPrice = bundle.quantity * demoProductPrice;
@@ -42,7 +42,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(bundle.quantity * bundle.discount)}</span>
+      outputText = <span>Save {displayFormattedPrice(bundle.discount)}</span>
     } else {
       outputText = <span>Save {bundle.discount}%</span>
     }
