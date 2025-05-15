@@ -64,8 +64,16 @@ export default function VolumeBundle({
    * @returns {string} Formatted price string with currency symbol
    */
   const calculatePrice = (bundle, type = 'discounted') => {
-    const price = getPrice(bundle);
-    const totalPrice = price * bundle.quantity;
+    let totalPrice = 0;
+    if (selectedBundle && selectedVariants && bundle.id === selectedBundle?.id) {
+      const bundleBarTotal = selectedVariants.reduce((sum, variant) => {
+        return sum + variant.price / 100;
+      }, 0);
+      totalPrice = bundleBarTotal;
+    } else {
+      const price = getPrice(bundle);
+      totalPrice = price * bundle.quantity;
+    }
     
     if (type === 'regular') {
       return formatPricing(totalPrice);
@@ -130,7 +138,8 @@ export default function VolumeBundle({
     const initialVariantSelection = {
       available: currentVariant.available,
       id: currentVariant.id,
-      options: currentVariant.options
+      options: currentVariant.options,
+      price: currentVariant.price,
     };
 
     // Create array with duplicated selections based on quantity
@@ -182,6 +191,7 @@ export default function VolumeBundle({
       // Update the availability status for the current variant and ID
       updatedVariants[barIndex].id = matchingVariant.id;
       updatedVariants[barIndex].available = matchingVariant.available;
+      updatedVariants[barIndex].price = matchingVariant.price;
 
       return updatedVariants;
     });
