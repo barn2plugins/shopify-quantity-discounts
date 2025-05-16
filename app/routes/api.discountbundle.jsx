@@ -29,7 +29,7 @@ export async function action({ request }) {
   const isPartnerDevelopment = store?.isPartnerDevelopment;
   const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
-  const shouldDisableDiscounts = isPartnerDevelopment === false && !isSubscribed;
+  const shouldDisableDiscounts = isPartnerDevelopment === false && isSubscribed === false;
 
   if (shouldDisableDiscounts) {
     return new Response(JSON.stringify({
@@ -48,7 +48,7 @@ export async function action({ request }) {
 
     if (!eligibleProductBundle) {
       return new Response(JSON.stringify({
-        success: true,
+        success: false,
         response: 'no_discounts',
         productId
       }));
@@ -56,8 +56,8 @@ export async function action({ request }) {
 
     const activeSubscription = await getActiveSubscriptionForCurrentSession({sessionId: session.id});
 
-    // If the user is a partner and doesn't have active subscription, we don't need to check the revenue limit
-    if (!activeSubscription && isPartnerDevelopment) {
+    // If the user is a partner then we don't need to check the revenue limit
+    if (isPartnerDevelopment) {
       return new Response(JSON.stringify({
         success: true,
         eligibleProductBundle,
@@ -75,7 +75,7 @@ export async function action({ request }) {
       (store.currency !== 'USD' && discountedMonthlyRevenue >= convertedRevenueLimit && name !== 'Pro')
     ) {
       return new Response(JSON.stringify({
-        success: true,
+        success: false,
         response: 'no_discounts',
         productId
       }));

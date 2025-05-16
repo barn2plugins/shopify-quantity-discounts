@@ -15,6 +15,14 @@
   }
 }
 
+.upgrade-notice {
+  padding: .75rem 25%;
+
+  @media screen and (max-width: 580px) {
+    padding: .75rem;
+  }
+}
+
 // App Home Page
 .barn2-app-home {
   .discounts_table_row {

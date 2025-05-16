@@ -12,6 +12,16 @@
     storeCurrency: {{ shop.currency | json }},
     volumeBundles: {{ shop.metafields.barn2_bundles.product_discount.value | json }}
   };
+
+  // Hide variant selector and quantity input if Barn2 Bundles is enabled
+  const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
+  const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+  if (variantSelector) {
+    variantSelector.style.display = 'none';
+  }
+  if (quantityInput) {
+    quantityInput.style.display = 'none';
+  }
 </script>
 {% # theme-check-disable AssetSizeJavaScript %}
 <script src="{{ 'barn2-discounts.js' | asset_url }}" defer></script>

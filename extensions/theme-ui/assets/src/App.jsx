@@ -7,6 +7,7 @@ export default function App() {
   const [eligibleBundleDiscount, setEligibleBundleDiscount] = useState(null);
   const [isInEditor, setIsInEditor] = useState(window?.b2ProductData?.isDesignMode || false);
   const [storeDetails, setStoreDetails] = useState({});
+  const [unHideQuantityVariantBlocks, setUnHideQuantityVariantBlocks] = useState(false);
 
   const fetchEligibleBundleDiscount = async (productId) => {
     try {
@@ -23,7 +24,7 @@ export default function App() {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching discount bundle:', error);
+      setUnHideQuantityVariantBlocks(true);
       return null;
     }
   };
@@ -33,11 +34,14 @@ export default function App() {
     const fetchData = async () => {
       try {
         const data = await fetchEligibleBundleDiscount(currentProductId);
-        if ( data.response === 'no_discounts' ) return;
-        setEligibleBundleDiscount(data?.eligibleProductBundle);
-        setStoreDetails(data?.store);
+        if ( data?.success === false ) {
+          setUnHideQuantityVariantBlocks(true);
+          return;
+        } else {
+          setEligibleBundleDiscount(data?.eligibleProductBundle);
+          setStoreDetails(data?.store);
+        }
       } catch (error) {
-        console.error('Error in useEffect:', error);
       }
     };
 
@@ -45,7 +49,30 @@ export default function App() {
     fetchData();
   }, [currentProductId, isInEditor]);
 
+  useEffect(() => {
+    if (!unHideQuantityVariantBlocks) {
+      return;
+    }
+
+    // Unhide the quantity input and variant select blocks
+    const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+    if (quantityInput) {
+      quantityInput.style.display = 'block';
+    }
+
+    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
+    if (variantSelector) {
+      variantSelector.style.display = 'block';
+    }
+  }, [unHideQuantityVariantBlocks]);
+
   return (
-    eligibleBundleDiscount && <DiscountBundle bundleData={eligibleBundleDiscount} isInEditor={isInEditor} storeDetails={storeDetails} />
+    eligibleBundleDiscount && 
+      <DiscountBundle 
+        bundleData={eligibleBundleDiscount} 
+        isInEditor={isInEditor} 
+        storeDetails={storeDetails} 
+        unHideQuantityVariantBlocks={unHideQuantityVariantBlocks}
+      />
   )
 }

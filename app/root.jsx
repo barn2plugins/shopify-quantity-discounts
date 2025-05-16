@@ -9,6 +9,7 @@ import {
 
 // Internal components and libraries
 import PartnerDevelopment from "./components/Notice/PartnerDevelopment";
+import UpgradeNotice from "./components/Notice/UpgradeNotice";
 import Credits from "./components/Footer/Credits.jsx";
 import { authenticate } from "./shopify.server";
 import { getStoreDetails } from "./services/store.service.js";
@@ -62,6 +63,7 @@ export default function App() {
       <body>
         <div className="barn2-app-root">
           { isPartnerDevelopment && !isSubscribed && <PartnerDevelopment/> }
+          { !isPartnerDevelopment && !isSubscribed && <UpgradeNotice/> }
           <Outlet />
           { <Credits/> }
         </div>

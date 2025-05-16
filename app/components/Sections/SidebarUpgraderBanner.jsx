@@ -27,7 +27,7 @@ export default function SidebarUpgraderBanner() {
         <BlockStack gap={600}>
           <BlockStack gap={500}>
             <Text alignment="center">
-            You're currently on our development plan, which is free while building your store. Now that your site is live, discounts will no longer appear on the front end. Please upgrade to a paid plan - all include a 14-day free trial
+              You're currently on our development plan, which is free while building your store. Now that your site is live, discounts will no longer appear on the front end. Please upgrade to a paid plan - all include a 14-day free trial
             </Text>
             <Button 
               variant="primary"
