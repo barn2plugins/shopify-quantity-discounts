@@ -1,66 +1,4 @@
 /**
- * Converts a currency code to its corresponding symbol.
- * 
- * @param {string} code - The ISO 4217 currency code (e.g., 'USD', 'EUR', 'GBP')
- * @returns {string} The currency symbol (e.g., '$', '€', '£') or the original code if no symbol is found
- * 
- * @example
- * currencyCodeToSymbol('USD') // returns '$'
- * currencyCodeToSymbol('EUR') // returns '€'
- * currencyCodeToSymbol('ABC') // returns 'ABC'
- */
-export const currencyCodeToSymbol = (code) => {
-  switch (code) {
-    case 'USD':
-      return '$';
-    case 'EUR':
-      return '€';
-    case 'GBP':
-      return '£';
-    case 'JPY':
-      return '¥';
-    case 'CNY':
-      return '¥';
-    case 'KRW':
-      return '₩';
-    case 'INR':
-      return '₹';
-    case 'RUB':
-      return '₽';
-    case 'BRL':
-      return 'R$';
-    case 'ZAR':
-      return 'R';
-    case 'AUD':
-      return 'A$';
-    case 'CAD':
-      return 'C$';
-    case 'NZD':
-      return 'NZ$';
-    case 'CHF':
-      return 'Fr';
-    case 'HKD':
-      return 'HK$';
-    case 'SGD':
-      return 'S$';
-    case 'SEK':
-      return 'kr';
-    case 'NOK':
-      return 'kr';
-    case 'DKK':
-      return 'kr';
-    case 'PLN':
-      return 'zł';
-    case 'THB':
-      return '฿';
-    case 'MXN':
-      return 'Mex$';
-    default:
-      return code;
-  }
-}
-
-/**
  * Applies custom design styles to the document root element using CSS variables
  * 
  * @param {Object} bundleData - The bundle configuration object
@@ -105,3 +43,15 @@ export const setCustomDesignStyles = (bundleData) => {
 
   document.documentElement.style.setProperty('--barn2-bundles-corner-radius', borderRadius);
 };
+
+export const unHideQuantityAndVariantBlocks = () => {
+  const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+  if (quantityInput) {
+    quantityInput.style.display = 'block';
+  }
+
+  const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
+  if (variantSelector) {
+    variantSelector.style.display = 'block';
+  }
+}

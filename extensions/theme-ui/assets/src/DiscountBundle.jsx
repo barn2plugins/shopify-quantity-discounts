@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { currencyCodeToSymbol } from './utils'
 import VolumeBundle from "./components/VolumeBundle";
 import BulkPricing from "./components/BulkPricing";
 
@@ -8,7 +7,6 @@ import { setCustomDesignStyles } from './utils'
 
 export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   const [currentVariant, setCurrentVariant] = useState(null);
-  const [storeCurrency, setStoreCurrency] = useState('$');
   const [productCartAddedEvent, setProductCartAddedEvent] = useState(false);
 
    /**
@@ -135,10 +133,6 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   }, []);
 
   useEffect(() => {
-    // Store store currency
-    const storeCurrency = isInEditor ? window.b2ProductData.storeCurrency : window?.Shopify?.currency?.active;
-    setStoreCurrency(currencyCodeToSymbol(storeCurrency));
-
     setCustomDesignStyles(bundleData);
 
     // Hide quantity picker
@@ -171,7 +165,6 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
         isInEditor={isInEditor}
         currentVariant={currentVariant}
         storeDetails={storeDetails}
-        storeCurrency={storeCurrency}
       />
     )
   }

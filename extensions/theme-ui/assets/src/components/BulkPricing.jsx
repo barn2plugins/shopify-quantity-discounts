@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 
-export default function BulkPricing({bundleData, isInEditor, currentVariant, storeDetails}) {
+import { unHideQuantityAndVariantBlocks } from '../utils'
+
+export default function BulkPricing({
+  bundleData, 
+  isInEditor, 
+  currentVariant, 
+  storeDetails
+}) {
   const [pricingTiers, setPricingTiers] = useState([]);
   const [previewOptions, setPreviewOptions] = useState([]);
 
   useEffect(() => {
-      setPricingTiers(JSON.parse(bundleData.pricingTiers || []));
-      setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
-      if (bundleData) {
-        addDiscountBundleToForm();
-      }
-  }, [])
+    setPricingTiers(JSON.parse(bundleData.pricingTiers || []));
+    setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
+    if (bundleData) {
+      addDiscountBundleToForm();
+    }
+
+    // Unhide the quantity input and variant select blocks
+    unHideQuantityAndVariantBlocks();
+  }, []);
 
   /**
    * Generates formatted discount text based on the pricing tier's discount type and value

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { unHideQuantityAndVariantBlocks } from './utils'
 import DiscountBundle from './DiscountBundle'
 
 export default function App() {
@@ -55,15 +56,8 @@ export default function App() {
     }
 
     // Unhide the quantity input and variant select blocks
-    const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
-    if (quantityInput) {
-      quantityInput.style.display = 'block';
-    }
-
-    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
-    if (variantSelector) {
-      variantSelector.style.display = 'block';
-    }
+    unHideQuantityAndVariantBlocks();
+    
   }, [unHideQuantityVariantBlocks]);
 
   return (
