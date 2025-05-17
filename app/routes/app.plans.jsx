@@ -5,33 +5,35 @@ import {
 import { useLoaderData, useFetcher } from "@remix-run/react";
 
 import { authenticate } from "../shopify.server";
-import { defaultPlans, userReviews } from "../utils/plans";
-import { getActiveSubscriptionForCurrentSession } from "../services/subscription.service";
+import { monthlyPlans, annualPlans, userReviews, PLANS } from "../utils/plans";
 
 import PricingBlock from '../components/Sections/PricingBlock';
 import PlansReviews from '../components/Sections/PlansReviews';
 import { useState, useEffect } from "react";
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { billing, session } = await authenticate.admin(request);
 
-  const currentSubscription = await getActiveSubscriptionForCurrentSession({sessionId: session.id});
-
-  const appHandle = process.env.SHOPIFY_APP_HANDLE || "barn2-bundles-bulk-discounts";
-  const appUrl = `https://${session?.shop}/admin/apps/${appHandle}`;
+  const { hasActivePayment, appSubscriptions } = await billing.check({
+    plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly, PLANS.Starter_Annual, PLANS.Growth_Annual, PLANS.Pro_Annual],
+  });
 
   return {
-    defaultPlans,
+    monthlyPlans,
+    annualPlans,
     reviews: userReviews,
-    appUrl,
-    currentSubscription: currentSubscription || false,
+    hasActivePayment,
+    currentSubscription: appSubscriptions[0],
   };
 }
 
 export default function PlansPage() {
   const fetcher = useFetcher();
-  const { defaultPlans, reviews, appUrl, currentSubscription } = useLoaderData();
+  const { monthlyPlans, annualPlans, reviews, hasActivePayment, currentSubscription } = useLoaderData();
   const [loading, setLoading] = useState(false);
+  const [defaultPlans, setDefaultPlans] = useState(monthlyPlans);
+  const [subscriptionType, setSubscriptionType] = useState('monthly');
+
   const subscription = fetcher.data?.subscription;
 
   useEffect(() => {
@@ -43,6 +45,22 @@ export default function PlansPage() {
 
   }, [subscription]);
 
+  useEffect(() => {
+    if (subscriptionType === 'monthly') {
+      setDefaultPlans(monthlyPlans);
+    } else {
+      setDefaultPlans(annualPlans);
+    }
+  }, [subscriptionType]);
+
+  useEffect(() => {
+    if (hasActivePayment) {
+      if (currentSubscription.name.includes('Annual')) {
+        setSubscriptionType('annual');
+      }
+    }
+  }, [])
+
   return (
     <div className="barn2-plans-page barn2-full-width">
       <Page
@@ -53,12 +71,14 @@ export default function PlansPage() {
         <div className="barn2-page-inner">
           <BlockStack gap={1000}>
             <PricingBlock 
+              hasActivePayment={hasActivePayment}
               currentSubscription={currentSubscription}
               defaultPlans={defaultPlans} 
               fetcher={fetcher} 
-              appUrl={appUrl} 
               loading={loading}
               setLoading={setLoading}
+              subscriptionType={subscriptionType}
+              setSubscriptionType={setSubscriptionType}
             />
             <PlansReviews reviews={reviews} />
           </BlockStack>

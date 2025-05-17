@@ -5,7 +5,7 @@ import { currentSessionHasActiveSubscription } from "../services/subscription.se
 import { getOrderAnalytics } from "../services/analytics.service";
 import { getActiveSubscriptionForCurrentSession } from "../services/subscription.service";
 import { convertUSDValuetoShopLocalCurrency } from "../utils/currency";
-import { defaultPlans } from "../utils/plans";
+import { monthlyPlans, annualPlans } from "../utils/plans";
 
 export async function action({ request }) {
   if (request.method !== 'POST') {
@@ -66,7 +66,10 @@ export async function action({ request }) {
       }));
     }
 
-    const {name, revenueLimit} = defaultPlans.find(p => p.name === activeSubscription?.plan);
+    const {name, revenueLimit} = activeSubscription?.plan.includes('Annual') ? 
+      annualPlans.find(p => p.name === activeSubscription?.plan) : 
+      monthlyPlans.find(p => p.name === activeSubscription?.plan);
+
     const {discountedMonthlyRevenue} = await getOrderAnalytics({sessionId: session.id});
     const convertedRevenueLimit = convertUSDValuetoShopLocalCurrency(1000, store.currency);
 

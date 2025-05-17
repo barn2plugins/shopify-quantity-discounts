@@ -1,8 +1,6 @@
 // External libraries and components
 import {
   Page,
-  Button,
-  Layout,
 } from "@shopify/polaris";
 
 import { useState, useEffect } from "react";

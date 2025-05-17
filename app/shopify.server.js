@@ -3,11 +3,13 @@ import {
   ApiVersion,
   AppDistribution,
   shopifyApp,
+  BillingInterval
 } from "@shopify/shopify-app-remix/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 import { fetchStoreDetails, saveStoreDetails, createShopifyVolumeDiscount } from "./shopify.service";
 import { getBarn2VolumeDiscountFunctionId } from "./utils/utils"
+import { PLANS } from "./utils/plans"
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -18,6 +20,38 @@ const shopify = shopifyApp({
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
+  billing: {
+    [PLANS.Starter_Monthly]: {
+      amount: 12.99,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [PLANS.Growth_Monthly]: {
+      amount: 24.99,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [PLANS.Pro_Monthly]: {
+      amount: 49.99,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [PLANS.Starter_Annual]: {
+      amount: 119,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    },
+    [PLANS.Growth_Annual]: {
+      amount: 239,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    },
+    [PLANS.Pro_Annual]: {
+      amount: 479,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    },
+  },
   hooks: {
     afterAuth: async ({ session, admin }) => {
       try {

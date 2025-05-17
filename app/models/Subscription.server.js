@@ -178,7 +178,7 @@ export const createAppSubscription = async({subscriptions, session, chargeId}) =
  * @param {Object} params.session - The current session object containing store information
  * @returns {Promise<void>} Resolves when all subscriptions are deactivated
  */
-export const deactivatPreviousAppSubscriptions = async ({admin, session}) => {
+export const deactivatPreviousAppSubscriptions = async ({session}) => {
   await prisma.$transaction(async (tx) => {
     // Update all active subscriptions for this store to inactive
     await tx.subscription.updateMany({

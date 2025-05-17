@@ -14,16 +14,16 @@ import {CheckIcon} from '@shopify/polaris-icons';
 import {useState} from 'react';
 
 export default function PricingBlock({
+  hasActivePayment,
   currentSubscription, 
   defaultPlans, 
   fetcher, 
-  appUrl, 
   loading, 
-  setLoading
+  setLoading,
+  subscriptionType,
+  setSubscriptionType
 }) {
   const [pressedButtonIndex, setPressedButtonIndex] = useState(0);
-
-  const [subscriptionType, setSubscriptionType] = useState('monthly');
 
   const handleButtonClick = (type) => {
     setSubscriptionType(type);
@@ -39,12 +39,8 @@ export default function PricingBlock({
     fetcher.submit(
       {
         billingName: plan.name,
-        billingAmount: plan.price[subscriptionType],
-        billingInterval: subscriptionType,
-        returnUrl: `${appUrl}/billing/charge`
       },
       {
-        method: 'POST',
         action: '/app/subscription/create'
       }
     )
@@ -55,7 +51,7 @@ export default function PricingBlock({
     if (!currentSubscription && plan.name === 'Free') return true;
 
     // Check for active plan
-    if (currentSubscription && currentSubscription?.active && currentSubscription?.plan === plan.name) {
+    if (hasActivePayment && currentSubscription?.name === plan.name) {
       return true;
     }
     return false;
@@ -74,8 +70,8 @@ export default function PricingBlock({
               Monthly
             </Button>
             <Button
-              pressed={subscriptionType === 'yearly'}
-              onClick={() => handleButtonClick('yearly')}
+              pressed={subscriptionType === 'annual'}
+              onClick={() => handleButtonClick('annual')}
             >
               Yearly
             </Button>
@@ -89,14 +85,14 @@ export default function PricingBlock({
             <Card padding={0}>
               <Bleed marginInline="400">
                 <div className="pricing_card_bleed">
-                  <Text variant="headingLg" alignment="center">{plan.name}</Text>
+                  <Text variant="headingLg" alignment="center">{plan.title}</Text>
                 </div>
               </Bleed>
               <Box className="pricing_card_inner">
                 <BlockStack gap={600}>
                   <BlockStack gap={500}>
                     <div className="pricing_amount">
-                      <span className="pricing_value">${plan.price[subscriptionType]}</span>
+                      <span className="pricing_value">${plan.price}</span>
                       <span className="pricing_duration">{ subscriptionType === 'monthly' ? '/ per month' : '/ per annum'}</span>
                     </div>
                     <Button 

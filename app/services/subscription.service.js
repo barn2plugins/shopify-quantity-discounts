@@ -38,43 +38,6 @@ export const getActiveSubscriptionForCurrentSession = async (params) => {
 }
 
 /**
- * Creates a new Shopify subscription and returns the confirmation URL
- * @param {Object} params - The parameters object
- * @param {Object} params.admin - The Shopify admin client
- * @param {string} params.billingName - The name of the subscription plan
- * @param {number} params.billingAmount - The billing amount
- * @param {string} params.billingInterval - The billing interval (ANNUAL/MONTHLY)
- * @param {string} params.returnUrl - The URL to return to after subscription confirmation
- * @returns {Promise<Object>} Returns object with:
- *                           - success: boolean indicating if operation was successful
- *                           - confirmationUrl: URL for subscription confirmation if successful
- *                           - errors: Array of error objects if unsuccessful
- */
-export const shopifyCreateSubscription = async (params) => {
-  try {
-    const response = await createShopifySubscription(params);
-    
-    if (response.data.appSubscriptionCreate.userErrors.length > 0) {
-      return {
-        success: false,
-        errors: response.data.appSubscriptionCreate.userErrors
-      }
-    }
-
-    return {
-      success: true,
-      confirmationUrl: response.data.appSubscriptionCreate.confirmationUrl
-    }
-
-  } catch (error) {
-    return { 
-      success: false, 
-      error: error.message 
-    };
-  }
-}
-
-/**
  * Retrieves current active subscriptions from Shopify
  * @param {Function} graphql - The Shopify GraphQL client function
  * @returns {Promise<Object>} Returns object with:
