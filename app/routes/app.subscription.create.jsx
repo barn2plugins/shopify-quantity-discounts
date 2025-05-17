@@ -10,7 +10,7 @@ export const loader = async ({ request }) => {
     plans: [billingName],
     onFailure: async () => billing.request({
       plan: billingName,
-      returnUrl: `https://${session.shop}/admin/apps/barn2-bundles-bulk-dev/app/billing/charge`,
+      returnUrl: `https://${session.shop}/admin/apps/barn2-bundles-bulk-discounts/app/billing/charge`,
     }),
   });
 
