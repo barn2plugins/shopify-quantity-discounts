@@ -10,7 +10,7 @@ export default function DeleteConfirmationModal({ bundleToDelete, fetcher, pagin
 
     fetcher.submit(
       { 
-        bundleId: bundleToDelete.id, 
+        bundle: JSON.stringify(bundleToDelete), 
         limit: pagination.limit,
         page: pagination.page
       },

@@ -32,7 +32,7 @@ export default function Documentation() {
     >
       <div className="barn2-page-inner documentation-page-video">
         <div className="iframe-wrapper">
-          <iframe src="https://www.youtube.com/embed/PtrctzSG7so?si=iJe_gBSTfZh-cR3Z" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+          <iframe src="https://www.youtube.com/embed/yVnCUdLAkek?si=iJe_gBSTfZh-cR3Z" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
         </div>
       </div>
     </Page>

@@ -25,7 +25,7 @@ export default function DiscountAnalytics({analyticsData}) {
                       <DataCard data={analyticsData.discountedMonthlyOrders}/>
                     </div>
                     <div className="analytics-card-box analytics-card-box-last">
-                      <DataCard data={analyticsData.discountedMonthlyOrders}/>
+                      <DataCard data={analyticsData.discountedAllTimeOrders}/>
                     </div>
                   </div>
                 </Box>

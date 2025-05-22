@@ -11,6 +11,7 @@ import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server"
 import { getDefaultBundle, createBundle } from "../services/bundle.service";
 import { getStoreDetails } from "../services/store.service";
+import { trackBundleCreateEvent } from "../services/mixpanel.service";
 
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
@@ -72,6 +73,13 @@ export const action = async ({ request }) => {
     if (discountBundle?.success === false) {
       return null;
     }
+
+    // On bundle create, track the event on Mixpanel
+   try {
+    trackBundleCreateEvent({session, bundle: discountBundle.bundle});
+   } catch (error) {
+    console.log('Error tracking bundle create event on Mixpanel', error);
+   }
 
     // const allDiscounts = await getAllBundles(session.id);
     // if (allDiscounts?.success === false) {
@@ -140,7 +148,6 @@ export default function DiscountPage() {
       shopify.toast.show('Discount saved');
       setTimeout(() => {
         navigate(`/app/discount/${discountBundleId}/edit`);
-        fetcher.load(`/app/discount/${discountBundleId}/edit`);
       }, 100);
     }
   }, [discountBundleId, shopify]);

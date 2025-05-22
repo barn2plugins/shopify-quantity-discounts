@@ -5,6 +5,7 @@ import {
   shopifyApp,
   BillingInterval
 } from "@shopify/shopify-app-remix/server";
+import Mixpanel from "mixpanel";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 import { fetchStoreDetails, saveStoreDetails, createShopifyVolumeDiscount } from "./shopify.service";
@@ -54,16 +55,46 @@ const shopify = shopifyApp({
   },
   hooks: {
     afterAuth: async ({ session, admin }) => {
+      const storeData = await fetchStoreDetails(admin);
+
       try {
         // Fetch store details using GraphQL
-        const storeData = await fetchStoreDetails(admin);
-        
         const volumeDiscountFunctionId = getBarn2VolumeDiscountFunctionId(storeData);
         const shopifyAutomaticDiscountId = await createShopifyVolumeDiscount({admin, volumeDiscountFunctionId, storeData});
 
         // Save store details to the database
         await saveStoreDetails({sessionId: session.id, storeData, volumeDiscountFunctionId, shopifyAutomaticDiscountId});
       } catch (error) {
+        console.error('Error fetching or saving store details:', error);
+      }
+
+      try {
+        const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN);
+        // On first install, track the user on Mixpanel
+        mp.people.set(session.shop, {
+          '$name': storeData?.data?.shop?.shopOwnerName,
+          '$email': storeData?.data?.shop?.email,
+          'Timezon': storeData?.data?.shop?.ianaTimezone,
+          'Development store': storeData?.data?.shop?.partnerDevelopment,
+          'Money format': storeData?.data?.shop?.moneyFormat,
+          'Currency code': storeData?.data?.shop?.currencyCode,
+        });
+        
+        // Record first install event for the user
+        mp.track('Installed', {
+          distinct_id: session.shop,
+          'Shop': session.shop,
+          'Shop owner name': storeData?.data?.shop?.shopOwnerName,
+          'Shop email': storeData?.data?.shop?.email,
+          'Timezone': storeData?.data?.shop?.ianaTimezone,
+          'Development store': storeData?.data?.shop?.partnerDevelopment ? 'Yes' : 'No',
+          'Currency code': storeData?.data?.shop?.currencyCode,
+          'Money format': storeData?.data?.shop?.moneyFormat,
+          'Install date': new Date().toISOString(),
+          'App version': process.env.APP_VERSION || '1.0.0',
+        });
+      } catch (error) {
+        console.error('Error tracking user installed event on Mixpanel:', error);
       }
     },
   },

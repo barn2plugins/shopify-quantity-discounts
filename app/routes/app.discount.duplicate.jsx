@@ -4,6 +4,7 @@ import { getBundleById, getAllBundles } from "../services/bundle.service";
 import { 
   createDiscountBundle, 
 } from '../models/Discount.server';
+import { trackBundleDuplicateEvent } from "../services/mixpanel.service";
 
 export const action = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -28,6 +29,9 @@ export const action = async ({ request }) => {
 
     // Get the updated list of bundles after duplication
     const discountBundles = await getAllBundles(session.id, page, limit);
+
+    // On bundle duplicate, track the event on Mixpanel
+    trackBundleDuplicateEvent({session, bundle: duplicatedBundle});
 
     return { 
         success: true,

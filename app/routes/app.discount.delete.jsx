@@ -2,6 +2,7 @@ import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { deleteShopifyVolumeDiscount } from "../services/discount.service";
 import { getAllBundles } from "../services/bundle.service";
+import { trackBundleDeleteEvent } from "../services/mixpanel.service";
 
 export const action = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
@@ -12,7 +13,8 @@ export const action = async ({ request }) => {
     return null;
   }
 
-  const bundleId = parseInt(fetcherData?.bundleId);
+  const bundleToDelete = JSON.parse(fetcherData?.bundle);
+  const bundleId = parseInt(bundleToDelete?.id);
   const limit = parseInt(fetcherData?.limit);
   const page = parseInt(fetcherData?.page);
 
@@ -47,6 +49,9 @@ export const action = async ({ request }) => {
 
     // Retrieve the updated list of bundles after deletion
     const discountBundles = await getAllBundles(session.id, page, limit);
+
+    // On bundle delete, track the event on Mixpanel
+    trackBundleDeleteEvent({session, bundle: bundleToDelete});
 
     return {
       success: true,

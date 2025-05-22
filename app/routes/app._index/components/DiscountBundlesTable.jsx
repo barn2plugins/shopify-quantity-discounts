@@ -96,7 +96,7 @@ export default function DiscountBundlesTable({
     
     fetcher.submit(
       { 
-        bundleId: bundle.id, 
+        bundle: JSON.stringify(bundle),
         active: event.target.checked, 
       },
       {
@@ -180,7 +180,8 @@ export default function DiscountBundlesTable({
 						priorities: JSON.stringify(updatedBundles.map(b => ({ 
 							id: b.id, 
 							priority: b.priority 
-						})))
+						}))),
+            totalBundles: updatedBundles.length
 					},
 					{
 						method: "PUT",

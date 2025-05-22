@@ -19,5 +19,4 @@ export const action = async ({ request }) => {
   } catch (error) {
     return new Response();
   }
-
 };

@@ -19,7 +19,7 @@ import { getOrderAnalytics } from "../../services/analytics.service";
 import { getStoreAnalyticsData } from "../../utils/analytics"
 
 export const loader = async ({ request }) => {
-  const { admin, session } = await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
   
   const page = 1;
   const limit = 20;

@@ -13,6 +13,7 @@ import { authenticate } from "../shopify.server.js"
 import { getBundle, updateBundle, getAllBundles } from "../services/bundle.service.js";
 import { getStoreDetails, updateStoreMetafieldForVolumeDiscount } from "../services/store.service.js";
 import { setOrUpdateOption, getOptionValue } from "../services/options.service";
+import { trackBundleUpdateEvent } from "../services/mixpanel.service";
 
 import AppBlockEmbed from "../components/Notice/AppBlockEmbed.jsx";
 import AppBlockEmbedPopup from "../components/Notice/AppBlockEmbedPopup.jsx";
@@ -98,6 +99,13 @@ export const action = async ({ request }) => {
       return null;
     }
     await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
+
+    // On bundle update, track the event on Mixpanel
+    try {
+      trackBundleUpdateEvent({session, bundle: fetcherData});
+    } catch (error) {
+      console.log('Error tracking bundle update event on Mixpanel', error);
+    }
 
     return discountData;
   }
