@@ -6,9 +6,6 @@ handle = "barn2-bundles-bulk-dev"
 application_url = "https://barn2-discounts.supersections.store"
 embedded = true
 
-[build]
-automatically_update_urls_on_dev = false
-
 [webhooks]
 api_version = "2025-01"
 
@@ -50,3 +47,6 @@ prefix = "apps"
 
 [pos]
 embedded = false
+
+[build]
+automatically_update_urls_on_dev = true

@@ -158,6 +158,10 @@
         color: var(--barn2-bundles-bundle-text-color, #303030);
       }
 
+      .price-strike-through {
+        text-decoration: line-through;
+      }
+
       .barn2-dbs-bottom {
         display: flex;
         flex-direction: column;

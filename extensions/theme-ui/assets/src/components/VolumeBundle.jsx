@@ -414,7 +414,16 @@ export default function VolumeBundle({
               </div>
               <div className="barn2-dbs-bottom">
                 <span className="barn2-dbs-price">{calculatePrice(bundle, 'discounted')}</span>
-                { previewOptions.showOriginalPrice && bundle.discount && <span className="barn2-dbs-regular-price">{calculatePrice(bundle, 'regular')}</span> }
+                { previewOptions.showOriginalPrice && bundle.discount && 
+                  <span 
+                    className={classNames(
+                      'barn2-dbs-regular-price',
+                      {
+                        'price-strike-through': parseFloat(bundle.discount) !== 0,
+                      }
+                    )}
+                  >{calculatePrice(bundle, 'regular')}</span>
+                }
               </div>
             </div>
           )

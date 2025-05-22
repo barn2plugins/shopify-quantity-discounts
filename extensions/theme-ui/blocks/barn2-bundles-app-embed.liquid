@@ -15,12 +15,13 @@
 
   // Hide variant selector and quantity input if Barn2 Bundles is enabled
   const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
-  const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+  const quantityInput = document.querySelector('.product-form__input.product-form__quantity, quantity-selector-component.quantity-selector');
   if (variantSelector) {
     variantSelector.style.display = 'none';
   }
   if (quantityInput) {
-    quantityInput.style.display = 'none';
+    // Force the style by setting !important
+    quantityInput.style.setProperty('display', 'none', 'important');
   }
 </script>
 {% # theme-check-disable AssetSizeJavaScript %}

@@ -39,14 +39,14 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   }
 
   const hideQuantityPicker = () => {
-    const quantityInput = document.querySelector('.product-form__input.product-form__quantity');
+    const quantityInput = document.querySelector('.product-form__input.product-form__quantity, quantity-selector-component.quantity-selector');
     if (quantityInput) {
       quantityInput.style.display = 'none';
     }
   }
 
   const hideVariantSelector = () => {
-    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
+    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios');
 
     if (variantSelector) {
       variantSelector.style.display = 'none';

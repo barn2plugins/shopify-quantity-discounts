@@ -13,15 +13,15 @@ if (barn2Block) {
   initializeApp(barn2Block);
 } else {
   // If block not found, look for quantity input
-  const productForm = document.querySelector('product-form.product-form');
+  const productForm = document.querySelector('form[action="/cart/add"]');
   if (productForm) {
-    const formElement = productForm.querySelector('form');
-    if (formElement) {
-      const appContainer = document.createElement('div');
-      appContainer.id = 'barn2_discounts';
-      appContainer.classList.add('barn2_discounts');
-      formElement.parentNode.insertBefore(appContainer, formElement);
-      initializeApp(appContainer);
-    }
+    const appContainer = document.createElement('div');
+    appContainer.id = 'barn2_discounts';
+    appContainer.classList.add('barn2_discounts');
+    productForm.parentNode.insertBefore(appContainer, productForm);
+    initializeApp(appContainer);
+  } else {
+    // If neither block nor quantity input found, log an error
+    console.log('Could not find the block or quantity input element');
   }
 }
