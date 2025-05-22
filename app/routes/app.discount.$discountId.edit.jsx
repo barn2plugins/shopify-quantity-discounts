@@ -136,7 +136,7 @@ export default function DiscountPage() {
   const [ pageLoaded, setPageLoaded ] = useState(false);
   const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
 
-  const isLoading = ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
+  const isLoading = fetcher.state === "submitting" || (fetcher.state === "loading" && fetcher.formMethod === "POST");
   const errors = fetcher.data?.errors;
 
   const shouldDisplayAppEmbedPopup =
