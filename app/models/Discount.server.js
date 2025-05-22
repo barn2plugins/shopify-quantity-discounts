@@ -187,7 +187,7 @@ export async function updateDiscountBundleById({data}) {
       whichProducts: data.whichProducts,
       layout: data.layout,
       previewEnabled: data.previewEnabled === 'true' ? true : false,
-      active: data.active ? true : false,
+      active: data.active === 'true' ? true : false,
       selectedProducts: data.selectedProducts,
       selectedCollections: data.selectedCollections,
       excludedProducts: data.excludedProducts,

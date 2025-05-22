@@ -116,7 +116,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                 <BlockStack style={{
                     gap: "5px",
                     flexDirection: 'column',
-                    alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
+                    alignItems: formState.layout === 'horizontal'? 'flex-end' : 'center',
                   }}>
                   <h4 className='bundle-discounted-price'>{displayCalculatedPrice(bundle)}</h4>
                   { formState.previewOptions?.showOriginalPrice && bundle.discount &&
@@ -124,7 +124,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                       className={classNames(
                         'bundle-regular-price',
                         {
-                          'price-strike-through': bundle.discount,
+                          'price-strike-through': parseFloat(bundle.discount) !== 0,
                         }
                       )}
                     >

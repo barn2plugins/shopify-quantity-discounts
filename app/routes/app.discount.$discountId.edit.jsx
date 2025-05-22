@@ -180,7 +180,6 @@ export default function DiscountPage() {
   const discountBundleAction = () => {
     const formData = {
       ...formState,
-      active: true,
       intent: 'update',
       selectedProducts: JSON.stringify(selectedProducts),
       selectedCollections: JSON.stringify(selectedCollections),

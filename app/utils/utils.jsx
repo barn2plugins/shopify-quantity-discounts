@@ -67,7 +67,7 @@ export const getApplyToText = ({
         return (
           <BlockStack>
             <span>
-              <Text fontWeight="bold" as="span">Selected collections: </Text>
+              <Text fontWeight="bold" as="span">Collections: </Text>
               {selectedProductsName.join(', ')}
             </span>
             { excludedProductsArray.length > 0 && <span>
