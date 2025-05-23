@@ -1,6 +1,48 @@
 import Mixpanel from "mixpanel";
 
 /**
+ * Set user on Mixpanel
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.session - The session object containing shop information
+ */
+export const setUserOnMixpanel = async ({session, storeData}) => {
+  const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN);
+
+  mp.people.set(session.shop, {
+    '$name': storeData?.data?.shop?.shopOwnerName,
+    '$email': storeData?.data?.shop?.email,
+    'Timezon': storeData?.data?.shop?.ianaTimezone,
+    'Development store': storeData?.data?.shop?.partnerDevelopment,
+    'Money format': storeData?.data?.shop?.moneyFormat,
+    'Currency code': storeData?.data?.shop?.currencyCode,
+  });
+}
+
+/**
+ * Tracks store installed event
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.session - The session object containing shop information
+ */
+export const trackInstalledEvent = async ({session, storeData}) => {
+  const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN);
+
+  mp.track('Installed', {
+    distinct_id: session.shop,
+    'Shop': session.shop,
+    'Shop owner name': storeData?.data?.shop?.shopOwnerName,
+    'Shop email': storeData?.data?.shop?.email,
+    'Timezone': storeData?.data?.shop?.ianaTimezone,
+    'Development store': storeData?.data?.shop?.partnerDevelopment ? 'Yes' : 'No',
+    'Currency code': storeData?.data?.shop?.currencyCode,
+    'Money format': storeData?.data?.shop?.moneyFormat,
+    'Install date': new Date().toISOString(),
+    'App version': process.env.APP_VERSION || '1.0.0',
+  });
+}
+
+/**
  * Tracks bundle creation event in Mixpanel with detailed properties
  * 
  * @param {Object} params - The parameters object
@@ -202,5 +244,22 @@ export const trackBundlePrioritiesEvent = async ({session, totalBundles}) => {
   mp.track('Bundle priority update', {
     distinct_id: session.shop,
     'Total bundles': totalBundles,
+  });
+}
+
+/**
+ * Tracks store order receive event in Mixpanel with detailed properties
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.session - The session object containing shop information
+ */
+export const trackOrderReceiveEvent = async ({session, order}) => {
+  const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN);
+
+  mp.track('Bundle order received', {
+    distinct_id: session.shop,
+    'Shop': session.shop,
+    'Order id': order.id,
+    'Discount revenue': order.revenue
   });
 }
