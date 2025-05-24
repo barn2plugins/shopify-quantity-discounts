@@ -17,26 +17,13 @@ export function run(input) {
   // Initialize the discounts array that will be returned
   const discounts = [];
 
-  // Group eligible cart lines by product ID
-  const productGroups = {};
-  cart.lines.forEach(line => {
-    const productId = line.merchandise?.product?.id;
-    if (productId) {
-      if (!productGroups[productId]) {
-        productGroups[productId] = {
-          totalQuantity: 0,
-          lines: []
-        };
-      }
-      productGroups[productId].totalQuantity += line.quantity;
-      productGroups[productId].lines.push(line);
-    }
-  });
-
-  const hasEntireCartDiscount = cart.lines.some(line => 
+  // Check if any line has entire_cart bulk pricing
+  const hasEntireCartDiscount = cart.lines.find(line => 
+    line?._barn2_discount_bundle_type?.value === 'bulk_pricing' && 
     line?._barn2_discount_applies_to?.value === 'entire_cart'
-  )
+  );
 
+  // If entire_cart discount exists, apply it
   if (hasEntireCartDiscount) {
     const totalCartQuantity = cart.lines.reduce((sum, line) => sum + line.quantity, 0);
     const discountCampaignName = cart.lines[0]?._barn2_discount_campaign_name?.value;
@@ -76,69 +63,61 @@ export function run(input) {
     };
   }
 
+  const volumeDiscountsGroup = {};
+  const bulkPricingGroups = [];
 
-  // Process each product group separately
-  for (const [productId, group] of Object.entries(productGroups)) {
-    const firstItem = group.lines[0];
+  // Setup eligible lines for volume discounts and bulk pricing
+  cart.lines.forEach(line => {
+    const productId = line.merchandise?.product?.id;
+    const campaignName = line?._barn2_discount_campaign_name?.value;
+    const bundleType = line?._barn2_discount_bundle_type?.value;
+    const appliesTo = line?._barn2_discount_applies_to?.value;
 
-    const bundleType = firstItem?._barn2_discount_bundle_type?.value;
-
+    // Skip if no product ID or no campaign name (not eligible for discount)
+    if (!productId || !campaignName) return;
+    
+    // Handle volume discounts - group by product ID
     if (bundleType === "volume_discount") {
-      // Get discount attributes
-      const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
-      const discountQuantity = parseInt(firstItem?._barn2_discount_quantity?.value) || 0;
-      const discountValue = firstItem?._barn2_discount_value?.value || 0;
-      const discountType = firstItem?._barn2_discount_type?.value || "percentage";
-
-      // Check if the line quantity matches the discount quantity
-      if (group.totalQuantity === discountQuantity && discountValue && discountType) {
-        // Create a target for this specific line item
-        // Create targets for each line of this product (all variants)
-        const targets = group.lines.map(line => ({
-          cartLine: { id: line.id }
-        }));
-        
-        // Create the discount based on discount type
-        const discountAmount = {
-          value: discountType === "amount" 
-            ? { fixedAmount: { amount: parseFloat(discountValue) } }
-            : { percentage: { value: parseFloat(discountValue) } }
+      if (!volumeDiscountsGroup[productId]) {
+        volumeDiscountsGroup[productId] = {
+          totalQuantity: 0,
+          lines: [],
         };
-
-        discounts.push({
-          targets: targets,
-          value: discountAmount.value,
-          message: discountCampaignName
-        });
-
-        break;
       }
+      volumeDiscountsGroup[productId].totalQuantity += line.quantity;
+      volumeDiscountsGroup[productId].lines.push(line);
     }
 
-    if (bundleType === "bulk_pricing") {
-      const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
-      const bulkPricingTiers = JSON.parse(firstItem?._barn2_discount_pricing_tiers?.value) || [];
+    // Handle bulk pricing for individual products
+    else if (bundleType === "bulk_pricing" && appliesTo === "individual_products") {
+      bulkPricingGroups.push(line);
+    }
+    // You can add handling for bulk_pricing with cart-wide application here
+  });
 
-      // Find the applicable pricing tier based on total quantity
-      const applicableTier = bulkPricingTiers.find(tier => 
-        group.totalQuantity >= tier.min_quantity && 
-        group.totalQuantity <= tier.max_quantity
-      );
+  // Handle volume discounts - apply discount if total quantity matches the discount quantity for any product
+  for (const [productId, group] of Object.entries(volumeDiscountsGroup)) {
+    const firstItem = group.lines[0];
 
-      if (!applicableTier) {
-        return;
-      }
+    // Get discount attributes
+    const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
+    const discountQuantity = parseInt(firstItem?._barn2_discount_quantity?.value) || 0;
+    const discountValue = firstItem?._barn2_discount_value?.value || 0;
+    const discountType = firstItem?._barn2_discount_type?.value || "percentage";
 
+    // Check if the line quantity matches the discount quantity
+    if (group.totalQuantity === discountQuantity && discountValue && discountType) {
+      // Create a target for this specific line item
       // Create targets for each line of this product (all variants)
       const targets = group.lines.map(line => ({
         cartLine: { id: line.id }
       }));
-
+      
       // Create the discount based on discount type
       const discountAmount = {
-        value: applicableTier.discount_type === "amount" 
-          ? { fixedAmount: { amount: parseFloat(applicableTier.discount) } }
-          : { percentage: { value: parseFloat(applicableTier.discount) } }
+        value: discountType === "amount" 
+          ? { fixedAmount: { amount: parseFloat(discountValue) } }
+          : { percentage: { value: parseFloat(discountValue) } }
       };
 
       discounts.push({
@@ -146,12 +125,48 @@ export function run(input) {
         value: discountAmount.value,
         message: discountCampaignName
       });
+
+      break;
     }
   }
 
-  // Return the correctly formatted result object
+  // Handle bulk pricing for individual products
+  for (const [productId, group] of Object.entries(bulkPricingGroups)) {
+    // Get discount attributes
+    const discountCampaignName = group?._barn2_discount_campaign_name?.value;
+    const bulkPricingTiers = JSON.parse(group?._barn2_discount_pricing_tiers?.value) || [];
+
+    // Find the applicable pricing tier based on total quantity
+    const applicableTier = bulkPricingTiers.find(tier => 
+      group.quantity >= tier.min_quantity && 
+      group.quantity <= tier.max_quantity
+    );
+
+    if (!applicableTier || !discountCampaignName) return;
+
+    const discountValue = applicableTier.discount || 0;
+    const discountType = applicableTier.discount_type || "percentage";
+    
+    const targets = [
+      { cartLine: { id: group.id } },
+    ];
+
+    // Create the discount based on discount type
+    const discountAmount = {
+      value: discountType === "amount" 
+        ? { fixedAmount: { amount: parseFloat(discountValue) } }
+        : { percentage: { value: parseFloat(discountValue) } }
+    };
+
+    discounts.push({
+      targets,
+      value: discountAmount.value,
+      message: discountCampaignName
+    });
+  }
+
   return {
-    discounts: discounts,
-    discountApplicationStrategy: DiscountApplicationStrategy.First,
+    discounts,
+    discountApplicationStrategy: DiscountApplicationStrategy.All,
   };
 }
