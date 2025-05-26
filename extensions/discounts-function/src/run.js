@@ -95,42 +95,55 @@ export function run(input) {
     // You can add handling for bulk_pricing with cart-wide application here
   });
 
-  // Handle volume discounts - apply discount if total quantity matches the discount quantity for any product
+  /**
+   * Handle volume discounts
+   * 
+   * Apply discount if total quantity matches the discount quantity for any product
+   */
   for (const [productId, group] of Object.entries(volumeDiscountsGroup)) {
     const firstItem = group.lines[0];
 
     // Get discount attributes
     const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
-    const discountQuantity = parseInt(firstItem?._barn2_discount_quantity?.value) || 0;
-    const discountValue = firstItem?._barn2_discount_value?.value || 0;
-    const discountType = firstItem?._barn2_discount_type?.value || "percentage";
+    const volumeBundles = JSON.parse(firstItem?._barn2_discount_volume_bundles?.value) || [];
 
-    // Check if the line quantity matches the discount quantity
-    if (group.totalQuantity === discountQuantity && discountValue && discountType) {
-      // Create a target for this specific line item
-      // Create targets for each line of this product (all variants)
-      const targets = group.lines.map(line => ({
-        cartLine: { id: line.id }
-      }));
-      
-      // Create the discount based on discount type
-      const discountAmount = {
-        value: discountType === "amount" 
-          ? { fixedAmount: { amount: parseFloat(discountValue) } }
-          : { percentage: { value: parseFloat(discountValue) } }
-      };
+    // Find the applicable pricing tier based on total quantity
+    const applicableBundle = volumeBundles.find(bundle => 
+      group.totalQuantity === parseInt(bundle.quantity)
+    );
 
-      discounts.push({
-        targets: targets,
-        value: discountAmount.value,
-        message: discountCampaignName
-      });
+    if (!applicableBundle ||!discountCampaignName) break;
 
-      break;
-    }
+    const discountValue = applicableBundle.discount || 0;
+    const discountType = applicableBundle.discount_type || "percentage";
+
+    // Create a target for this specific line item
+    // Create targets for each line of this product (all variants)
+    const targets = group.lines.map(line => ({
+      cartLine: { id: line.id }
+    }));
+    
+    // Create the discount based on discount type
+    const discountAmount = {
+      value: discountType === "amount" 
+        ? { fixedAmount: { amount: parseFloat(discountValue) } }
+        : { percentage: { value: parseFloat(discountValue) } }
+    };
+
+    discounts.push({
+      targets: targets,
+      value: discountAmount.value,
+      message: discountCampaignName
+    });
+
+    break;
   }
 
-  // Handle bulk pricing for individual products
+  /**
+   * Handle bulk pricing for individual products
+   *
+   * Apply discount if total quantity matches the discount quantity for any product
+   */
   for (const [productId, group] of Object.entries(bulkPricingGroups)) {
     // Get discount attributes
     const discountCampaignName = group?._barn2_discount_campaign_name?.value;

@@ -18,13 +18,7 @@ query RunInput {
       _barn2_discount_bundle_type: attribute(key: "_barn2_discount_bundle_type") {
         value
       }
-      _barn2_discount_quantity: attribute(key: "_barn2_discount_quantity") {
-        value
-      }
-      _barn2_discount_value: attribute(key: "_barn2_discount_value") {
-        value
-      }
-      _barn2_discount_type: attribute(key: "_barn2_discount_type") {
+      _barn2_discount_volume_bundles: attribute(key: "_barn2_discount_volume_bundles") {
         value
       }
       _barn2_discount_pricing_tiers: attribute(key: "_barn2_discount_pricing_tiers") {
@@ -33,9 +27,6 @@ query RunInput {
       _barn2_discount_applies_to: attribute(key: "_barn2_discount_applies_to") {
         value
       }
-    }
-    cartBarn2DiscountApplied: attribute(key: "barn2_discount_applied") {
-      value
     }
   }
   discountNode {
