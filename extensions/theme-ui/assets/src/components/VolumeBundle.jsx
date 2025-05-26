@@ -346,20 +346,8 @@ export default function VolumeBundle({
 
     // Update or create discount quantity input
     updateOrCreateInput(
-      'properties[_barn2_discount_quantity]',
-      selectedBundle.quantity || 0
-    );
-
-    // Update or create discount value input
-    updateOrCreateInput(
-      'properties[_barn2_discount_value]',
-      selectedBundle.discount || 0
-    );
-
-    // Update or create discount type input
-    updateOrCreateInput(
-      'properties[_barn2_discount_type]',
-      selectedBundle.discount_type || 'percentage'
+      'properties[_barn2_discount_volume_bundles]',
+      bundleData.volumeBundles || ''
     );
   };
 
@@ -409,7 +397,7 @@ export default function VolumeBundle({
                     <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
                     { previewOptions.amountSaved && <p>{discountText(bundle)}</p> }
                   </div>
-                  { bundleData.layout === 'horizontal' && isBundleSelected(bundle) && getVariantPickerBars() }
+                  { bundleData.layout === 'horizontal' && isBundleSelected(bundle) && shopifyProductVariants.length > 1 && getVariantPickerBars() }
                 </div>
               </div>
               <div className="barn2-dbs-bottom">
@@ -430,7 +418,7 @@ export default function VolumeBundle({
         })}
       </div>
 
-      { bundleData.layout === 'vertical' && (
+      { bundleData.layout === 'vertical' && shopifyProductVariants.length > 1 && (
         <div className="barn2-db-bars-wrapper">{getVariantPickerBars()}</div>
       ) }
     </div>

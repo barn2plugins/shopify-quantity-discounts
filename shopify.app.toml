@@ -3,7 +3,7 @@
 client_id = "858c89ba09011b7be4c42d83ef959102"
 name = "Barn2 Bundles & Bulk Discounts"
 handle = "barn2-bundles-bulk-discounts"
-application_url = "https://shopify-quantity-discounts.fly.dev"
+application_url = "https://barn2-bundles-bulk-discounts.fly.dev"
 embedded = true
 
 [webhooks]
@@ -35,13 +35,13 @@ scopes = "read_orders,read_products,read_themes,unauthenticated_read_product_lis
 
 [auth]
 redirect_urls = [
-  "https://shopify-quantity-discounts.fly.dev/auth/callback",
-  "https://shopify-quantity-discounts.fly.dev/auth/shopify/callback",
-  "https://shopify-quantity-discounts.fly.dev/api/auth/callback"
+  "https://barn2-bundles-bulk-discounts.fly.dev/auth/callback",
+  "https://barn2-bundles-bulk-discounts.fly.dev/auth/shopify/callback",
+  "https://barn2-bundles-bulk-discounts.fly.dev/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://shopify-quantity-discounts.fly.dev/api"
+url = "https://barn2-bundles-bulk-discounts.fly.dev/api"
 subpath = "barn2-bundles-bulk-discounts"
 prefix = "apps"
 
