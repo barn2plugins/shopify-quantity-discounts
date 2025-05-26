@@ -126,6 +126,10 @@ export default function BulkPricing({
     );
   };
 
+  if (!bundleData.previewEnabled) {
+    return null;
+  }
+
   return (
     <div className="barn2-bulk-table-wrapper">
       { bundleData.previewEnabled && (

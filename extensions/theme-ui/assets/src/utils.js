@@ -12,8 +12,6 @@ export const setCustomDesignStyles = (bundleData) => {
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-text-color', customDesigns.highlightedTextColor);
   document.documentElement.style.setProperty('--barn2-bundles-bundle-border-color', customDesigns.bundleBorderColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-border-color', customDesigns.highlightedBorderColor);
-  document.documentElement.style.setProperty('--barn2-bundles-bundle-badge-color', customDesigns.bundleBadgeColor);
-  document.documentElement.style.setProperty('--barn2-bundles-badge-text-color', customDesigns.badgeTextColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-color', customDesigns.highlightedColor);
 
   document.documentElement.style.setProperty('--barn2-bundles-table-color', customDesigns.tableColor);
@@ -22,9 +20,6 @@ export const setCustomDesignStyles = (bundleData) => {
   document.documentElement.style.setProperty('--barn2-bundles-text-color', customDesigns.textColor);
   document.documentElement.style.setProperty('--barn2-bundles-label-color', customDesigns.labelColor);
   document.documentElement.style.setProperty('--barn2-bundles-label-text-color', customDesigns.lebelTextColor);
-  document.documentElement.style.setProperty('--barn2-bundles-cart-notice-bg-color', customDesigns.cartNoticeBackgroundColor);
-  document.documentElement.style.setProperty('--barn2-bundles-cart-notice-text-color', customDesigns.cartNoticeTextColor);
-  document.documentElement.style.setProperty('--barn2-bundles-badge-color', customDesigns.badgeColor);
   document.documentElement.style.setProperty('--barn2-bundles-border-color', customDesigns.borderColor);
 
   // Handle corner radius

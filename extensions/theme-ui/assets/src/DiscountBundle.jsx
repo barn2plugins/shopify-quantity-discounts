@@ -158,7 +158,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
     )
   }
 
-  if (currentVariant!== null && bundleData.type === 'bulk_pricing' && bundleData.previewEnabled === true ) {
+  if (currentVariant!== null && bundleData.type === 'bulk_pricing' ) {
     return (
       <BulkPricing
         bundleData={bundleData}

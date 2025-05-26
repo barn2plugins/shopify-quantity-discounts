@@ -37,6 +37,8 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setSelectedProducts(formattedSelection);
+    } else {
+      setSelectedProducts([]);
     }
   }
 
@@ -62,6 +64,8 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setExcludedProducts(formattedSelection);
+    } else {
+      setExcludedProducts([]);
     }
   }
 
@@ -84,6 +88,8 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setSelectedCollections(formattedSelection);
+    } else {
+      setSelectedCollections([]);
     }
   }
 
@@ -106,6 +112,8 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setExcludedCollections(formattedSelection);
+    } else {
+      setExcludedCollections([]);
     }
   }
 
