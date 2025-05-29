@@ -21,6 +21,7 @@ export default function VolumeBundleSection({
   currencyCode, 
   volumeBundles,
   setVolumeBundles,
+  formErrors
 }) {
 
   const currencySymbol = currencyCodeToSymbol(currencyCode);
@@ -201,6 +202,12 @@ export default function VolumeBundleSection({
               </tr>
             ))}
           </IndexTable> 
+
+          { formErrors?.volumeBundle && (
+            <Box paddingBlockEnd={300}>
+              <Text as="p" tone='critical'>{formErrors?.volumeBundle}</Text>
+            </Box>
+          )}
 
           <InlineStack>
             <Button icon={PlusIcon} variant="primary" onClick={addNewBundle}>Add tier</Button>

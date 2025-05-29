@@ -13,6 +13,11 @@ export const setCustomDesignStyles = (bundleData) => {
   document.documentElement.style.setProperty('--barn2-bundles-bundle-border-color', customDesigns.bundleBorderColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-border-color', customDesigns.highlightedBorderColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-color', customDesigns.highlightedColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-text-color', customDesigns.selectedTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-border-color', customDesigns.selectedBorderColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-color', customDesigns.selectedColor);
+  document.documentElement.style.setProperty('--barn2-bundles-bundle-badge-color', customDesigns.badgeBackgroundColor);
+  document.documentElement.style.setProperty('--barn2-bundles-badge-text-color', customDesigns.badgeTextColor);
 
   document.documentElement.style.setProperty('--barn2-bundles-table-color', customDesigns.tableColor);
   document.documentElement.style.setProperty('--barn2-bundles-header-text-color', customDesigns.headerTextColor);

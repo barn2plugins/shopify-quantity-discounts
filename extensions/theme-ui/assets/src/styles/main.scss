@@ -132,6 +132,7 @@
         border-radius: 100px;
         border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
         display: inline-block;
+        background-color: white;
       }
 
       .barn2-dbs-text-block {
@@ -164,11 +165,20 @@
       }
 
       &.selected {
-        background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
+        background-color: var(--barn2-bundles-selected-color, #f1f1f1);
+        border-color: var(--barn2-bundles-selected-border-color, #616161);
 
         .barn2-input-circle {
           border-width: 2px;
-          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+          border-color: var(--barn2-bundles-selected-border-color, #616161);
+        }
+
+        .barn2-dbs-bundle-title,
+        .barn2-dbs-price, 
+        .barn2-dbs-bundle-price,
+        .barn2-dbs-regular-price,
+        .barn2-dbs-text-block p {
+          color: var(--barn2-bundles-selected-text-color, #303030);
         }
       }
 
@@ -178,15 +188,20 @@
         color: var(--barn2-bundles-badge-text-color, #ffffff);
         top: -1px;
         border-radius: 0 0 10px 10px;
-        padding: 0px 7px;
+        padding: 3px 7px;
         font-size: 9px;
-        min-width: 78px;
+        width: 78px;
         right: calc(50% - 39px);
-        line-height: 2;
+        line-height: 1.4;
       }
 
-      &.highlighted {
+      &.highlighted:not(.selected) {
         border-color: var(--barn2-bundles-highlighted-border-color, rgb(97, 97, 97));
+        background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
+
+        .barn2-input-circle {
+          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+        }
 
         .barn2-dbs-bundle-title,
         .barn2-dbs-price,

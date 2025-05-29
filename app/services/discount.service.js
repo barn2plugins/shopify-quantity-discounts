@@ -62,9 +62,9 @@ export async function createShopifyVolumeDiscount({admin, fetcherData, discountF
           startsAt: JSON.parse(fetcherData.specificDates).start,
           endsAt: fetcherData.activeDates === 'specific_dates' ? JSON.parse(fetcherData.specificDates).end : null,
           combinesWith: {
-            orderDiscounts: false,
-            productDiscounts: false,
-            shippingDiscounts: false
+            orderDiscounts: true,
+            productDiscounts: true,
+            shippingDiscounts: true
           },
           metafields: [
             {

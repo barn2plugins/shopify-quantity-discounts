@@ -25,7 +25,8 @@ export default function BulkPricingTiers({
   setFormState,
   pricingTiers,
   setPricingTiers,
-  store
+  store,
+  formErrors
 }) {
   const currencySymbol = currencyCodeToSymbol(store.currencyCode);
 
@@ -186,6 +187,12 @@ export default function BulkPricingTiers({
                   ))}
                 </IndexTable> 
               </Box>
+
+              { formErrors?.bulkPricing && (
+                <Box paddingBlockEnd={300}>
+                  <Text as="p" tone='critical'>{formErrors?.bulkPricing}</Text>
+                </Box>
+              )}
 
               <InlineStack>
                 <Button icon={PlusIcon} variant="primary" onClick={addNewPricingTier}>Add tier</Button>

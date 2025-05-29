@@ -94,6 +94,7 @@ export default function Content({
             currencyCode={store?.currencyCode}
             volumeBundles={volumeBundles}
             setVolumeBundles={setVolumeBundles}
+            formErrors={formErrors}
           />
         </Box>
       ) }
@@ -105,6 +106,7 @@ export default function Content({
           pricingTiers={pricingTiers}
           setPricingTiers={setPricingTiers}
           store={store}
+          formErrors={formErrors}
         />
       ) }
       <Box style={boxStylesWithEndingChoiceComponent}>

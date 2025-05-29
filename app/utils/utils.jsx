@@ -450,9 +450,14 @@ export const setCustomDesignStyles = (bundleData) => {
   
   document.documentElement.style.setProperty('--barn2-bundles-bundle-text-color', customDesigns.bundleTextColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-text-color', customDesigns.highlightedTextColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-text-color', customDesigns.selectedTextColor);
   document.documentElement.style.setProperty('--barn2-bundles-bundle-border-color', customDesigns.bundleBorderColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-border-color', customDesigns.highlightedBorderColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-border-color', customDesigns.selectedBorderColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-color', customDesigns.selectedColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-color', customDesigns.highlightedColor);
+  document.documentElement.style.setProperty('--barn2-bundles-bundle-badge-color', customDesigns.badgeBackgroundColor);
+  document.documentElement.style.setProperty('--barn2-bundles-badge-text-color', customDesigns.badgeTextColor);
 
   document.documentElement.style.setProperty('--barn2-bundles-table-color', customDesigns.tableColor);
   document.documentElement.style.setProperty('--barn2-bundles-header-text-color', customDesigns.headerTextColor);
@@ -590,6 +595,48 @@ export const hexToHsb = (hex) => {
   };
 };
 
+const hasValidBulkQuantityRanges = (ranges) => {
+  const errors = [];
+  for (let i = 0; i < ranges.length - 1; i++) {
+    const current = ranges[i];
+    const next = ranges[i + 1];
+    // Check if current max_quantity is greater than or equal to next min_quantity
+    if (current.max_quantity >= next.min_quantity) {
+      errors.push({
+        index: i,
+        current: current,
+        next: next,
+      });
+    }
+  }
+  return {
+      isValid: errors.length === 0,
+      errors: errors
+  };
+}
+
+const hasValidBundleQuantityRanges = (ranges) => {
+  const counts = {};
+  const duplicates = [];
+  
+  ranges.forEach((obj, index) => {
+      const qty = obj.quantity;
+      if (counts[qty]) {
+          counts[qty].push(index);
+      } else {
+          counts[qty] = [index];
+      }
+  });
+  
+  Object.entries(counts).forEach(([qty, indices]) => {
+      if (indices.length > 1) {
+          duplicates.push({ quantity: qty, indices });
+      }
+  });
+  
+  return duplicates;
+}
+
 /**
  * Validates form data for discount bundle creation/editing
  */
@@ -598,6 +645,16 @@ export const validateDiscountForm = (formData) => {
 
   if (!formData.name) {
     errors.name = 'Name is required';
+  }
+
+  const bulkPricingRange = hasValidBulkQuantityRanges(JSON.parse(formData.pricingTiers));
+  if (bulkPricingRange.isValid === false) {
+    errors.bulkPricing = 'Pricing rules are overlapping with each other';
+  }
+
+  const volumeBundleError = hasValidBundleQuantityRanges(JSON.parse(formData.volumeBundles));
+  if (volumeBundleError.length > 0) {
+    errors.volumeBundle = 'Volume quantity rules are overlapping with each other';
   }
 
   // Return null if no errors, otherwise return errors object

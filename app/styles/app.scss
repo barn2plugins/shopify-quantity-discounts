@@ -466,7 +466,7 @@
 
 .bundles-list {
   .bundle-single {
-    border: 1px solid var(--p-color-border-inverse);
+    border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));;
     border-radius: var(--barn2-bundles-corner-radius, 7px);
     padding: var(--p-space-600) var(--p-space-400) var(--p-space-400);
     display: flex;
@@ -511,26 +511,33 @@
         width: 10px;
         height: 10px;
         border-radius: 100px;
-        border: 1px solid var(--p-color-border-hover);
+        border: 2px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
+        background-color: white;
         display: inline-block;
       }
     }
 
-
     &.selected {
-      background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
-      border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+      background-color: var(--barn2-bundles-selected-color, #f1f1f1);
+      border-color: var(--barn2-bundles-selected-border-color, #616161);
+
+      .bundle-title,
+      .bundle-discounted-price,
+      .bundle-description,
+      .bundle-regular-price {
+        color: var(--barn2-bundles-selected-text-color, #303030);
+      }
 
       .input-field {
         .input-circle {
-          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
-        background-color: #fff;;
+          border-color: var(--barn2-bundles-selected-border-color, #616161);
+          background-color: #fff;;
           border-width: 2px;
         }
       }
     }
 
-    &.highlighted {
+    &.highlighted:not(.selected) {
       background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
       border-color: var(--barn2-bundles-highlighted-border-color, #616161);
 
@@ -540,6 +547,12 @@
       .bundle-regular-price {
         color: var(--barn2-bundles-highlighted-text-color, #303030);
       }
+
+      .input-field {
+        .input-circle {
+          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+        }
+      }
     }
 
     .highlightedText {
@@ -548,16 +561,12 @@
       color: var(--barn2-bundles-badge-text-color, #ffffff);
       top: 0;
       border-radius: 0 0 10px 10px;
-      padding: 0px 5px;
+      padding: 3px 5px;
       font-size: 9px;
-      min-width: 70px;
+      width: 70px;
       right: calc(50% - 35px);
-      line-height: 2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.4;
     }
-
   }
 
   &.layout-horizontal {

@@ -141,7 +141,7 @@ export async function createShopifyVolumeDiscount({admin, volumeDiscountFunction
           combinesWith: {
             orderDiscounts: true,
             productDiscounts: true,
-            shippingDiscounts: false
+            shippingDiscounts: true
           },
           metafields: [
             {
