@@ -27,6 +27,8 @@ export default function AppBlockEmbedPopup({fetcher, bundlesDiscountsExtensionId
         method: "POST"
       }
     );
+
+    shopify.modal.close('app-embed-popup-modal');
   }
 
   const handleAction = () => {
