@@ -218,7 +218,7 @@ export const getDefaultPricingTiers = () => {
     },
     {
       min_quantity: 11,
-      max_quantity: 21,
+      max_quantity: 20,
       discount: '',
       discount_type: 'percentage'
     },
