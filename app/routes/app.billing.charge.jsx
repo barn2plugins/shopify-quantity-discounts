@@ -4,6 +4,7 @@ import {
   deactivatePreviousAppSubscriptions,
   recordAppSubscription,
 } from "../services/subscription.service";
+import { trackStoreSubscribedEvent } from "../services/mixpanel.service";
 
 export const loader = async ({request}) => {
   const { admin, session, redirect } = await authenticate.admin(request);
@@ -25,6 +26,8 @@ export const loader = async ({request}) => {
 
     // Record app new subscription
     await recordAppSubscription({subscriptions: subscription.subscriptions, session, chargeId});
+
+    await trackStoreSubscribedEvent({subscriptions: subscription.subscriptions, session, chargeId});
 
     return redirect('/app');
   } catch (e) {

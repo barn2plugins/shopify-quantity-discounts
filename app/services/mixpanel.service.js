@@ -263,3 +263,30 @@ export const trackOrderReceiveEvent = async ({session, order}) => {
     'Discount revenue': order.revenue
   });
 }
+
+/**
+ * Tracks store subscription event in Mixpanel with detailed properties
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.session - The session object containing shop information
+ * @param {Object} params.subscriptions - The subscriptions data
+ * @param {Object} params.chargeId - The charge ID of the billing
+ */
+export const trackStoreSubscribedEvent = async ({session, subscriptions, chargeId}) => {
+  const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN);
+  const currentSubscription = subscriptions[0];
+  const lineItem = currentSubscription.lineItems[0];
+
+  mp.track('Store subscribed', {
+    distinct_id: session.shop,
+    'Shop': session.shop,
+    'Charge id': chargeId,
+    'Plan': currentSubscription.name,
+    'Price': lineItem.plan.pricingDetails.price.amount,
+    'Currency': lineItem.plan.pricingDetails.price.currencyCode,
+    'Status': currentSubscription.status,
+    'Trial days': parseInt(currentSubscription.trialDays),
+    'Billing on': currentSubscription.createdAt,
+    'Billing period end': currentSubscription.currentPeriodEnd
+  });
+}
