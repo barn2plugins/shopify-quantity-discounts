@@ -54,15 +54,6 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     return outputText;
   }
 
-  useEffect(() => {
-    // Find the highlighted bundle
-    const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
-    if (highlightedBundle) {
-      const bundleIndex = volumeBundles.indexOf(highlightedBundle);
-      setSelectedBundle(bundleIndex);
-    }
-  }, [volumeBundles]);
-
   if (volumeBundles.length <= 0 || (formState.type === 'bulk_pricing' && formState.previewEnabled === false) ) {
     return null;
   }

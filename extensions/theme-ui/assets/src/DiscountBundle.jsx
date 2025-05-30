@@ -153,7 +153,6 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
         isInEditor={isInEditor} 
         currentVariant={currentVariant} 
         storeDetails={storeDetails}
-        productCartAddedEvent={productCartAddedEvent}
       />
     )
   }

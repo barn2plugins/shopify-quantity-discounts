@@ -517,6 +517,24 @@
       }
     }
 
+    &.highlighted {
+      background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
+      border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+
+      .bundle-title,
+      .bundle-discounted-price,
+      .bundle-description,
+      .bundle-regular-price {
+        color: var(--barn2-bundles-highlighted-text-color, #303030);
+      }
+
+      .input-field {
+        .input-circle {
+          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+        }
+      }
+    }
+
     &.selected {
       background-color: var(--barn2-bundles-selected-color, #f1f1f1);
       border-color: var(--barn2-bundles-selected-border-color, #616161);
@@ -533,24 +551,6 @@
           border-color: var(--barn2-bundles-selected-border-color, #616161);
           background-color: #fff;;
           border-width: 2px;
-        }
-      }
-    }
-
-    &.highlighted:not(.selected) {
-      background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
-      border-color: var(--barn2-bundles-highlighted-border-color, #616161);
-
-      .bundle-title,
-      .bundle-discounted-price,
-      .bundle-description,
-      .bundle-regular-price {
-        color: var(--barn2-bundles-highlighted-text-color, #303030);
-      }
-
-      .input-field {
-        .input-circle {
-          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
         }
       }
     }

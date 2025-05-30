@@ -139,31 +139,31 @@ export default function VolumeBundleSection({
                   </div>
                 </td>
                 <td className="cell_discount">
-                    <div className="combined_text_select_field text_select_combined_width">
-                      <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
-                        const value = event.target.value;
-                        if (value === '') {
-                          handleVolumeChange(index, 'discount', '');
-                        } else {
-                          // Only allow numbers and a single decimal point
-                          if (/^\d*\.?\d*$/.test(value)) {
-                            handleVolumeChange(index, 'discount', value);
-                          }
+                  <div className="combined_text_select_field text_select_combined_width">
+                    <input type="text" value={bundle.discount?.toString() || ''} onChange={(event) => {
+                      const value = event.target.value;
+                      if (value === '') {
+                        handleVolumeChange(index, 'discount', '');
+                      } else {
+                        // Only allow numbers and a single decimal point
+                        if (/^\d*\.?\d*$/.test(value)) {
+                          handleVolumeChange(index, 'discount', value);
                         }
-                      }}/>
-                      <select
-                        value={bundle.discount_type}
-                        onChange={(event) => {
-                          const selectedValue = event.target.value;
-                          handleVolumeChange(index, 'discount_type', selectedValue);
-                        }}
-                        className="select-with-custom-arrow"
-                      >
-                        { volumeBundleDiscountTypes.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </div>
+                      }
+                    }}/>
+                    <select
+                      value={bundle.discount_type}
+                      onChange={(event) => {
+                        const selectedValue = event.target.value;
+                        handleVolumeChange(index, 'discount_type', selectedValue);
+                      }}
+                      className="select-with-custom-arrow"
+                    >
+                      { volumeBundleDiscountTypes.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </td>
                 <td className="cell_description">
                   <TextField

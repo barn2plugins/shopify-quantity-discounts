@@ -321,6 +321,8 @@ export async function getEligibleDiscountBundle({storefront, session, productId,
       return bundle;
     }
 
+    const productGid = `gid://shopify/Product/${productId}`;
+
     if (whichProducts === 'all_products_except_selected') {
       // Check if product is in excluded collections
       const productCollections = await getCollectionsByProductId({
@@ -362,7 +364,6 @@ export async function getEligibleDiscountBundle({storefront, session, productId,
       const selectedProductsList = typeof selectedProducts === 'string'
         ? JSON.parse(selectedProducts)
         : selectedProducts;
-      const productGid = `gid://shopify/Product/${productId}`;
       // Check if the current productId is in the selected list
       if (selectedProductsList?.some(product => product.id === productGid)) {
         return bundle;
@@ -397,7 +398,7 @@ export async function getEligibleDiscountBundle({storefront, session, productId,
         : excludedProducts;
 
       // Check if the current productId is in the excluded product list
-      if (excludedProductsList?.some(product => product.id === productId)) {
+      if (excludedProductsList?.some(product => product.id === productGid)) {
         return false;
       }
 

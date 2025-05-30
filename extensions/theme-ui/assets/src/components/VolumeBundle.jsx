@@ -5,8 +5,7 @@ export default function VolumeBundle({
   bundleData, 
   isInEditor, 
   currentVariant, 
-  storeDetails,
-  productCartAddedEvent
+  storeDetails
 }) {
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [volumeBundles, setVolumeBundles] = useState([]);
@@ -201,8 +200,10 @@ export default function VolumeBundle({
     // Find the highlighted bundle
     const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
     if (highlightedBundle) {
-      setSelectedBundle(highlightedBundle);
       updateProductQuantity(highlightedBundle.quantity);
+      if(shopifyProductVariants.length > 1) {
+        setSelectedBundle(highlightedBundle);
+      }
     }
   }, [volumeBundles]);
 
@@ -227,18 +228,19 @@ export default function VolumeBundle({
       variant.id === array[0].id
     );
 
-    const submitButton = document.querySelector('[type="submit"]');
+    const submitButton = document.querySelector('[action="/cart/add"] [type="submit"]');
     const paymentButton = document.querySelector('.shopify-payment-button');
+    const productForm = submitButton?.closest('form');
 
     if (allVariantsMatch) {
       updateProductQuantity(selectedVariants.length);
-      submitButton.classList.remove('b2-different-variants-selected');
+      submitButton?.classList.remove('b2-different-variants-selected');
       if (paymentButton) {
         paymentButton.style.display = '';
       }
     } else {
       updateProductQuantity(1);
-      submitButton.classList.add('b2-different-variants-selected');
+      submitButton?.classList.add('b2-different-variants-selected');
       if (paymentButton) {
         paymentButton.style.display = 'none';
       }
@@ -246,9 +248,12 @@ export default function VolumeBundle({
 
     // Add event listener to the submit button
     const handleSubmit = async (e) => {
-      if (!submitButton.classList.contains('b2-different-variants-selected')) {
+      if (!submitButton?.classList.contains('b2-different-variants-selected')) {
         return;
       }
+
+      e.preventDefault();
+      e.target.setAttribute('disabled', 'disabled');
 
       const variantInput = document.querySelector('.product-variant-id');
       // Get all variant IDs except the current one
@@ -292,14 +297,28 @@ export default function VolumeBundle({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data)
-        })
+        }).then(() => {
+          e.target.removeAttribute('disabled');
+        });
+
+        // Then summit the form
+        const submitEvent = new SubmitEvent('submit', {
+          bubbles: true,
+          cancelable: true
+        });
+
+        productForm.dispatchEvent(submitEvent);
       } catch (error) {
       }
     };
-    if (productCartAddedEvent) {
-      handleSubmit();
-    }
-  }, [selectedVariants, productCartAddedEvent]);
+
+    submitButton?.addEventListener('click', handleSubmit);
+
+    // Cleanup function to remove event listener
+    return () => {
+      submitButton?.removeEventListener('click', handleSubmit);
+    };
+  }, [selectedVariants]);
 
   useEffect(() => {
     setVolumeBundles(JSON.parse(bundleData.volumeBundles || []));
