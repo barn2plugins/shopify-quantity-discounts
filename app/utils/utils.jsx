@@ -649,12 +649,12 @@ export const validateDiscountForm = (formData) => {
 
   const bulkPricingRange = hasValidBulkQuantityRanges(JSON.parse(formData.pricingTiers));
   if (bulkPricingRange.isValid === false) {
-    errors.bulkPricing = 'Pricing rules are overlapping with each other';
+    errors.bulkPricing = 'Each tier must have a unique range — please adjust any overlapping quantities.';
   }
 
   const volumeBundleError = hasValidBundleQuantityRanges(JSON.parse(formData.volumeBundles));
   if (volumeBundleError.length > 0) {
-    errors.volumeBundle = 'Volume quantity rules are overlapping with each other';
+    errors.volumeBundle = 'Each tier must have a unique range — please adjust any overlapping quantities.';
   }
 
   // Return null if no errors, otherwise return errors object

@@ -30,14 +30,16 @@ export default function ProductSelectionSection({
       selectionIds: selectedProducts
     });
 
-    if (resourceSelection && resourceSelection.selection.length > 0) {
+    if (resourceSelection && resourceSelection.length > 0) {
       // Update your stored selected IDs
-      const formattedSelection = resourceSelection.selection.map(product => ({
+      const formattedSelection = resourceSelection.map(product => ({
         id: product.id,
         title: product.title
       }));
       setSelectedProducts(formattedSelection);
-    } else {
+    }
+    
+    if (resourceSelection && resourceSelection.length === 0)  {
       setSelectedProducts([]);
     }
   }
@@ -57,14 +59,16 @@ export default function ProductSelectionSection({
       selectionIds: excludedProducts
     });
 
-    if (resourceSelection && resourceSelection.selection.length > 0) {
+    if (resourceSelection && resourceSelection.length > 0) {
       // Update your stored selected IDs
-      const formattedSelection = resourceSelection.selection.map(product => ({
+      const formattedSelection = resourceSelection.map(product => ({
         id: product.id,
         title: product.title
       }));
       setExcludedProducts(formattedSelection);
-    } else {
+    } 
+    
+    if (resourceSelection && resourceSelection.length === 0) {
       setExcludedProducts([]);
     }
   }
@@ -81,14 +85,16 @@ export default function ProductSelectionSection({
       selectionIds: selectedCollections
     });
 
-    if (resourceSelection && resourceSelection.selection.length > 0) {
+    if (resourceSelection && resourceSelection.length > 0) {
       // Update your stored selected IDs
-      const formattedSelection = resourceSelection.selection.map(product => ({
+      const formattedSelection = resourceSelection.map(product => ({
         id: product.id,
         title: product.title
       }));
       setSelectedCollections(formattedSelection);
-    } else {
+    } 
+    
+    if (resourceSelection && resourceSelection.length > 0) {
       setSelectedCollections([]);
     }
   }
@@ -105,14 +111,16 @@ export default function ProductSelectionSection({
       selectionIds: excludedCollections
     });
 
-    if (resourceSelection && resourceSelection.selection.length > 0) {
+    if (resourceSelection && resourceSelection.length > 0) {
       // Update your stored selected IDs
-      const formattedSelection = resourceSelection.selection.map(product => ({
+      const formattedSelection = resourceSelection.map(product => ({
         id: product.id,
         title: product.title
       }));
       setExcludedCollections(formattedSelection);
-    } else {
+    }
+    
+    if (resourceSelection && resourceSelection.length === 0) {
       setExcludedCollections([]);
     }
   }

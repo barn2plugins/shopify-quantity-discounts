@@ -243,6 +243,7 @@ export const trackBundlePrioritiesEvent = async ({session, totalBundles}) => {
 
   mp.track('Bundle priority update', {
     distinct_id: session.shop,
+    'Shop': session.shop,
     'Total bundles': totalBundles,
   });
 }

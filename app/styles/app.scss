@@ -646,17 +646,24 @@
       width: 190px;
     }
   }
-  .Polaris-IndexTable__TableHeading{
-    background-color: var(--p-color-bg);
-    color: var(--p-color-text-secondary);
-    font-weight: var(--p-font-weight-semibold);
-
-    &:first-child {
-      border-radius: 10px 0 0 0;
-    }
-
-    &:last-child {
-      border-radius: 0 10px 0 0;
+  table {
+    border-collapse: collapse;
+    thead {
+      th{
+        background-color: var(--p-color-bg);
+        color: var(--p-color-text-secondary);
+        font-weight: var(--p-font-weight-medium);
+        font-size: var(--p-font-size-300);
+        padding: var(--p-space-200) var(--p-space-300);
+    
+        &:first-child {
+          border-radius: 10px 0 0 0;
+        }
+    
+        &:last-child {
+          border-radius: 0 10px 0 0;
+        }
+      }
     }
   }
 }

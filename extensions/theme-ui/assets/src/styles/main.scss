@@ -187,11 +187,11 @@
         background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
         color: var(--barn2-bundles-badge-text-color, #ffffff);
         top: -1px;
+        right: 90px;
         border-radius: 0 0 10px 10px;
         padding: 3px 7px;
         font-size: 9px;
         width: 78px;
-        right: calc(50% - 39px);
         line-height: 1.4;
       }
 

@@ -1,7 +1,6 @@
 // External libraries and components
 import { 
   BlockStack, 
-  IndexTable, 
   Text, 
   Button, 
   TextField, 
@@ -11,7 +10,6 @@ import {
   Tooltip,
   Grid,
   Card,
-  Checkbox,
   Box
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon, QuestionCircleIcon } from '@shopify/polaris-icons';
@@ -19,6 +17,7 @@ import { useEffect } from 'react';
 
 // Internal components
 import { currencyCodeToSymbol, getDefaultPricingTiers } from '../../utils/utils';
+import IndexTable from '../Fields/IndexTable';
 
 export default function BulkPricingTiers({ 
   formState,

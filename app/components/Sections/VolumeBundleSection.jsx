@@ -1,7 +1,6 @@
 // External libraries and components
 import { 
-  BlockStack, 
-  IndexTable, 
+  BlockStack,
   Text, 
   Button, 
   TextField, 
@@ -15,6 +14,7 @@ import { getDefaultBundleDiscountTypes } from '../../utils/utils';
 
 // Internal components
 import { currencyCodeToSymbol } from '../../utils/utils';
+import IndexTable from '../Fields/IndexTable';
 
 export default function VolumeBundleSection({
   formState,
@@ -113,7 +113,7 @@ export default function VolumeBundleSection({
               {title: 'Discount'},
               {title: 'Description'},
               {title: 'Label'},
-              {title: 'Highlighted', alignment: 'end'},
+              {title: 'Highlighted'},
               {title: ''},
             ]}
             selectable={false}
