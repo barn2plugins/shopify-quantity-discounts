@@ -37,9 +37,7 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setSelectedProducts(formattedSelection);
-    }
-    
-    if (resourceSelection && resourceSelection.length === 0)  {
+    } else if (resourceSelection)  {
       setSelectedProducts([]);
     }
   }
@@ -66,9 +64,7 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setExcludedProducts(formattedSelection);
-    } 
-    
-    if (resourceSelection && resourceSelection.length === 0) {
+    } else if (resourceSelection) {
       setExcludedProducts([]);
     }
   }
@@ -92,9 +88,7 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setSelectedCollections(formattedSelection);
-    } 
-    
-    if (resourceSelection && resourceSelection.length > 0) {
+    } else if(resourceSelection) {
       setSelectedCollections([]);
     }
   }
@@ -118,9 +112,7 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setExcludedCollections(formattedSelection);
-    }
-    
-    if (resourceSelection && resourceSelection.length === 0) {
+    } if (resourceSelection) {
       setExcludedCollections([]);
     }
   }
