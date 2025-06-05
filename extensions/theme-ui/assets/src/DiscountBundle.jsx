@@ -46,7 +46,7 @@ export default function DiscountBundle({bundleData, isInEditor, storeDetails}) {
   }
 
   const hideVariantSelector = () => {
-    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios');
+    const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios, variant-picker.variant-picker');
 
     if (variantSelector) {
       variantSelector.style.display = 'none';

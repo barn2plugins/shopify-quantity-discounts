@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import classNames from 'classnames/dedupe';
 
 export default function VolumeBundle({
@@ -14,6 +14,8 @@ export default function VolumeBundle({
   const [shopifyProductOptions, setShopifyProductOptions] = useState(window.b2ProductData?.product?.options || []);
   const [shopifyProductVariants, setShopifyProductVariants] = useState(window.b2ProductData?.product?.variants || []);
   const [selectedVariants, setSelectedVariants] = useState([]);
+  const selectedVariantsRef = useRef(selectedVariants);
+  const selectedBundleRef = useRef(selectedBundle);
 
   const displayFormattedPrice = (price) => {
     const formattedPrice = typeof price === 'number' ? 
@@ -110,13 +112,21 @@ export default function VolumeBundle({
    * @param {number} quantity - The quantity of items in the bundle
    */
   const updateProductQuantity = (quantity) => {
-    const quantityInput = document.querySelector('.product-form__input.product-form__quantity input[type="number"]');
+    const quantityInput = document.querySelector('.product-form__input.product-form__quantity input[type="number"], input[name="quantity"]');
     if (quantityInput) {
       quantityInput.value = quantity;
       // Trigger change event to update any listeners
       quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
     }
   };
+
+  const updateProductVariantId = () => {
+    const variantInput = document.querySelector('.product-variant-id, [ref="variantId"]');
+    if (variantInput) {
+      variantInput.value = currentVariant.id;
+      variantInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
 
   const isBundleSelected = (bundle) => {
     if (!selectedBundle) return false;
@@ -134,17 +144,12 @@ export default function VolumeBundle({
   const setBundleSelectedVariants = () => {
     if (selectedBundle === null) return;
     // Get initial variant selections
-    const initialVariantSelection = {
+    const duplicatedSelections = Array.from({ length: selectedBundle.quantity }, () => ({
       available: currentVariant.available,
       id: currentVariant.id,
-      options: currentVariant.options,
+      options: [...currentVariant.options],
       price: currentVariant.price,
-    };
-
-    // Create array with duplicated selections based on quantity
-    const duplicatedSelections = Array(selectedBundle.quantity)
-    .fill(null)
-    .map(() => ({...initialVariantSelection}));
+    }));
   
     setSelectedVariants(duplicatedSelections);
   }
@@ -153,11 +158,11 @@ export default function VolumeBundle({
     // Update the URL with the new variant ID
     const url = new URL(window.location.href);
     url.searchParams.set('variant', variantId);
-    window.history.replaceState({}, '', url.toString());
+    // window.history.replaceState({}, '', url.toString());
     window.dispatchEvent(new Event('popstate'));
 
     // Find and update hidden variant ID input if it exists
-    const variantInput = document.querySelector('.product-variant-id');
+    const variantInput = document.querySelector('.product-variant-id, [ref="variantId"]');
     if (variantInput) {
       variantInput.value = variantId;
       variantInput.dispatchEvent(new Event('change', { bubbles: true }));
@@ -203,6 +208,9 @@ export default function VolumeBundle({
       updateProductQuantity(highlightedBundle.quantity);
       if(shopifyProductVariants.length > 1) {
         setSelectedBundle(highlightedBundle);
+      } else {
+        updateProductQuantity(highlightedBundle.quantity);
+        addDiscountBundleToForm(highlightedBundle);
       }
     }
   }, [volumeBundles]);
@@ -220,17 +228,136 @@ export default function VolumeBundle({
     if (selectedBundle === null) return;
     updateProductQuantity(selectedBundle.quantity);
     addDiscountBundleToForm(selectedBundle);
+    selectedBundleRef.current = selectedBundle;
   }, [selectedBundle]);
 
   useEffect(() => {
-    // Check whether all variants match or not
+    const waitForElement = (selector, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        const startTime = Date.now();
+        
+        const checkForElement = () => {
+          const element = document.querySelector(selector);
+          if (element) {
+            resolve(element);
+          } else if (Date.now() - startTime > timeout) {
+            reject(new Error(`Element ${selector} not found within ${timeout}ms`));
+          } else {
+            setTimeout(checkForElement, 100);
+          }
+        };
+        
+        checkForElement();
+      });
+    };
+
+    const attachListener = async () => {
+      try {
+        const addToCartButton = await waitForElement('form[action="/cart/add"] [type="submit"]');
+
+        const handleClick = (event) => {
+          
+          // Get current state values at click time
+          const submitButton = document.querySelector('[action="/cart/add"] [type="submit"]');
+          
+          if (!submitButton?.classList.contains('b2-different-variants-selected')) {
+            return;
+          }
+
+          event.preventDefault();
+          event.target.setAttribute('disabled', 'disabled');
+
+          const variantInput = document.querySelector('.product-variant-id, [ref="variantId"]');
+          const currentSelectedVariants = selectedVariantsRef.current;
+          const currentSelectedBundle = selectedBundleRef.current;
+
+          // Get all variant IDs except the current one
+          let hasRemovedCurrentVariant = false;
+          const otherVariants = currentSelectedVariants
+            .filter(variant => {
+              if (variant.id === parseInt(variantInput.value) && !hasRemovedCurrentVariant) {
+                hasRemovedCurrentVariant = true;
+                return false;
+              }
+              return true;
+            })
+            .filter(variant => variant.available)
+            .map(variant => variant.id);
+          
+          // Group variants by ID and count quantities
+          const groupedVariants = otherVariants.reduce((acc, variantId) => {
+            acc[variantId] = (acc[variantId] || 0) + 1;
+            return acc;
+          }, {});
+
+          const data = {
+            items: Object.entries(groupedVariants).map(([variantId, quantity]) => ({
+              id: parseInt(variantId),
+              quantity,
+              properties: {
+                '_barn2_discount_campaign_name': bundleData.name,
+                '_barn2_discount_bundle_type': 'volume_discount',
+                '_barn2_discount_volume_bundles': bundleData.volumeBundles || ''
+              }
+            }))
+          };
+
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+          }).then(() => {
+            submitButton.removeAttribute('disabled');
+
+            const submitEvent = new SubmitEvent('submit', {
+              bubbles: true,
+              cancelable: true
+            });
+
+            const productForm = submitButton?.closest('form');
+            productForm.dispatchEvent(submitEvent);
+          });
+        };
+
+        addToCartButton.addEventListener('click', handleClick);
+        
+        // Return cleanup function
+        return () => {
+          addToCartButton.removeEventListener('click', handleClick);
+        };
+      } catch (error) {
+        return () => {}; // Return empty cleanup function on error
+      }
+    };
+
+    // Call the async function and handle cleanup
+    let cleanup = null;
+    
+    attachListener().then((cleanupFn) => {
+      cleanup = cleanupFn;
+    });
+
+    // Return cleanup function for useEffect
+    return () => {
+      if (cleanup) {
+        cleanup();
+      }
+    };
+  }, []); // Empty dependency array - runs only once
+
+  // Separate useEffect for updating UI based on selectedVariants
+  useEffect(() => {
+    if (selectedVariants.length === 0) return;
+    selectedVariantsRef.current = selectedVariants;
+
     const allVariantsMatch = selectedVariants.every((variant, _, array) => 
       variant.id === array[0].id
     );
-
+    
     const submitButton = document.querySelector('[action="/cart/add"] [type="submit"]');
     const paymentButton = document.querySelector('.shopify-payment-button');
-    const productForm = submitButton?.closest('form');
 
     if (allVariantsMatch) {
       updateProductQuantity(selectedVariants.length);
@@ -245,79 +372,6 @@ export default function VolumeBundle({
         paymentButton.style.display = 'none';
       }
     }
-
-    // Add event listener to the submit button
-    const handleSubmit = async (e) => {
-      if (!submitButton?.classList.contains('b2-different-variants-selected')) {
-        return;
-      }
-
-      e.preventDefault();
-      e.target.setAttribute('disabled', 'disabled');
-
-      const variantInput = document.querySelector('.product-variant-id');
-      // Get all variant IDs except the current one
-      let hasRemovedCurrentVariant = false;
-      const otherVariants = selectedVariants
-        .filter(variant => {
-          if (variant.id === parseInt(variantInput.value) && !hasRemovedCurrentVariant) {
-            hasRemovedCurrentVariant = true;
-            return false;
-          }
-          return true;
-        })
-        .filter(variant => variant.available)
-        .map(variant => variant.id);
-      
-      // Group variants by ID and count quantities
-      const groupedVariants = otherVariants.reduce((acc, variantId) => {
-        acc[variantId] = (acc[variantId] || 0) + 1;
-        return acc;
-      }, {});
-
-      const data = {
-        items: Object.entries(groupedVariants).map(([variantId, quantity]) => ({
-          id: parseInt(variantId),
-          quantity,
-          properties: {
-            '_barn2_discount_campaign_name': bundleData.name,
-            '_barn2_discount_bundle_type': 'volume_discount',
-            '_barn2_discount_quantity': selectedBundle.quantity,
-            '_barn2_discount_value': selectedBundle.discount,
-            '_barn2_discount_type': selectedBundle.discount_type,
-          }
-        }))
-      };
-
-      try {
-        // Add other variants to the cart before submitting the form
-        await fetch('/cart/add.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
-        }).then(() => {
-          e.target.removeAttribute('disabled');
-        });
-
-        // Then summit the form
-        const submitEvent = new SubmitEvent('submit', {
-          bubbles: true,
-          cancelable: true
-        });
-
-        productForm.dispatchEvent(submitEvent);
-      } catch (error) {
-      }
-    };
-
-    submitButton?.addEventListener('click', handleSubmit);
-
-    // Cleanup function to remove event listener
-    return () => {
-      submitButton?.removeEventListener('click', handleSubmit);
-    };
   }, [selectedVariants]);
 
   useEffect(() => {
@@ -332,7 +386,7 @@ export default function VolumeBundle({
    * to store discount-related data that will be used when the product is added to cart.
    */
   const addDiscountBundleToForm = (selectedBundle) => {
-    const form = document.querySelector('product-form.product-form form');
+    const form = document.querySelector('product-form.product-form form, product-form-component [action="/cart/add"]');
     if (!form) {
       return;
     }
@@ -405,7 +459,10 @@ export default function VolumeBundle({
               )}
               onClick={() => {
                 setSelectedBundle(bundle);
-                updateProductQuantity(bundle.quantity);
+                if (selectedBundle?.id !== bundle?.id) {
+                  updateProductQuantity(bundle.quantity);
+                  updateProductVariantId();
+                }
               }}
             >
               { bundle.label.length > 0 && <span className="barn2-highlighted-text">{bundle.label}</span>}

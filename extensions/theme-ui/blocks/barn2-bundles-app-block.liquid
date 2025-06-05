@@ -14,7 +14,7 @@
   };
 
   // Hide variant selector and quantity input if Barn2 Bundles is enabled
-  const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects');
+  const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios, variant-picker.variant-picker');
   const quantityInput = document.querySelector('.product-form__input.product-form__quantity, quantity-selector-component');
   if (variantSelector) {
     variantSelector.style.display = 'none';
@@ -33,7 +33,7 @@
   "name": "Barn2 Bundles & Discounts",
   "target": "section",
   "enabled_on": {
-    "templates": ["product", "collection", "page"]
+    "templates": ["product"]
   },
   "stylesheet": "barn2-discounts.css"
 }
