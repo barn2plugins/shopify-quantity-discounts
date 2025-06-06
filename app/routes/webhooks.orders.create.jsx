@@ -3,6 +3,8 @@ import { saveOrderAnalytics } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
 import { sendUsageEvent } from "../services/mantle.service";
+import { setOrUpdateOption, getOptionValue } from "../services/options.service";
+import { getStoreDetails } from "../services/store.service";
 
 export const action = async ({ request }) => {
   const { payload, session, topic } = await authenticate.webhook(request);
@@ -10,6 +12,9 @@ export const action = async ({ request }) => {
   if (topic !== 'ORDERS_CREATE') {
     return new Response();
   }
+
+  // Get the store details for this session
+  const store = await getStoreDetails(session.id, {id: true});
 
   // Check if the order has an automatic discount applied
   const hasAutomaticDiscount = payload.discount_applications.length > 0;
@@ -60,16 +65,25 @@ export const action = async ({ request }) => {
     return new Response();
   }
 
+  // Save the order analytics in our database
   await saveOrderAnalytics({orderId: payload.id, parsedLineItems, discountedOrderValue, sessionId: session?.id});
 
   try {
+    // Track the order receive event in Mixpanel
     await trackOrderReceiveEvent({session, order: { id: payload.id, revenue: discountedOrderValue }})
 
-    const eventName = 'First order received';
-    const properties = {
-      revenue: discountedOrderValue,
+    // For the first order received, send the event to Mantle
+    const firstOrderReceived = await getOptionValue({storeId: store.id, key: 'first_order_received'})
+    if (!firstOrderReceived) {
+      const eventName = 'first_order_received';
+      const properties = {
+        revenue: discountedOrderValue,
+      }
+      await sendUsageEvent({session, eventName, properties});
+
+      // Record first order received in the store
+      await setOrUpdateOption({sessionId: session.id, key: 'first_order_received', value: 'true'});
     }
-    await sendUsageEvent({session, eventName, properties});
   } catch (error) {
   }
 
