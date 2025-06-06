@@ -2,6 +2,7 @@ import { findDiscountBundlesByNames } from "../services/bundle.service";
 import { saveOrderAnalytics } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
+import { sendUsageEvent } from "../services/mantle.service";
 
 export const action = async ({ request }) => {
   const { payload, session, topic } = await authenticate.webhook(request);
@@ -63,6 +64,12 @@ export const action = async ({ request }) => {
 
   try {
     await trackOrderReceiveEvent({session, order: { id: payload.id, revenue: discountedOrderValue }})
+
+    const eventName = 'First order received';
+    const properties = {
+      revenue: discountedOrderValue,
+    }
+    await sendUsageEvent({session, eventName, properties});
   } catch (error) {
   }
 

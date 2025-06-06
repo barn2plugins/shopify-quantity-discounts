@@ -11,6 +11,7 @@ import { fetchStoreDetails, saveStoreDetails, createShopifyVolumeDiscount } from
 import { setUserOnMixpanel, trackInstalledEvent } from "./services/mixpanel.service";
 import { getBarn2VolumeDiscountFunctionId } from "./utils/utils"
 import { PLANS } from "./utils/plans"
+import { identifyCustomerOnMantle } from "./services/mantle.service";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -77,6 +78,8 @@ const shopify = shopifyApp({
       } catch (error) {
         console.error('Error tracking user installed event on Mixpanel:', error);
       }
+
+      await identifyCustomerOnMantle({platformId: storeData.data.shop.id, session});
     },
   },
   future: {
