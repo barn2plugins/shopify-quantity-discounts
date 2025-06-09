@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import classNames from 'classnames/dedupe';
+import { updateOrCreateInput } from '../utils';
 
 export default function VolumeBundle({
   bundleData, 
@@ -117,6 +118,8 @@ export default function VolumeBundle({
       quantityInput.value = quantity;
       // Trigger change event to update any listeners
       quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+    } else {
+      updateOrCreateInput('quantity', quantity);
     }
   };
 
@@ -390,20 +393,6 @@ export default function VolumeBundle({
     if (!form) {
       return;
     }
-
-    // Helper function to update or create input
-    const updateOrCreateInput = (name, value) => {
-      let input = form.querySelector(`input[name="${name}"]`);
-      if (input) {
-        input.value = value;
-      } else {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      }
-    };
 
     // Update or create bundle type input
     updateOrCreateInput(

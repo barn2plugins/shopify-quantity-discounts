@@ -28,24 +28,15 @@ export const createOrderAnalytics = async ({orderId, parsedLineItems, discounted
  * @param {string} params.sessionId - The session ID to retrieve analytics for
  * @returns {Promise<Array>} Array of OrderAnalytics records for the current month
  */
-export const getCurrentMonthsOrderAnalytics = async ({sessionId}) => {
-  const firstDayOfMonth = new Date();
-  firstDayOfMonth.setDate(1);
-  firstDayOfMonth.setHours(0, 0, 0, 0);
-
-  const lastDayOfMonth = new Date(firstDayOfMonth);
-  lastDayOfMonth.setMonth(lastDayOfMonth.getMonth() + 1);
-  lastDayOfMonth.setDate(0);
-  lastDayOfMonth.setHours(23, 59, 59, 999);
-
+export const findCurrentOrdersByDateRange = async ({sessionId, startDate, endDate}) => {
   return await prisma.orderAnalytics.findMany({
     where: {
       store: {
         sessionId
       },
       createdAt: {
-        gte: firstDayOfMonth,
-        lte: lastDayOfMonth
+        gte: startDate,
+        lte: endDate
       }
     }
   });

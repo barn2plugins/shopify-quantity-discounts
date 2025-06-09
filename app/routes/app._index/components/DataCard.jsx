@@ -6,7 +6,7 @@ BlockStack,
 function DataCard({data}) {
   
   const printAmount = () => {
-    return data.title.toLowerCase().includes('orders') ? data.amount : `$${data.amount}`;
+    return data.title.toLowerCase().includes('orders') ? data.amount : `$${data.amount.toFixed(2)}`;
   }
 
   return (

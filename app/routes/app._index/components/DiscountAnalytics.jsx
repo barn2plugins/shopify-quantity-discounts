@@ -2,9 +2,7 @@
 import {
   Layout,
   Card,
-  BlockStack,
   Box,
-  InlineStack,
   Grid,
 } from "@shopify/polaris";
 

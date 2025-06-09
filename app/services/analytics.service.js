@@ -1,4 +1,4 @@
-import { createOrderAnalytics, getCurrentMonthsOrderAnalytics, getAllTimeOrderAnalytics } from "../models/OrderAnalytics.server.js";
+import { createOrderAnalytics, findCurrentOrdersByDateRange, getAllTimeOrderAnalytics } from "../models/OrderAnalytics.server.js";
 
 /**
  * Saves order analytics data and handles any errors that occur
@@ -37,7 +37,22 @@ export const saveOrderAnalytics = async (params) => {
  *                           - default: boolean indicating if default values were returned due to error
  */
 export const getOrderAnalytics = async (params) => {
-  const orderAnalyticsData = await getOrderAnalyticsData(params);
+  const startDate = new Date();
+  startDate.setDate(1);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + 1);
+  endDate.setDate(0);
+  endDate.setHours(23, 59, 59, 999);
+
+  const updatedParams = {
+    ...params,
+    startDate,
+    endDate,
+  }
+
+  const orderAnalyticsData = await getOrderAnalyticsData(updatedParams);
 
   if (!orderAnalyticsData.success) {
     return {
@@ -50,14 +65,14 @@ export const getOrderAnalytics = async (params) => {
   }
 
   const { currentMonthsOrderAnalytics, allTimeOrderAnalytics } = orderAnalyticsData;
-  
+
   const discountedMonthlyOrders = currentMonthsOrderAnalytics.length;
   const discountedAllTimeOrders = allTimeOrderAnalytics.length;
   const discountedMonthlyRevenue = currentMonthsOrderAnalytics.reduce((total, order) => {
-    return Number(total + parseFloat(order.discountedOrderValue)).toFixed(2);  
+    return Number(total + parseFloat(order.discountedOrderValue));
   }, 0);
   const discountedAllTimeRevenue = allTimeOrderAnalytics.reduce((total, order) => {
-    return Number(total + parseFloat(order.discountedOrderValue)).toFixed(2);  
+    return Number(total + parseFloat(order.discountedOrderValue));  
   }, 0);
   
   return {
@@ -67,6 +82,32 @@ export const getOrderAnalytics = async (params) => {
     discountedMonthlyRevenue,
     discountedAllTimeRevenue,
   }
+}
+
+export const orderAnalyticsForCurrentBilling = async (sessionId, subscription) => {
+  try {
+    const startDate = new Date(subscription.billingOn);
+    const endDate = new Date(subscription.billingPeriodEnd);
+    endDate.setHours(23, 59, 59, 999);
+
+    const params = {
+      sessionId,
+      startDate,
+      endDate,
+    }
+
+    return await findCurrentOrdersByDateRange(params);
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+export const getCurrentMonthsOrderAnalytics = async (params) => {
+  return await findCurrentOrdersByDateRange(params);
 }
 
 /**
