@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData
 } from "@remix-run/react";
+import { useEffect } from 'react';
 
 // Internal components and libraries
 import PartnerDevelopment from "./components/Notice/PartnerDevelopment";
@@ -28,6 +29,8 @@ export const loader = async ({ request }) => {
   if (!hasActivePayment) {
     await deactivatePreviousAppSubscriptions({session});
   }
+
+  const helpScoutBeaconId = process.env.BEACON_ID;
   
   const store = await getStoreDetails(session.id, { 
     isPartnerDevelopment: true,
@@ -42,6 +45,7 @@ export const loader = async ({ request }) => {
   return {
     isPartnerDevelopment: store?.isPartnerDevelopment,
     hasActivePayment,
+    helpScoutBeaconId,
     userData: {
       email: store?.session?.email,
       name: store?.shopOwnerName
@@ -50,10 +54,20 @@ export const loader = async ({ request }) => {
 };
 
 export default function App() {
-  const { isPartnerDevelopment, hasActivePayment, userData } = useLoaderData();
+  const { isPartnerDevelopment, hasActivePayment, helpScoutBeaconId, userData } = useLoaderData();
 
-  const BEACON_ID = 'f63228ce-9f50-4389-8930-8a25425d0ec8';
-  useHelpScoutBeacon(BEACON_ID, userData);
+  useEffect(() => {
+    if (!userData) return;
+    useHelpScoutBeacon(helpScoutBeaconId, userData);
+
+    // Clean up on unmount
+    return () => {
+      // Optionally: Hide the beacon when component unmounts
+      if (window.Beacon) {
+        window.Beacon('hide');
+      }
+    };
+  }, [helpScoutBeaconId, userData]);
 
   return (
     <html>

@@ -28,7 +28,7 @@ export const loader = async ({ request }) => {
     isPartnerDevelopment: true,
   });
 
-  const defaultBundle = await getDefaultBundle({sessionId: session.id, timezone: store.ianaTimezone});
+  const defaultBundle = await getDefaultBundle({sessionId: session.id, timezone: store?.ianaTimezone});
   const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
   return {
@@ -36,8 +36,8 @@ export const loader = async ({ request }) => {
     isSubscribed,
     store: {
       currencyCode: store?.currency || '$',
-      ianaTimezone: store.ianaTimezone || 'UTC',
-      moneyFormat: store.moneyFormat || '${{amount}}',
+      ianaTimezone: store?.ianaTimezone || 'UTC',
+      moneyFormat: store?.moneyFormat || '${{amount}}',
       isPartnerDevelopment: store?.isPartnerDevelopment,
     }
   };
