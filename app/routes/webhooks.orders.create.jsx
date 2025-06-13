@@ -1,5 +1,5 @@
 import { findDiscountBundlesByNames } from "../services/bundle.service";
-import { saveOrderAnalytics, getCurrentMonthsOrderAnalytics } from "../services/analytics.service";
+import { saveOrderAnalytics } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
 import { sendUsageEventToMantle } from "../services/mantle.service";
