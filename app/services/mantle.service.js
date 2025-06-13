@@ -62,3 +62,21 @@ export const sendUsageEventToMantle = async ({session, eventName, properties}) =
     console.error(error);
   }
 }
+
+export const getMantleClient = async ({session}) => {
+  try {
+    const customerApiToken = await getMantleApiToken(session);
+
+    // Initialize with customer token for customer-specific operations
+    const mantleClient = new MantleClient({
+      appId: process.env.MANTLE_APP_ID,
+      customerApiToken: customerApiToken,
+    });
+
+    const customer = await mantleClient.getCustomer();
+
+    return customer;
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -40,10 +40,10 @@ export const getOrderAnalytics = async (params) => {
   let updatedParams = {};
   if (params?.currentSubscription) {
     updatedParams = {
-      ...params,
-      startDate: params?.currentSubscription?.billingOn,
-      endDate: params?.currentSubscription?.billingPeriodEnd,
-    }
+      sessionId: params?.sessionId,
+      startDate: params?.currentSubscription?.currentPeriodStart,
+      endDate: params?.currentSubscription?.currentPeriodEnd,
+    };
   } else {
     const startDate = new Date();
     startDate.setDate(1);
@@ -55,7 +55,7 @@ export const getOrderAnalytics = async (params) => {
     endDate.setHours(23, 59, 59, 999);
   
     updatedParams = {
-      ...params,
+      sessionId: params?.sessionId,
       startDate,
       endDate,
     }

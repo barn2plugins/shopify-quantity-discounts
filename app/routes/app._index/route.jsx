@@ -16,14 +16,18 @@ import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
-import { getStoreAnalyticsData } from "../../utils/analytics"
+import { getStoreAnalyticsData } from "../../utils/analytics";
+import { getMantleClient } from "../../services/mantle.service.js";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
+
+  const customerResponse = await getMantleClient({session});
+  console.log('customerResponse');
+  console.log(customerResponse);
   
   const page = 1;
   const limit = 20;
-
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
   const discountBundles = await getAllBundles(session.id, page, limit);
@@ -32,7 +36,7 @@ export const loader = async ({ request }) => {
     return null;
   }
 
-  const orderAnalyticsData = await getOrderAnalytics({sessionId: session.id});
+  const orderAnalyticsData = await getOrderAnalytics({sessionId: session.id, currentSubscription: customerResponse?.subscription});
   
   if (!orderAnalyticsData.success) {
     return null;
