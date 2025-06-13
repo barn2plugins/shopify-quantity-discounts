@@ -104,7 +104,7 @@ export default function Index() {
           method: "POST",
         }
       );
-    }, 1000);
+    }, 400);
 
     // Cleanup function to clear the timeout on unmount
     return () => clearTimeout(timeoutId);

@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
-client_id = "858c89ba09011b7be4c42d83ef959102"
 
+client_id = "858c89ba09011b7be4c42d83ef959102"
 name = "Barn2 Bundles & Bulk Discounts"
 handle = "barn2-bundles-bulk-discounts"
 application_url = "https://barn2-bundles-bulk-discounts.fly.dev"
@@ -50,3 +50,4 @@ embedded = false
 
 [build]
 include_config_on_deploy = true
+automatically_update_urls_on_dev = false
