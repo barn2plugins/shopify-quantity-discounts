@@ -12,6 +12,7 @@ export const monthlyPlans = [
     id: 0,
     title: 'Free',
     name: 'Free',
+    amount: 0.00,
     price: 0.00,
     features: [
       'Perfect for Development Stores',
@@ -32,6 +33,8 @@ export const monthlyPlans = [
       'Unlimited bundles & discounts',
       'Email & live chat support'
     ],
+    cappedAmount: 49.99,
+    cappedAmountTerms: "Additional $12 charge applies when you earn additional revenue more than $1000 in your current plan. If you exceed $5000 of additonal revenue, you will be charged a total additional $37 on top of current subscription.",
     revenueLimit: 1000
   },
   {
@@ -45,6 +48,8 @@ export const monthlyPlans = [
       'Unlimited bundles & discounts',
       'Email & live chat support'
     ],
+    cappedAmount: 49.99,
+    cappedAmountTerms: "If you exceed $5000 of additonal revenue, you will be charged a total additional $37 on top of current subscription.",
     revenueLimit: 5000
   },
   {

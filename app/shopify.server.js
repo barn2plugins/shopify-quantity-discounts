@@ -28,12 +28,22 @@ const shopify = shopifyApp({
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
       trialDays: 14,
+      usageTerms: "Additional charges apply for revenue over $1,000/month",
+      usageCappedAmount: {
+        amount: 37,
+        currencyCode: "USD"
+      }
     },
     [PLANS.Growth_Monthly]: {
       amount: 24.99,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
-      trialDays: 14
+      trialDays: 14,
+      usageTerms: "Additional charges apply for revenue over $5,000/month",
+      usageCappedAmount: {
+        amount: 25,
+        currencyCode: "USD"
+      }
     },
     [PLANS.Pro_Monthly]: {
       amount: 49.99,

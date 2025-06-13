@@ -11,55 +11,29 @@ import PricingBlock from '../components/Sections/PricingBlock';
 import PlansReviews from '../components/Sections/PlansReviews';
 import { useState, useEffect } from "react";
 
-export const loader = async ({ request }) => {
-  const { billing, session } = await authenticate.admin(request);
+import { useMantle } from '@heymantle/react';
 
-  const { hasActivePayment, appSubscriptions } = await billing.check({
-    plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly, PLANS.Starter_Annual, PLANS.Growth_Annual, PLANS.Pro_Annual],
-  });
+export const loader = async ({ request }) => {
+  const { session } = await authenticate.admin(request);
 
   return {
     monthlyPlans,
     annualPlans,
     reviews: userReviews,
-    hasActivePayment,
-    currentSubscription: appSubscriptions[0],
   };
 }
 
 export default function PlansPage() {
-  const fetcher = useFetcher();
-  const { monthlyPlans, annualPlans, reviews, hasActivePayment, currentSubscription } = useLoaderData();
+  const { plans, customer, subscription, client, discount } = useMantle();
+
+  const { monthlyPlans, reviews } = useLoaderData();
   const [loading, setLoading] = useState(false);
   const [defaultPlans, setDefaultPlans] = useState(monthlyPlans);
-  const [subscriptionType, setSubscriptionType] = useState('monthly');
-
-  const subscription = fetcher.data?.subscription;
+  const [currentSubscription, setCurrentSubscription] = useState({});
 
   useEffect(() => {
-    if (subscription?.success) {
-      window.open(subscription.confirmationUrl, '_top');
-    } else {
-      setLoading(false);
-    }
-
-  }, [subscription]);
-
-  useEffect(() => {
-    if (subscriptionType === 'monthly') {
-      setDefaultPlans(monthlyPlans);
-    } else {
-      setDefaultPlans(annualPlans);
-    }
-  }, [subscriptionType]);
-
-  useEffect(() => {
-    if (hasActivePayment) {
-      if (currentSubscription.name.includes('Annual')) {
-        setSubscriptionType('annual');
-      }
-    }
-  }, [])
+    setCurrentSubscription(subscription);
+  }, [subscription])
 
   return (
     <div className="barn2-plans-page barn2-full-width">
@@ -69,19 +43,22 @@ export default function PlansPage() {
         title={ 'My plan' }
       >
         <div className="barn2-page-inner">
-          <BlockStack gap={1000}>
-            <PricingBlock 
-              hasActivePayment={hasActivePayment}
-              currentSubscription={currentSubscription}
-              defaultPlans={defaultPlans} 
-              fetcher={fetcher} 
-              loading={loading}
-              setLoading={setLoading}
-              subscriptionType={subscriptionType}
-              setSubscriptionType={setSubscriptionType}
-            />
-            <PlansReviews reviews={reviews} />
-          </BlockStack>
+          { plans && plans.length > 0 && 
+            <BlockStack gap={1000}>
+              <PricingBlock 
+                plans={plans}
+                customer={customer}
+                currentSubscription={currentSubscription}
+                setCurrentSubscription={setCurrentSubscription}
+                client={client}
+                discount={discount}
+                defaultPlans={defaultPlans} 
+                loading={loading}
+                setLoading={setLoading}
+              />
+              <PlansReviews reviews={reviews} />
+            </BlockStack>
+          }
         </div>
       </Page>
     </div>

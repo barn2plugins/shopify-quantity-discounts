@@ -1,13 +1,14 @@
 import { findDiscountBundlesByNames } from "../services/bundle.service";
-import { saveOrderAnalytics } from "../services/analytics.service";
+import { saveOrderAnalytics, getCurrentMonthsOrderAnalytics } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
-import { sendUsageEvent } from "../services/mantle.service";
+import { sendUsageEventToMantle } from "../services/mantle.service";
 import { setOrUpdateOption, getOptionValue } from "../services/options.service";
 import { getStoreDetails } from "../services/store.service";
+import { processOrderLineItems, trackFirstOrderReceived, trackOrderReceivedOnMantle } from "../utils/analytics";
 
 export const action = async ({ request }) => {
-  const { payload, session, topic } = await authenticate.webhook(request);
+  const { admin, payload, session, topic } = await authenticate.webhook(request);
 
   if (topic !== 'ORDERS_CREATE') {
     return new Response();
@@ -31,37 +32,10 @@ export const action = async ({ request }) => {
 
   // Find the discount bundle lineItems from the payload
   const lineItems = payload.line_items;
-  
-  // Trim out the lineItems to save in the database only the necessary fields
-  const parsedLineItems = lineItems.map((lineItem) => {
-    return {
-      cartLineId: lineItem.id,
-      productId: lineItem.product_id,
-      variantId: lineItem.variant_id,
-      title: lineItem.title,
-      variantTitle: lineItem.name,
-      quantity: lineItem.quantity,
-      price: lineItem.price,
-      discountAllocations: lineItem.discount_allocations
-    };
-  });
 
-  // Calculate the discounted order value
-  const discountedOrderValue = lineItems.reduce((total, lineItem) => {
-    if (lineItem.discount_allocations.length === 0) {
-      return total;
-    }
-    const totalDiscountAmount = lineItem.discount_allocations.reduce((sum, allocation) => {
-      return sum + parseFloat(allocation.amount);
-    }, 0);
+  const { parsedLineItems, discountedOrderValue, hasValidOrder } = processOrderLineItems(lineItems);
 
-    const originalTotal = parseFloat(lineItem.price) * parseInt(lineItem.quantity);
-    const finalPrice = originalTotal - totalDiscountAmount;
-
-    return total + finalPrice;
-  }, 0);
-
-  if (discountedOrderValue == 0) {
+  if (!hasValidOrder) {
     return new Response();
   }
 
@@ -73,17 +47,10 @@ export const action = async ({ request }) => {
     await trackOrderReceiveEvent({session, order: { id: payload.id, revenue: discountedOrderValue }})
 
     // For the first order received, send the event to Mantle
-    const firstOrderReceived = await getOptionValue({storeId: store.id, key: 'first_order_received'})
-    if (!firstOrderReceived) {
-      const eventName = 'first_order_received';
-      const properties = {
-        revenue: discountedOrderValue,
-      }
-      await sendUsageEvent({session, eventName, properties});
-
-      // Record first order received in the store
-      await setOrUpdateOption({sessionId: session.id, key: 'first_order_received', value: 'true'});
-    }
+    await trackFirstOrderReceived({ session, store, discountedOrderValue, getOptionValue, sendUsageEventToMantle, setOrUpdateOption });
+    
+    // Record every order received event in Mantle
+    await trackOrderReceivedOnMantle({ session, orderId: payload.id, discountedOrderValue, sendUsageEventToMantle });
   } catch (error) {
   }
 

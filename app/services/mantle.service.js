@@ -44,7 +44,7 @@ export const getMantleApiToken = async (session) => {
   }
 }
 
-export const sendUsageEvent = async ({session, eventName, properties}) => {
+export const sendUsageEventToMantle = async ({session, eventName, properties}) => {
   try {
     const customerApiToken = await getMantleApiToken(session);
 
