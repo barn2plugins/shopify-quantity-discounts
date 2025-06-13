@@ -37,31 +37,7 @@ export const saveOrderAnalytics = async (params) => {
  *                           - default: boolean indicating if default values were returned due to error
  */
 export const getOrderAnalytics = async (params) => {
-  let updatedParams = {};
-  if (params?.currentSubscription) {
-    updatedParams = {
-      sessionId: params?.sessionId,
-      startDate: params?.currentSubscription?.currentPeriodStart,
-      endDate: params?.currentSubscription?.currentPeriodEnd,
-    };
-  } else {
-    const startDate = new Date();
-    startDate.setDate(1);
-    startDate.setHours(0, 0, 0, 0);
-  
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 1);
-    endDate.setDate(0);
-    endDate.setHours(23, 59, 59, 999);
-  
-    updatedParams = {
-      sessionId: params?.sessionId,
-      startDate,
-      endDate,
-    }
-  }
-
-  const orderAnalyticsData = await getOrderAnalyticsData(updatedParams);
+  const orderAnalyticsData = await getOrderAnalyticsData(params);
 
   if (!orderAnalyticsData.success) {
     return {

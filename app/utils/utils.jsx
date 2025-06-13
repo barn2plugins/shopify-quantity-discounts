@@ -660,3 +660,26 @@ export const validateDiscountForm = (formData) => {
   // Return null if no errors, otherwise return errors object
   return Object.keys(errors).length > 0 ? errors : null;
 };
+
+export const getDateRangeForAnalytics = (subscription) => {
+  if (subscription) {
+    return {
+      startDate: subscription?.currentPeriodStart,
+      endDate: subscription?.currentPeriodEnd,
+    }
+  }
+
+  const startDate = new Date();
+  startDate.setDate(1);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + 1);
+  endDate.setDate(0);
+  endDate.setHours(23, 59, 59, 999);
+
+  return {
+    startDate,
+    endDate,
+  }
+}

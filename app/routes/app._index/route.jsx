@@ -10,6 +10,7 @@ import { useFetcher } from "@remix-run/react";
 
 // Internal components and libraries
 import DiscountAnalytics from "./components/DiscountAnalytics.jsx";
+import DiscountAnalyticsSkeleton from "./components/DiscountAnalyticsSkeleton.jsx";
 import DiscountBundlesTable from "./components/DiscountBundlesTable";
 import EmptyStateComponent from "./components/EmptyStateComponent";
 import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
@@ -17,15 +18,12 @@ import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
 import { getStoreAnalyticsData } from "../../utils/analytics";
-import { getMantleClient } from "../../services/mantle.service.js";
+import { getDateRangeForAnalytics } from "../../utils/utils"
+import { useMantle } from '@heymantle/react';
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
-  const customerResponse = await getMantleClient({session});
-  console.log('customerResponse');
-  console.log(customerResponse);
-  
   const page = 1;
   const limit = 20;
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
@@ -36,16 +34,7 @@ export const loader = async ({ request }) => {
     return null;
   }
 
-  const orderAnalyticsData = await getOrderAnalytics({sessionId: session.id, currentSubscription: customerResponse?.subscription});
-  
-  if (!orderAnalyticsData.success) {
-    return null;
-  }
-
-  const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
-
   return { 
-    analyticsData,
     discountBundles: discountBundles.bundles,
     bundlesDiscountsExtensionId,
     pagination: discountBundles.pagination
@@ -73,21 +62,54 @@ export const action = async ({ request }) => {
     }
   }
 
+  if (fetcherData?.action === 'getAnalyticsData') {
+    const analyticsDateRange = JSON.parse(fetcherData?.analyticsDateRange);
+
+    const orderAnalyticsData = await getOrderAnalytics({
+      sessionId: session.id, 
+      startDate: analyticsDateRange?.startDate, 
+      endDate: analyticsDateRange?.endDate
+    });
+
+    const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
+    
+    return {
+      analyticsData
+    }
+  }
+
   return null;
 }
 
 export default function Index() {
+  const { subscription } = useMantle();
   const fetcher = useFetcher();
-  const { 
-    analyticsData, 
-    discountBundles, 
-    bundlesDiscountsExtensionId, 
-    pagination,
-  } = useLoaderData();
+  const { discountBundles, bundlesDiscountsExtensionId, pagination } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(false);
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
   const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
+
+  const [ analyticsDataLoaded, setAnalyticsDataLoaded ] = useState(false);
+  const [ analyticsData, setAnalyticsData ] = useState({});
+  
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const analyticsDateRange = getDateRangeForAnalytics(subscription); 
+      fetcher.submit(
+        { 
+          action: 'getAnalyticsData',
+          analyticsDateRange: JSON.stringify(analyticsDateRange)
+        },
+        {
+          method: "POST",
+        }
+      );
+    }, 1000);
+
+    // Cleanup function to clear the timeout on unmount
+    return () => clearTimeout(timeoutId);
+  }, [subscription]);
 
   const updatedBundles = fetcher.data?.bundles;
   const updatedPagination = fetcher.data?.pagination;
@@ -106,6 +128,10 @@ export default function Index() {
   useEffect(() => {
     if (fetcher.data?.appEmbedDisabled) {
       setIsAppEmbedDisabled(true);
+    }
+    if (fetcher.data?.analyticsData) {
+      setAnalyticsDataLoaded(true);
+      setAnalyticsData(fetcher.data?.analyticsData);
     }
   }, [fetcher.data])
 
@@ -136,7 +162,8 @@ export default function Index() {
           { bundles.length > 0 && (
             <BlockStack gap={500}>
               { bundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
-              <DiscountAnalytics analyticsData={analyticsData}/>
+              {!analyticsDataLoaded && <DiscountAnalyticsSkeleton/>}
+              {analyticsDataLoaded && <DiscountAnalytics analyticsData={analyticsData}/>}
               <BlockStack gap="1000">
                 <DiscountBundlesTable 
                   fetcher={fetcher} 
