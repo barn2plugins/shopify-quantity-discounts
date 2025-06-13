@@ -5,7 +5,7 @@ import {
 import { useLoaderData, useFetcher } from "@remix-run/react";
 
 import { authenticate } from "../shopify.server";
-import { monthlyPlans, annualPlans, userReviews, PLANS } from "../utils/plans";
+import { monthlyPlans, userReviews, PLANS } from "../utils/plans";
 
 import PricingBlock from '../components/Sections/PricingBlock';
 import PlansReviews from '../components/Sections/PlansReviews';
@@ -18,7 +18,6 @@ export const loader = async ({ request }) => {
 
   return {
     monthlyPlans,
-    annualPlans,
     reviews: userReviews,
   };
 }

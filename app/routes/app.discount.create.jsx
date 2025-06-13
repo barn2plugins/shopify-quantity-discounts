@@ -17,9 +17,14 @@ import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
 
 import { getDefaultBundleDiscountTypes, getDefaultPricingTiers, validateDiscountForm } from "../utils/utils";
-import { currentSessionHasActiveSubscription } from "../services/subscription.service";
+import { PLANS } from "../utils/plans"
+
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
+  
+  const {hasActivePayment} = await billing.check({
+    plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly],
+  });
 
   const store = await getStoreDetails(session.id, {
     currency: true,
@@ -29,11 +34,11 @@ export const loader = async ({ request }) => {
   });
 
   const defaultBundle = await getDefaultBundle({sessionId: session.id, timezone: store?.ianaTimezone});
-  const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
 
+  
   return {
     defaultBundle,
-    isSubscribed,
+    isSubscribed: hasActivePayment,
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store?.ianaTimezone || 'UTC',

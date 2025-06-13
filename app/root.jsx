@@ -23,7 +23,7 @@ export const loader = async ({ request }) => {
   const { billing, session } = await authenticate.admin(request);
 
   const {hasActivePayment} = await billing.check({
-    plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly, PLANS.Starter_Annual, PLANS.Growth_Annual, PLANS.Pro_Annual],
+    plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly],
   });
 
   if (!hasActivePayment) {

@@ -32,7 +32,7 @@ export default function PricingBlock({
       planId: plan.id,
       test: true,
       discountId: discount?.id,
-      returnUrl: '/app/plans'
+      returnUrl: '/app'
     });
     
     setLoading(false);
@@ -47,6 +47,7 @@ export default function PricingBlock({
   }
 
   const isActivePlan = (plan) => {
+    if (!currentSubscription && plan.name === 'Free') return true;
     return plan?.id === currentSubscription?.plan?.id;
   }
 

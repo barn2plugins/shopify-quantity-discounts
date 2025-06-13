@@ -5,7 +5,9 @@ import { currentSessionHasActiveSubscription } from "../services/subscription.se
 import { getOrderAnalytics } from "../services/analytics.service";
 import { getActiveSubscriptionForCurrentSession } from "../services/subscription.service";
 import { convertUSDValuetoShopLocalCurrency } from "../utils/currency";
-import { monthlyPlans, annualPlans } from "../utils/plans";
+import { monthlyPlans } from "../utils/plans";
+import { getMantleCustomer } from "../services/mantle.service";
+import { getDateRangeForAnalytics } from "../utils/utils"
 
 export async function action({ request }) {
   if (request.method !== 'POST') {
@@ -26,10 +28,10 @@ export async function action({ request }) {
     ianaTimezone: true,
   });
 
-  const isPartnerDevelopment = store?.isPartnerDevelopment;
-  const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
+  const mantleCustomer = await getMantleCustomer({session});
 
-  const shouldDisableDiscounts = isPartnerDevelopment === false && isSubscribed === false;
+  const isPartnerDevelopment = store?.isPartnerDevelopment;
+  const shouldDisableDiscounts = isPartnerDevelopment === false && !mantleCustomer.subscription;
 
   if (shouldDisableDiscounts) {
     return new Response(JSON.stringify({
@@ -54,7 +56,7 @@ export async function action({ request }) {
       }));
     }
 
-    const activeSubscription = await getActiveSubscriptionForCurrentSession({sessionId: session.id});
+    const activeSubscription = mantleCustomer?.subscription;
 
     // If the user is a partner then we don't need to check the revenue limit
     if (isPartnerDevelopment) {
@@ -66,11 +68,9 @@ export async function action({ request }) {
       }));
     }
 
-    const {name, revenueLimit} = activeSubscription?.plan.includes('Annual') ? 
-      annualPlans.find(p => p.name === activeSubscription?.plan) : 
-      monthlyPlans.find(p => p.name === activeSubscription?.plan);
-
-    const {discountedMonthlyRevenue} = await getOrderAnalytics({sessionId: session.id});
+    const {name, revenueLimit} = monthlyPlans.find(p => p.name === activeSubscription?.plan?.name);
+    const analyticsDateRange = getDateRangeForAnalytics(activeSubscription); 
+    const {discountedMonthlyRevenue} = await getOrderAnalytics({sessionId: session.id, ...analyticsDateRange});
     const convertedRevenueLimit = convertUSDValuetoShopLocalCurrency(1000, store.currency);
 
     if (

@@ -67,8 +67,7 @@ export const action = async ({ request }) => {
 
     const orderAnalyticsData = await getOrderAnalytics({
       sessionId: session.id, 
-      startDate: analyticsDateRange?.startDate, 
-      endDate: analyticsDateRange?.endDate
+      ...analyticsDateRange
     });
 
     const analyticsData = getStoreAnalyticsData(orderAnalyticsData);

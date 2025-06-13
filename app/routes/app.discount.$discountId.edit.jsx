@@ -19,14 +19,18 @@ import AppBlockEmbed from "../components/Notice/AppBlockEmbed.jsx";
 import AppBlockEmbedPopup from "../components/Notice/AppBlockEmbedPopup.jsx";
 import Content from "../components/Layouts/Discount/Content.jsx";
 import Sidebar from "../components/Layouts/Discount/Sidebar.jsx";
+import { PLANS } from "../utils/plans";
 
 import { getDefaultPricingTiers, parseBundleObject, editPageHasChanges, validateDiscountForm } from "../utils/utils.jsx";
-import { currentSessionHasActiveSubscription } from "../services/subscription.service";
 
 export const loader = async ({ request, params }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   // Get the app embed block extension id
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
+
+  const {hasActivePayment} = await billing.check({
+    plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly],
+  });
 
   const store = await getStoreDetails(session.id, {
     id: true,
@@ -47,12 +51,11 @@ export const loader = async ({ request, params }) => {
   }
 
   const parsedDiscountBundle = await parseBundleObject({ discountBundle });
-  const isSubscribed = await currentSessionHasActiveSubscription({sessionId: session.id});
   const appEmbedPopupDisplayed = await getOptionValue({storeId: store.id, key: 'app_embed_popup_displayed'})
   
   return { 
     discountBundle: parsedDiscountBundle, 
-    isSubscribed,
+    isSubscribed: hasActivePayment,
     appEmbedPopupDisplayed: appEmbedPopupDisplayed === 'true',
     store: {
       currencyCode: store?.currency || '$',
