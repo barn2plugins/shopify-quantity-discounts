@@ -34,7 +34,8 @@ export default function DiscountBundlesTable({
   fetcher, 
   discountBundles, 
   pagination,
-  shouldDisplaySortIcon
+  shouldDisplaySortIcon,
+  shouldLimitFeatures
 }) {
   const shopify = useAppBridge();
   const [bundleToDelete, setBundleToDelete] = useState({});
@@ -121,6 +122,7 @@ export default function DiscountBundlesTable({
         plain 
         accessibilityLabel={`Edit discount ${bundle.id}`} 
         url={`/app/discount/${bundle.id}/edit`}
+        disabled={shouldLimitFeatures}
       />
       <Button 
         icon={DuplicateIcon} 
@@ -128,6 +130,7 @@ export default function DiscountBundlesTable({
         accessibilityLabel={`Duplicate discount ${bundle.id}`} 
         loading={duplicatingId === bundle.id && fetcherIsSubmitting}
         onClick={() => handleDuplicate(bundle)}
+        disabled={shouldLimitFeatures}
       />
       <Button 
         icon={DeleteIcon} 
@@ -246,7 +249,7 @@ export default function DiscountBundlesTable({
               <Text variant="headingLg" as="h4">
                 Discount
               </Text>
-              <Button variant="primary" url="/app/discount/create">New discount</Button>
+              <Button variant="primary" url="/app/discount/create" disabled={shouldLimitFeatures}>New discount</Button>
             </InlineStack>
             <div className="discounts-table-wrapper">
               <DndContext

@@ -1,7 +1,12 @@
 import {
-Text,
-BlockStack,
+  Text,
+  BlockStack,
+  InlineStack,
+  Tooltip,
+  Icon
 } from "@shopify/polaris";
+
+import {InfoIcon} from '@shopify/polaris-icons';
 
 function DataCard({data}) {
   
@@ -12,7 +17,16 @@ function DataCard({data}) {
   return (
     <BlockStack gap="200">
       <p className="analytics-card-title">
-        <Text as="span" variant="bodySm">{data.title}</Text>
+        <InlineStack blockAlign="center" gap={100}>
+          <Text as="p" variant="bodyMd">{data.title}</Text>
+          { data.tooltip && <Tooltip
+            content={
+              <InlineStack gap="200">{data.tooltip}</InlineStack>
+            }
+          >
+            <Icon source={InfoIcon}></Icon>
+          </Tooltip> }
+        </InlineStack>
       </p>
       <Text variant="headingXl" as="h4" fontWeight="bold">
         {printAmount()}

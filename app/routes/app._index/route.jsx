@@ -7,6 +7,7 @@ import { authenticate } from "../../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { useFetcher } from "@remix-run/react";
+import { useMantle } from '@heymantle/react';
 
 // Internal components and libraries
 import DiscountAnalytics from "./components/DiscountAnalytics.jsx";
@@ -17,9 +18,10 @@ import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
+import { getStoreDetails } from "../../services/store.service.js";
 import { getStoreAnalyticsData } from "../../utils/analytics";
 import { getDateRangeForAnalytics } from "../../utils/utils"
-import { useMantle } from '@heymantle/react';
+import { PLANS } from "../../utils/plans"
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -29,7 +31,7 @@ export const loader = async ({ request }) => {
   const bundlesDiscountsExtensionId = process?.env?.SHOPIFY_BARN2_BUNDLES_BULK_DISCOUNTS_ID;
 
   const discountBundles = await getAllBundles(session.id, page, limit);
-
+ 
   if (!discountBundles.success) {
     return null;
   }
@@ -42,7 +44,7 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
@@ -70,10 +72,32 @@ export const action = async ({ request }) => {
       ...analyticsDateRange
     });
 
-    const analyticsData = getStoreAnalyticsData(orderAnalyticsData);
+    const analyticsData = getStoreAnalyticsData({orderAnalyticsData, analyticsDateRange});
     
     return {
       analyticsData
+    }
+  }
+
+  if (fetcherData?.action === 'checkStoreActiveStatus') {
+    const { isPartnerDevelopment } = await getStoreDetails(session.id, { 
+      isPartnerDevelopment: true
+    });
+    
+    if (isPartnerDevelopment) {
+      return { shouldLimitFeatures: false }
+    }
+
+    const { hasActivePayment } = await billing.check({
+      plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly],
+    });
+
+    if (!isPartnerDevelopment && !hasActivePayment) {
+      return { shouldLimitFeatures: true }
+    }
+
+    return {
+      shouldLimitFeatures: false
     }
   }
 
@@ -83,6 +107,10 @@ export const action = async ({ request }) => {
 export default function Index() {
   const { subscription } = useMantle();
   const fetcher = useFetcher();
+  const analyticsFetcher = useFetcher();
+  const storeStatusFetcher = useFetcher();
+  const appEmbedFetcher = useFetcher();
+
   const { discountBundles, bundlesDiscountsExtensionId, pagination } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(false);
 
@@ -91,24 +119,8 @@ export default function Index() {
 
   const [ analyticsDataLoaded, setAnalyticsDataLoaded ] = useState(false);
   const [ analyticsData, setAnalyticsData ] = useState({});
-  
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const analyticsDateRange = getDateRangeForAnalytics(subscription); 
-      fetcher.submit(
-        { 
-          action: 'getAnalyticsData',
-          analyticsDateRange: JSON.stringify(analyticsDateRange)
-        },
-        {
-          method: "POST",
-        }
-      );
-    }, 400);
 
-    // Cleanup function to clear the timeout on unmount
-    return () => clearTimeout(timeoutId);
-  }, [subscription]);
+  const [ shouldLimitFeatures, setShouldLimitFeatures ] = useState(false);
 
   const updatedBundles = fetcher.data?.bundles;
   const updatedPagination = fetcher.data?.pagination;
@@ -125,30 +137,67 @@ export default function Index() {
   }, [updatedBundles, updatedPagination]);
 
   useEffect(() => {
-    if (fetcher.data?.appEmbedDisabled) {
+    if (appEmbedFetcher.data?.appEmbedDisabled) {
       setIsAppEmbedDisabled(true);
     }
-    if (fetcher.data?.analyticsData) {
+    if (analyticsFetcher.data?.analyticsData) {
       setAnalyticsDataLoaded(true);
-      setAnalyticsData(fetcher.data?.analyticsData);
+      setAnalyticsData(analyticsFetcher.data?.analyticsData);
     }
-  }, [fetcher.data])
+    if (storeStatusFetcher.data?.shouldLimitFeatures) {
+      setShouldLimitFeatures(storeStatusFetcher.data?.shouldLimitFeatures === true)
+    }
+  }, [appEmbedFetcher?.data, analyticsFetcher?.data, storeStatusFetcher?.data])
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const checkStoreActiveStatus = setTimeout(() => {
       // Check app embed enabled or not
-      fetcher.submit(
+      storeStatusFetcher.submit(
+        {
+          action: 'checkStoreActiveStatus',
+        },
+        {
+          method: 'POST',
+        }
+      )
+    }, 100);
+    
+    const embedTimeoutId = setTimeout(() => {
+      // Check app embed enabled or not
+      appEmbedFetcher.submit(
         {},
         {
           method: 'POST',
           action: '/app/check-app-embed-status'
         }
       )
-    }, 100);
+    }, 200);
+
+    // Cleanup function to clear the timeout on unmount
+    return () => {
+      clearTimeout(embedTimeoutId);
+      clearTimeout(checkStoreActiveStatus);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const analyticsDateRange = getDateRangeForAnalytics(subscription); 
+      analyticsFetcher.submit(
+        { 
+          action: 'getAnalyticsData',
+          analyticsDateRange: JSON.stringify(analyticsDateRange)
+        },
+        {
+          method: "POST",
+        }
+      );
+    }, 400);
 
     // Cleanup function to clear the timeout on unmount
     return () => clearTimeout(timeoutId);
-  }, [])
+  }, [subscription]);
 
   return (
     <div className="barn2-app-home">
@@ -169,6 +218,7 @@ export default function Index() {
                   discountBundles={bundles} 
                   pagination={bundlesPagination} 
                   shouldDisplaySortIcon={shouldDisplaySortIcon}
+                  shouldLimitFeatures={shouldLimitFeatures}
                 />
               </BlockStack>
             </BlockStack>

@@ -37,11 +37,7 @@ api_version = "2025-01"
 scopes = "read_orders,read_products,read_themes,unauthenticated_read_product_listings,write_app_proxy,write_discounts,write_orders,write_products,write_script_tags"
 
 [auth]
-redirect_urls = [
-  "https://barn2-discounts.supersections.store/auth/callback",
-  "https://barn2-discounts.supersections.store/auth/shopify/callback",
-  "https://barn2-discounts.supersections.store/api/auth/callback"
-]
+redirect_urls = ["https://barn2-discounts.supersections.store/auth/callback", "https://barn2-discounts.supersections.store/auth/shopify/callback", "https://barn2-discounts.supersections.store/api/auth/callback"]
 
 [app_proxy]
 url = "https://barn2-discounts.supersections.store/api"

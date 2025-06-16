@@ -1,28 +1,61 @@
-export const getStoreAnalyticsData = (data) => {
+/**
+ * Generates formatted analytics data with appropriate date range text
+ *
+ * @param {Object} params - The parameters object
+ * @param {Object} params.orderAnalyticsData - Order analytics data containing discount metrics
+ * @param {Object} [params.analyticsDateRange] - Optional date range for the analytics data
+ * 
+ * @returns {Object} Formatted analytics data with titles, tooltips, and values
+ */
+export const getStoreAnalyticsData = ({orderAnalyticsData, analyticsDateRange}) => {
+  let dateRangeText = 'Data shown is for the 30-day period';
+
+  if (analyticsDateRange && analyticsDateRange.startDate && analyticsDateRange.endDate) {
+    const startDate = new Date(analyticsDateRange.startDate);
+    const endDate = new Date(analyticsDateRange.endDate);
+    
+    // Format dates as "DD MMM" (e.g., "14 May")
+    const formatDate = (date) => {
+      const day = date.getDate();
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      return `${day} ${month}`;
+    };
+    
+    dateRangeText = `Data shown is for the 30-day period from ${formatDate(startDate)} to ${formatDate(endDate)}`;
+  }
+  
   return {
     discountedMonthlyOrders: {
       title: 'This month\'s discounted orders',
-      amount: data.discountedMonthlyOrders,
+      tooltip: dateRangeText,
+      amount: orderAnalyticsData.discountedMonthlyOrders,
       subdued: '0.00'
     },
     discountedAllTimeOrders: {
       title: 'All time discounted orders',
-      amount: data.discountedAllTimeOrders,
+      amount: orderAnalyticsData.discountedAllTimeOrders,
       subdued: '0.00'
     },
     discountedMonthlyRevenue: {
       title: 'This month\'s discounted revenue',
-      amount: data.discountedMonthlyRevenue,
+      tooltip: dateRangeText,
+      amount: orderAnalyticsData.discountedMonthlyRevenue,
       subdued: '0.00'
     },
     discountedAllTimeRevenue: {
       title: 'All time discounted revenue',
-      amount: data.discountedAllTimeRevenue,
+      amount: orderAnalyticsData.discountedAllTimeRevenue,
       subdued: '0.00'
     },
   }
 };
 
+/**
+ * Processes order line items to calculate discount values and format for database
+ * 
+ * @param {Array} lineItems - The order line items to process
+ * @returns {Object} Object containing parsed line items, discounted order value, and order validity
+ */
 export function processOrderLineItems(lineItems) {
   // Transform line items to database format
   const parsedLineItems = lineItems.map((lineItem) => ({
@@ -93,6 +126,16 @@ export async function trackFirstOrderReceived({ session, store, discountedOrderV
   });
 }
 
+/**
+ * Tracks order received events in Mantle analytics service
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.session - The current session object
+ * @param {string} params.orderId - The ID of the received order
+ * @param {number} params.discountedOrderValue - The value of the order after discounts
+ * @param {Function} params.sendUsageEventToMantle - Function to send events to Mantle
+ * @returns {Promise<void>} - Promise that resolves when tracking is complete
+ */
 export async function trackOrderReceivedOnMantle({ session, orderId, discountedOrderValue, sendUsageEventToMantle }) {
   // Send the event to Mantle
   await sendUsageEventToMantle({

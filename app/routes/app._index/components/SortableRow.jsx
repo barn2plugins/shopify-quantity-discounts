@@ -9,7 +9,13 @@ import { useNavigate } from "@remix-run/react";
 
 import {getApplyToText} from "../../../utils/utils";
 
-export default function SortableRow({ bundle, index, handleBundleToggle, renderRowActions, shouldDisplaySortIcon }) {
+export default function SortableRow({ 
+  bundle, 
+  index, 
+  handleBundleToggle, 
+  renderRowActions, 
+  shouldDisplaySortIcon,
+}) {
   const navigate = useNavigate();
 
   const {
