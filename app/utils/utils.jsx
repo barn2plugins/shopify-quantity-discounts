@@ -661,6 +661,9 @@ export const validateDiscountForm = (formData) => {
   return Object.keys(errors).length > 0 ? errors : null;
 };
 
+/**
+ * Determines the date range for analytics based on subscription period or current month.
+ */
 export const getDateRangeForAnalytics = (subscription) => {
   if (subscription) {
     return {
@@ -681,5 +684,27 @@ export const getDateRangeForAnalytics = (subscription) => {
   return {
     startDate,
     endDate,
+  }
+}
+
+/**
+ * Determines the date range for webhook order analytics based on subscription or store creation date.
+ */
+export const getDateRangeForWebhookOrderAnalytics = ({subscription, store}) => {
+  if (subscription) {
+    return {
+      startDate: subscription?.billingOn,
+      endDate: subscription?.billingPeriodEnd,
+    }
+  }
+
+  const endDate = new Date(store?.createdAt);
+  endDate.setMonth(endDate.getMonth() + 1);
+  endDate.setDate(0);
+  endDate.setHours(23, 59, 59, 999);
+  
+  return {
+    startDate: store?.createdAt,
+    endDate
   }
 }

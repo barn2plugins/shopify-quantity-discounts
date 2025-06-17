@@ -6,11 +6,11 @@ import prisma from "../db.server";
  * @param {string} params.sessionId - The session ID to look up the subscription
  * @returns {Promise<Object|null>} The subscription object if found, null otherwise
  */
-export const getCurrentSessionActiveSubscription = async ({sessionId}) => {
+export const getCurrentSessionActiveSubscription = async ({session}) => {
   return await prisma.subscription.findFirst({
     where: {
       store: {
-        sessionId
+        sessionId: session?.id
       },
       active: true,
       status: 'ACTIVE'

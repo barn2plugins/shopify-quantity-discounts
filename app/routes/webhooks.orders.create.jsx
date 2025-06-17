@@ -1,21 +1,26 @@
 import { findDiscountBundlesByNames } from "../services/bundle.service";
-import { saveOrderAnalytics } from "../services/analytics.service";
+import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceived, trackOrderReceivedOnMantle } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
 import { sendUsageEventToMantle } from "../services/mantle.service";
 import { setOrUpdateOption, getOptionValue } from "../services/options.service";
 import { getStoreDetails } from "../services/store.service";
-import { processOrderLineItems, trackFirstOrderReceived, trackOrderReceivedOnMantle } from "../utils/analytics";
+import { getActiveSubscriptionForCurrentSession, getPlanRevenueLimitBySubscription } from "../services/subscription.service"
+import { processOrderLineItems } from "../utils/analytics";
+import { getDateRangeForWebhookOrderAnalytics } from "../utils/utils";
 
 export const action = async ({ request }) => {
-  const { admin, payload, session, topic } = await authenticate.webhook(request);
+  const { payload, session, topic } = await authenticate.webhook(request);
 
   if (topic !== 'ORDERS_CREATE') {
     return new Response();
   }
 
   // Get the store details for this session
-  const store = await getStoreDetails(session.id, {id: true});
+  const store = await getStoreDetails(session.id, {
+    id: true,
+    createdAt: true
+  });
 
   // Check if the order has an automatic discount applied
   const hasAutomaticDiscount = payload.discount_applications.length > 0;
@@ -51,6 +56,37 @@ export const action = async ({ request }) => {
     
     // Record every order received event in Mantle
     await trackOrderReceivedOnMantle({ session, orderId: payload.id, discountedOrderValue, sendUsageEventToMantle });
+  } catch (error) {
+  }
+
+  try {
+    const currentSubscription = await getActiveSubscriptionForCurrentSession({session});
+    const planRevenueLimitBySubscription = await getPlanRevenueLimitBySubscription({currentSubscription});
+    if (planRevenueLimitBySubscription === 0) return;
+
+    const dateRange = getDateRangeForWebhookOrderAnalytics({subscription: currentSubscription, store});
+    const storeCurrentRevenue = await getStoreCurrentRevenue({session, ...dateRange});
+
+    if (!storeCurrentRevenue.success) return;
+
+    const revenueThreshold75Percentage = 0.75;
+    const revenueThreshold75 = planRevenueLimitBySubscription * revenueThreshold75Percentage;
+    
+    if (storeCurrentRevenue?.discountedMonthlyRevenue >= revenueThreshold75) {
+      await sendUsageEventToMantle({
+        session,
+        eventName: "starter_free_75_threshold_reached",
+        properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
+      })
+    }
+
+    if (storeCurrentRevenue?.discountedMonthlyRevenue >= planRevenueLimitBySubscription) {
+      await sendUsageEventToMantle({
+        session,
+        eventName: "starter_free_100_threshold_reached",
+        properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
+      })
+    }
   } catch (error) {
   }
 

@@ -110,3 +110,21 @@ export const deactivatePreviousAppSubscriptions = async (params) => {
     };
   }
 }
+
+/**
+ * Retrieves the revenue limit based on the subscription plan.
+ * 
+ * @param {Object} params - The parameters object
+ * @param {Object} params.currentSubscription - The current subscription object
+ * @param {string} [params.currentSubscription.plan] - The plan name (defaults to 'Starter' if not provided)
+ * @returns {Promise<number>} The revenue limit for the subscription plan (1000 for Starter, 5000 for Growth, 0 for Pro)
+ */
+export const getPlanRevenueLimitBySubscription = async({currentSubscription}) => {
+  const planName = currentSubscription?.plan || 'Starter';
+  const planRevenueLimit = {
+    'Starter': 1000,
+    'Growth': 5000,
+    'Pro': 0
+  }
+  return planRevenueLimit[planName];
+}
