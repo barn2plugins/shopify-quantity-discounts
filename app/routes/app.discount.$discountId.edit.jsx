@@ -124,6 +124,7 @@ export const action = async ({ request }) => {
 
 export default function DiscountPage() {
   const fetcher = useFetcher();
+  const storeStatusFetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();
   const { discountBundle, isSubscribed, appEmbedPopupDisplayed, store } = useLoaderData();
@@ -138,6 +139,7 @@ export default function DiscountPage() {
   const [ pricingTiers, setPricingTiers ] = useState([]);
   const [ pageLoaded, setPageLoaded ] = useState(false);
   const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
+  const [ shouldLimitFeatures, setShouldLimitFeatures ] = useState(false);
 
   const isLoading = fetcher.state === "submitting" || (fetcher.state === "loading" && fetcher.formMethod === "POST");
   const errors = fetcher.data?.errors;
@@ -247,6 +249,9 @@ export default function DiscountPage() {
 
     setHasUnsavedChanges(hasChanges);
 
+    if (shouldLimitFeatures) {
+      return;
+    }
     hasChanges ? shopify.saveBar.show('discount-edit-save-bar') : shopify.saveBar.hide('discount-edit-save-bar');
 
   }, [formState, selectedProducts, selectedCollections, excludedProducts, excludedCollections, volumeBundles, pricingTiers]);
@@ -277,7 +282,32 @@ export default function DiscountPage() {
 
     // Cleanup function to clear the timeout on unmount
     return () => clearTimeout(timeoutId);
-  }, [])
+  }, []);
+
+
+  useEffect(() => {
+    const checkStoreActiveStatus = setTimeout(() => {
+      // Check app embed enabled or not
+      storeStatusFetcher.submit(
+        {
+          action: 'checkStoreActiveStatus',
+        },
+        {
+          method: 'POST',
+          action: '/app/check-app-subscription-status'
+        }
+      )
+    }, 100);
+
+    // Cleanup function to clear the timeout on unmount
+    return () => clearTimeout(checkStoreActiveStatus);
+  }, []);
+
+  useEffect(() => {
+    if (storeStatusFetcher.data?.shouldLimitFeatures) {
+      setShouldLimitFeatures(storeStatusFetcher.data?.shouldLimitFeatures === true)
+    }
+  }, [storeStatusFetcher?.data])
 
   return (
     <div className="barn2-discounts-page-wrapper barn2-discount-edit-page-wrapper">

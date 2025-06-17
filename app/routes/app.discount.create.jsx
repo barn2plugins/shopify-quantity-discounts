@@ -86,18 +86,13 @@ export const action = async ({ request }) => {
     console.log('Error tracking bundle create event on Mixpanel', error);
    }
 
-    // const allDiscounts = await getAllBundles(session.id);
-    // if (allDiscounts?.success === false) {
-    //   return null;
-    // }
-    // await updateStoreMetafieldForVolumeDiscount({admin, shopifyShopId: store.session.userId, allDiscounts: allDiscounts.bundles});
-
     return discountBundle;
   } 
 }
 
 export default function DiscountPage() {
   const fetcher = useFetcher();
+  const storeStatusFetcher = useFetcher();
   const shopify = useAppBridge();
   const { defaultBundle, isSubscribed, store } = useLoaderData();
   const navigate = useNavigate();
@@ -110,6 +105,7 @@ export default function DiscountPage() {
   const [ volumeBundles, setVolumeBundles ] = useState([]);
   const [ pricingTiers, setPricingTiers ] = useState([]);
   const [ hasUnsavedChanges, setHasUnsavedChanges ] = useState(false);
+  const [ shouldLimitFeatures, setShouldLimitFeatures ] = useState(false);
 
   const setFormState = (...args) => {
     setHasUnsavedChanges(true);
@@ -162,6 +158,30 @@ export default function DiscountPage() {
     setPricingTiers(getDefaultPricingTiers())
   }, []);
 
+  useEffect(() => {
+    const checkStoreActiveStatus = setTimeout(() => {
+      // Check app embed enabled or not
+      storeStatusFetcher.submit(
+        {
+          action: 'checkStoreActiveStatus',
+        },
+        {
+          method: 'POST',
+          action: '/app/check-app-subscription-status'
+        }
+      )
+    }, 100);
+
+    // Cleanup function to clear the timeout on unmount
+    return () => clearTimeout(checkStoreActiveStatus);
+  }, []);
+
+  useEffect(() => {
+    if (storeStatusFetcher.data?.shouldLimitFeatures) {
+      setShouldLimitFeatures(storeStatusFetcher.data?.shouldLimitFeatures === true)
+    }
+  }, [storeStatusFetcher?.data])
+
   // On clicking the create discount button, set the form state to active and submit the form
   const discountBundleAction = () => {
     const formData = {
@@ -183,8 +203,11 @@ export default function DiscountPage() {
   };
 
   useEffect(() => {
+    if (shouldLimitFeatures) {
+      return;
+    }
     shopify.saveBar.show('discount-create-save-bar');
-  }, [formState])
+  }, [formState, shouldLimitFeatures])
 
   return (
     <div className="barn2-discounts-page-wrapper">

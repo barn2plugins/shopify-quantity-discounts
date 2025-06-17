@@ -18,10 +18,8 @@ import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
-import { getStoreDetails } from "../../services/store.service.js";
 import { getStoreAnalyticsData } from "../../utils/analytics";
 import { getDateRangeForAnalytics } from "../../utils/utils"
-import { PLANS } from "../../utils/plans"
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -76,28 +74,6 @@ export const action = async ({ request }) => {
     
     return {
       analyticsData
-    }
-  }
-
-  if (fetcherData?.action === 'checkStoreActiveStatus') {
-    const { isPartnerDevelopment } = await getStoreDetails(session.id, { 
-      isPartnerDevelopment: true
-    });
-    
-    if (isPartnerDevelopment) {
-      return { shouldLimitFeatures: false }
-    }
-
-    const { hasActivePayment } = await billing.check({
-      plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly],
-    });
-
-    if (!isPartnerDevelopment && !hasActivePayment) {
-      return { shouldLimitFeatures: true }
-    }
-
-    return {
-      shouldLimitFeatures: false
     }
   }
 
@@ -158,6 +134,7 @@ export default function Index() {
         },
         {
           method: 'POST',
+          action: '/app/check-app-subscription-status'
         }
       )
     }, 100);
@@ -179,7 +156,6 @@ export default function Index() {
       clearTimeout(checkStoreActiveStatus);
     };
   }, []);
-
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {

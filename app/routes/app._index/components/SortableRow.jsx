@@ -15,6 +15,7 @@ export default function SortableRow({
   handleBundleToggle, 
   renderRowActions, 
   shouldDisplaySortIcon,
+  shouldLimitFeatures,
 }) {
   const navigate = useNavigate();
 
@@ -28,6 +29,7 @@ export default function SortableRow({
 
   const handleClick = (e) => {
     e.preventDefault();
+    if (shouldLimitFeatures) return;
     navigate(`/app/discount/${bundle.id}/edit`);
   };
 
@@ -47,9 +49,12 @@ export default function SortableRow({
         <Text variation="strong">{bundle.priority}</Text>
       </td>
       <td className="col-bundle-name" onClick={handleClick}>
-        <a
+        { shouldLimitFeatures && bundle.name}
+        { !shouldLimitFeatures && <a
           href={`/app/discount/${bundle.id}/edit`}
-        >{bundle.name}</a>
+        >
+          {bundle.name}
+        </a>}
       </td>
       <td className="col-bundle-type">
         { bundle.type === 'volume_bundle' ? 'Volume bundle' : 'Bulk pricing' }

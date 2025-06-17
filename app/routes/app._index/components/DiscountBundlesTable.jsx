@@ -282,6 +282,7 @@ export default function DiscountBundlesTable({
                           renderRowActions={renderRowActions}
                           handleBundleToggle={handleBundleToggle}
                           shouldDisplaySortIcon={shouldDisplaySortIcon}
+                          shouldLimitFeatures={shouldLimitFeatures}
                         />
                       )
                     }

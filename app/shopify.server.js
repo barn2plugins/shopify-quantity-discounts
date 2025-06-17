@@ -27,8 +27,8 @@ const shopify = shopifyApp({
       amount: 12.99,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
-      trialDays: 14,
-      usageTerms: "Additional charges apply for revenue over $1,000/month",
+      trialDays: 0,
+      usageTerms: "Free for basic usage. Additional charges apply for revenue over $1,000/month or when usage limits are exceeded.",
       usageCappedAmount: {
         amount: 37,
         currencyCode: "USD"
@@ -39,7 +39,7 @@ const shopify = shopifyApp({
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
       trialDays: 14,
-      usageTerms: "Additional charges apply for revenue over $5,000/month",
+      usageTerms: "Additional charges apply for revenue over $5,000/month.",
       usageCappedAmount: {
         amount: 25,
         currencyCode: "USD"
@@ -50,22 +50,7 @@ const shopify = shopifyApp({
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
       trialDays: 14
-    },
-    [PLANS.Starter_Annual]: {
-      amount: 119,
-      currencyCode: 'USD',
-      interval: BillingInterval.Annual,
-    },
-    [PLANS.Growth_Annual]: {
-      amount: 239,
-      currencyCode: 'USD',
-      interval: BillingInterval.Annual,
-    },
-    [PLANS.Pro_Annual]: {
-      amount: 479,
-      currencyCode: 'USD',
-      interval: BillingInterval.Annual,
-    },
+    }
   },
   hooks: {
     afterAuth: async ({ session, admin }) => {

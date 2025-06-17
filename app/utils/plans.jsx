@@ -23,9 +23,10 @@ export const monthlyPlans = [
     id: 1,
     title: 'Starter',
     name: PLANS.Starter_Monthly,
-    price: 12.99,
+    price: 0,
     features: [
-      'Up to <strong>$1,000/month</strong> in additional revenue',
+      '<strong>Intro offer: Free for first 50 stores 🎁</strong>',
+      'Up to $1,000/month in additional revenue',
       'All features included',
       'Unlimited bundles & discounts',
       'Email & live chat support'
@@ -40,6 +41,7 @@ export const monthlyPlans = [
     name: PLANS.Growth_Monthly,
     price: 24.99,
     features: [
+      '<strong>Perfect for growing stores</strong>',
       'Up to <strong>$5,000/month</strong> in additional revenue',
       'All features included',
       'Unlimited bundles & discounts',
@@ -55,6 +57,7 @@ export const monthlyPlans = [
     name: PLANS.Pro_Monthly,
     price: 49.99,
     features: [
+      '<strong>Perfect for large stores</strong>',
       '<strong>No revenue limits</strong>',
       'All features included',
       'Unlimited bundles & discounts',
