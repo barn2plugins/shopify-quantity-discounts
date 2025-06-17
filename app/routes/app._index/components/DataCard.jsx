@@ -11,7 +11,12 @@ import {InfoIcon} from '@shopify/polaris-icons';
 function DataCard({data}) {
   
   const printAmount = () => {
-    return data.title.toLowerCase().includes('orders') ? data.amount : `$${data.amount.toFixed(2)}`;
+    if (data.title.toLowerCase().includes('orders')) {
+      return data.amount || 0;
+    } else {
+      const amount = parseFloat(data.amount) || 0;
+      return `$${amount.toFixed(2)}`;
+    }
   }
 
   return (

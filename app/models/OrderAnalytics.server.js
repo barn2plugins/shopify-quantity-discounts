@@ -17,19 +17,18 @@ export const createOrderAnalytics = async ({orderId, parsedLineItems, discounted
       },
       orderId: parseInt(orderId),
       lineItems: JSON.stringify(parsedLineItems),
-      discountedOrderValue: discountedOrderValue.toString(),
+      discountedOrderValue: parseFloat(discountedOrderValue),
     }
   });
 }
 
 /**
- * Retrieves order analytics records for the current month
- * @param {Object} params - The parameters object
- * @param {string} params.sessionId - The session ID to retrieve analytics for
- * @returns {Promise<Array>} Array of OrderAnalytics records for the current month
+ * Counts order analytics records within a date range for a store
+ * @param {Object} params - Parameters object with sessionId, startDate, and endDate
+ * @returns {Promise<number>} Count of matching records
  */
-export const findCurrentOrdersByDateRange = async ({sessionId, startDate, endDate}) => {
-  return await prisma.orderAnalytics.findMany({
+export const getCurrentMonthsOrderNumbers = async ({sessionId, startDate, endDate}) => {
+  return await prisma.orderAnalytics.count({
     where: {
       store: {
         sessionId
@@ -43,17 +42,55 @@ export const findCurrentOrdersByDateRange = async ({sessionId, startDate, endDat
 }
 
 /**
- * Retrieves all order analytics records for a store
- * @param {Object} params - The parameters object
- * @param {string} params.sessionId - The session ID to retrieve analytics for
- * @returns {Promise<Array>} Array of all OrderAnalytics records
+ * Counts all order analytics records for a store
+ * @param {Object} params - Object with sessionId
+ * @returns {Promise<number>} Total count of records
  */
-export const getAllTimeOrderAnalytics = async ({sessionId}) => {
-  return await prisma.orderAnalytics.findMany({
+export const getAllTimeOrderNumbers = async ({sessionId}) => {
+  return await prisma.orderAnalytics.count({
     where: {
       store: {
         sessionId
       }
+    }
+  });
+}
+
+/**
+ * Calculates total revenue from discounted orders within a date range
+ * @param {Object} params - Object with sessionId, startDate, and endDate
+ * @returns {Promise<Object>} Sum of discountedOrderValue for matching records
+ */
+export const getCurrentMonthsOrderRevenue = async ({sessionId, startDate, endDate}) => {
+  return await prisma.orderAnalytics.aggregate({
+    where: {
+      store: {
+        sessionId
+      },
+      createdAt: {
+        gte: startDate,
+        lte: endDate
+      }
+    },
+    _sum: {
+      discountedOrderValue: true
+    }
+  });
+}
+/**
+ * Calculates total revenue from all order analytics records for a store
+ * @param {Object} params - Object with sessionId
+ * @returns {Promise<Object>} Sum of discountedOrderValue for all records
+ */
+export const getAllTimeOrderRevenue = async ({sessionId}) => {
+  return await prisma.orderAnalytics.aggregate({
+    where: {
+      store: {
+        sessionId
+      }
+    },
+    _sum: {
+      discountedOrderValue: true
     }
   });
 }

@@ -72,3 +72,12 @@ export const updateOrCreateInput = (name, value) => {
     form.appendChild(input);
   }
 };
+
+export const removeInputField = (selector) => {
+  const inputField = document.querySelector(`input[name="${selector}"]`);
+  if (inputField) {
+    inputField.remove();
+    return true;
+  }
+  return false;
+};

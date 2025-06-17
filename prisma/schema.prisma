@@ -133,7 +133,7 @@ model OrderAnalytics {
 
   orderId               BigInt
   lineItems             String
-  discountedOrderValue  String
+  discountedOrderValue  Decimal? @db.Decimal(10, 2)
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt

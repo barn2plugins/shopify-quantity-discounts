@@ -1,4 +1,10 @@
-import { createOrderAnalytics, findCurrentOrdersByDateRange, getAllTimeOrderAnalytics } from "../models/OrderAnalytics.server.js";
+import { 
+  createOrderAnalytics, 
+  getCurrentMonthsOrderNumbers,
+  getAllTimeOrderNumbers,
+  getCurrentMonthsOrderRevenue,
+  getAllTimeOrderRevenue,
+} from "../models/OrderAnalytics.server.js";
 
 /**
  * Saves order analytics data and handles any errors that occur
@@ -49,17 +55,13 @@ export const getOrderAnalytics = async (params) => {
     };
   }
 
-  const { currentMonthsOrderAnalytics, allTimeOrderAnalytics } = orderAnalyticsData;
+  const { 
+    discountedMonthlyOrders, 
+    discountedAllTimeOrders, 
+    discountedMonthlyRevenue, 
+    discountedAllTimeRevenue 
+  } = orderAnalyticsData;
 
-  const discountedMonthlyOrders = currentMonthsOrderAnalytics.length;
-  const discountedAllTimeOrders = allTimeOrderAnalytics.length;
-  const discountedMonthlyRevenue = currentMonthsOrderAnalytics.reduce((total, order) => {
-    return Number(total + parseFloat(order.discountedOrderValue));
-  }, 0);
-  const discountedAllTimeRevenue = allTimeOrderAnalytics.reduce((total, order) => {
-    return Number(total + parseFloat(order.discountedOrderValue));  
-  }, 0);
-  
   return {
     success: true,
     discountedMonthlyOrders,
@@ -67,32 +69,6 @@ export const getOrderAnalytics = async (params) => {
     discountedMonthlyRevenue,
     discountedAllTimeRevenue,
   }
-}
-
-export const orderAnalyticsForCurrentBilling = async (sessionId, subscription) => {
-  try {
-    const startDate = new Date(subscription.billingOn);
-    const endDate = new Date(subscription.billingPeriodEnd);
-    endDate.setHours(23, 59, 59, 999);
-
-    const params = {
-      sessionId,
-      startDate,
-      endDate,
-    }
-
-    return await findCurrentOrdersByDateRange(params);
-  } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
-
-export const getCurrentMonthsOrderAnalytics = async (params) => {
-  return await findCurrentOrdersByDateRange(params);
 }
 
 /**
@@ -107,13 +83,17 @@ export const getCurrentMonthsOrderAnalytics = async (params) => {
  */
 const getOrderAnalyticsData = async (params) => {
   try {
-    const currentMonthsOrderAnalytics = await getCurrentMonthsOrderAnalytics(params);
-    const allTimeOrderAnalytics = await getAllTimeOrderAnalytics(params);
+    const discountedMonthlyOrders = await getCurrentMonthsOrderNumbers(params);
+    const discountedAllTimeOrders = await getAllTimeOrderNumbers(params);
+    const { _sum: { discountedOrderValue: discountedMonthlyRevenue } } = await getCurrentMonthsOrderRevenue(params);
+    const { _sum: { discountedOrderValue: discountedAllTimeRevenue } } = await getAllTimeOrderRevenue(params);
 
     return {
       success: true,
-      currentMonthsOrderAnalytics,
-      allTimeOrderAnalytics,
+      discountedMonthlyOrders,
+      discountedAllTimeOrders,
+      discountedMonthlyRevenue,
+      discountedAllTimeRevenue
     }
   } catch (error) {
     return {

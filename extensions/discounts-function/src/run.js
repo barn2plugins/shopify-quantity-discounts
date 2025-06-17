@@ -17,7 +17,9 @@ export function run(input) {
   // Initialize the discounts array that will be returned
   const discounts = [];
 
-  // Check if any line has entire_cart bulk pricing
+  /**
+   * Check if any line has entire_cart bulk pricing
+   */
   const hasEntireCartDiscount = cart.lines.find(line => 
     line?._barn2_discount_bundle_type?.value === 'bulk_pricing' && 
     line?._barn2_discount_applies_to?.value === 'entire_cart'
@@ -112,7 +114,7 @@ export function run(input) {
       group.totalQuantity === parseInt(bundle.quantity)
     );
 
-    if (!applicableBundle ||!discountCampaignName) break;
+    if (!applicableBundle || !discountCampaignName || !applicableBundle.discount) break;
 
     const discountValue = applicableBundle.discount || 0;
     const discountType = applicableBundle.discount_type || "percentage";
