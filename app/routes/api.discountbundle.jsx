@@ -22,18 +22,6 @@ export async function action({ request }) {
     ianaTimezone: true,
   });
 
-  const mantleCustomer = await getMantleCustomer({session});
-
-  const isPartnerDevelopment = store?.isPartnerDevelopment;
-  const shouldDisableDiscounts = isPartnerDevelopment === false && !mantleCustomer.subscription;
-
-  if (shouldDisableDiscounts) {
-    return new Response(JSON.stringify({
-      success: true,
-      response: 'disable_discounts',
-    }));
-  }
-
   const { productId, isInEditor } = await request.json();
   const shouldSendDummyBundleData = typeof productId === 'undefined' && isInEditor;
 

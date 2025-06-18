@@ -1,13 +1,14 @@
 import { findDiscountBundlesByNames } from "../services/bundle.service";
-import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceived, trackOrderReceivedOnMantle } from "../services/analytics.service";
+import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceived, trackOrderReceivedOnMantle, track75ThresholdOnMantle, track100ThresholdOnMantle } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
 import { sendUsageEventToMantle } from "../services/mantle.service";
 import { setOrUpdateOption, getOptionValue } from "../services/options.service";
 import { getStoreDetails } from "../services/store.service";
-import { getActiveSubscriptionForCurrentSession, getPlanRevenueLimitBySubscription } from "../services/subscription.service"
+import { getPlanRevenueLimitBySubscription } from "../services/subscription.service"
 import { processOrderLineItems } from "../utils/analytics";
 import { getDateRangeForWebhookOrderAnalytics } from "../utils/utils";
+import { getMantleCustomer } from "../services/mantle.service";
 
 export const action = async ({ request }) => {
   const { payload, session, topic } = await authenticate.webhook(request);
@@ -60,34 +61,21 @@ export const action = async ({ request }) => {
   }
 
   try {
-    const currentSubscription = await getActiveSubscriptionForCurrentSession({session});
-    const planRevenueLimitBySubscription = await getPlanRevenueLimitBySubscription({currentSubscription});
+    const mantleCustomer = await getMantleCustomer({session});
+    const subscription = mantleCustomer.subscription;
+    const planRevenueLimitBySubscription = await getPlanRevenueLimitBySubscription({planName: subscription?.plan?.name});
     if (planRevenueLimitBySubscription === 0) return;
 
-    const dateRange = getDateRangeForWebhookOrderAnalytics({subscription: currentSubscription, store});
+    const dateRange = getDateRangeForWebhookOrderAnalytics({subscription, store});
     const storeCurrentRevenue = await getStoreCurrentRevenue({session, ...dateRange});
 
     if (!storeCurrentRevenue.success) return;
 
-    const revenueThreshold75Percentage = 0.75;
-    const revenueThreshold75 = planRevenueLimitBySubscription * revenueThreshold75Percentage;
+    await track75ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, getOptionValue, sendUsageEventToMantle});
     
-    if (storeCurrentRevenue?.discountedMonthlyRevenue >= revenueThreshold75) {
-      await sendUsageEventToMantle({
-        session,
-        eventName: "starter_free_75_threshold_reached",
-        properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
-      })
-    }
-
-    if (storeCurrentRevenue?.discountedMonthlyRevenue >= planRevenueLimitBySubscription) {
-      await sendUsageEventToMantle({
-        session,
-        eventName: "starter_free_100_threshold_reached",
-        properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
-      })
-    }
+    await track100ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, getOptionValue, sendUsageEventToMantle});
   } catch (error) {
+    console.log(error);
   }
 
   return new Response();

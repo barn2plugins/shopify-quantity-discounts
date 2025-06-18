@@ -168,3 +168,34 @@ export const getStoreCurrentRevenue = async (params) => {
     };
   }
 }
+
+export async function track75ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, getOptionValue, sendUsageEventToMantle}) {
+  // Check if this 75 threshold haven't recorded
+  const thresholdReached75 = await getOptionValue({ storeId: store.id, key: 'threshold_reached_75' });
+  if (thresholdReached75) return;
+    
+  const revenueThreshold75Percentage = 0.75;
+  const revenueThreshold75 = planRevenueLimitBySubscription * revenueThreshold75Percentage;
+  
+  if (storeCurrentRevenue?.discountedMonthlyRevenue >= revenueThreshold75) {
+    await sendUsageEventToMantle({
+      session,
+      eventName: "threshold_reached_75",
+      properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
+    });
+  }
+}
+
+export async function track100ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, getOptionValue, sendUsageEventToMantle}) {
+  // Check if this 100 threshold haven't recorded
+  const thresholdReached100 = await getOptionValue({ storeId: store.id, key: 'threshold_reached_100' });
+  if (thresholdReached100) return;
+  
+  if (storeCurrentRevenue?.discountedMonthlyRevenue >= planRevenueLimitBySubscription) {
+    await sendUsageEventToMantle({
+      session,
+      eventName: "threshold_reached_100",
+      properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
+    })
+  }
+}

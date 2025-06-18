@@ -691,10 +691,10 @@ export const getDateRangeForAnalytics = (subscription) => {
  * Determines the date range for webhook order analytics based on subscription or store creation date.
  */
 export const getDateRangeForWebhookOrderAnalytics = ({subscription, store}) => {
-  if (subscription) {
+  if (subscription && subscription?.currentPeriodStart) {
     return {
-      startDate: subscription?.billingOn,
-      endDate: subscription?.billingPeriodEnd,
+      startDate: subscription?.currentPeriodStart,
+      endDate: subscription?.currentPeriodEnd,
     }
   }
 
