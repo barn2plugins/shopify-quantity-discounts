@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { unHideQuantityAndVariantBlocks } from '../utils'
+import { unHideQuantityAndVariantBlocks, updateOrCreateInput } from '../utils'
 
 export default function BulkPricing({
   bundleData, 
@@ -83,24 +83,11 @@ export default function BulkPricing({
    * to store discount-related data that will be used when the product is added to cart.
    */
   const addDiscountBundleToForm = () => {
-    const form = document.querySelector('product-form.product-form form');
+    const form = document.querySelector('product-form.product-form form, product-form-component [action="/cart/add"]');
     if (!form) {
       return;
     }
-    // Helper function to update or create input
-    const updateOrCreateInput = (name, value) => {
-      let input = form.querySelector(`input[name="${name}"]`);
-      if (input) {
-        input.value = value;
-      } else {
-        input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      }
-    };
-
+   
     // Update or create bundle type input
     updateOrCreateInput(
       'properties[_barn2_discount_campaign_name]',

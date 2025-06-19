@@ -110,7 +110,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                     alignItems: formState.layout === 'horizontal'? 'flex-end' : 'center',
                   }}>
                   <h4 className='bundle-discounted-price'>{displayCalculatedPrice(bundle)}</h4>
-                  { formState.previewOptions?.showOriginalPrice && bundle.discount &&
+                  { formState.previewOptions?.showOriginalPrice && parseFloat(bundle.discount) !== 0 &&
                     <p 
                       className={classNames(
                         'bundle-regular-price',

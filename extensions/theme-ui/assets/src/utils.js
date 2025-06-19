@@ -47,12 +47,12 @@ export const setCustomDesignStyles = (bundleData) => {
 export const unHideQuantityAndVariantBlocks = () => {
   const quantityInput = document.querySelector('.product-form__input.product-form__quantity, quantity-selector-component.quantity-selector');
   if (quantityInput) {
-    quantityInput.style.display = 'block';
+    quantityInput.style.removeProperty('display');
   }
 
   const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios, variant-picker.variant-picker');
   if (variantSelector) {
-    variantSelector.style.display = 'block';
+    quantityInput.style.removeProperty('display');
   }
 }
 
