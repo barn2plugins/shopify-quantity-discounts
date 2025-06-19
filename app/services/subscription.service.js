@@ -118,11 +118,11 @@ export const deactivatePreviousAppSubscriptions = async (params) => {
  * @returns {Promise<number>} The revenue limit for the subscription plan (1000 for Starter, 5000 for Growth, 0 for Pro)
  */
 export const getPlanRevenueLimitBySubscription = async({planName}) => {
-  const planName = planName || 'Starter';
+  const plan = planName || 'Starter';
   const planRevenueLimit = {
     'Starter': 1000,
     'Growth': 5000,
     'Pro': 0
   }
-  return planRevenueLimit[planName];
+  return planRevenueLimit[plan];
 }

@@ -7,7 +7,6 @@ import { authenticate } from "../../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { useFetcher } from "@remix-run/react";
-import { useMantle } from '@heymantle/react';
 
 // Internal components and libraries
 import DiscountAnalytics from "./components/DiscountAnalytics.jsx";
@@ -18,8 +17,10 @@ import AppBlockEmbed from "../../components/Notice/AppBlockEmbed.jsx";
 
 import { getAllBundles } from "../../services/bundle.service.js";
 import { getOrderAnalytics } from "../../services/analytics.service";
+import { getStoreDetails } from "../../services/store.service";
 import { getStoreAnalyticsData } from "../../utils/analytics";
 import { getDateRangeForAnalytics } from "../../utils/utils"
+import { getMantleCustomer } from "../../services/mantle.service";
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -63,7 +64,15 @@ export const action = async ({ request }) => {
   }
 
   if (fetcherData?.action === 'getAnalyticsData') {
-    const analyticsDateRange = JSON.parse(fetcherData?.analyticsDateRange);
+    // Get the store details for this session
+    const store = await getStoreDetails(session.id, {
+      id: true,
+      createdAt: true
+    });
+    const mantleCustomer = await getMantleCustomer({session});
+    const subscription = mantleCustomer.subscription;
+
+    const analyticsDateRange = getDateRangeForAnalytics({subscription, store}); 
 
     const orderAnalyticsData = await getOrderAnalytics({
       sessionId: session.id, 
@@ -81,7 +90,6 @@ export const action = async ({ request }) => {
 }
 
 export default function Index() {
-  const { subscription } = useMantle();
   const fetcher = useFetcher();
   const analyticsFetcher = useFetcher();
   const storeStatusFetcher = useFetcher();
@@ -159,11 +167,9 @@ export default function Index() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const analyticsDateRange = getDateRangeForAnalytics(subscription); 
       analyticsFetcher.submit(
         { 
-          action: 'getAnalyticsData',
-          analyticsDateRange: JSON.stringify(analyticsDateRange)
+          action: 'getAnalyticsData'
         },
         {
           method: "POST",
@@ -173,7 +179,7 @@ export default function Index() {
 
     // Cleanup function to clear the timeout on unmount
     return () => clearTimeout(timeoutId);
-  }, [subscription]);
+  }, []);
 
   return (
     <div className="barn2-app-home">

@@ -2,12 +2,10 @@ import { findDiscountBundlesByNames } from "../services/bundle.service";
 import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceived, trackOrderReceivedOnMantle, track75ThresholdOnMantle, track100ThresholdOnMantle } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveEvent } from "../services/mixpanel.service"
-import { sendUsageEventToMantle } from "../services/mantle.service";
-import { setOrUpdateOption, getOptionValue } from "../services/options.service";
 import { getStoreDetails } from "../services/store.service";
 import { getPlanRevenueLimitBySubscription } from "../services/subscription.service"
 import { processOrderLineItems } from "../utils/analytics";
-import { getDateRangeForWebhookOrderAnalytics } from "../utils/utils";
+import { getDateRangeForAnalytics } from "../utils/utils";
 import { getMantleCustomer } from "../services/mantle.service";
 
 export const action = async ({ request }) => {
@@ -53,11 +51,12 @@ export const action = async ({ request }) => {
     await trackOrderReceiveEvent({session, order: { id: payload.id, revenue: discountedOrderValue }})
 
     // For the first order received, send the event to Mantle
-    await trackFirstOrderReceived({ session, store, discountedOrderValue, getOptionValue, sendUsageEventToMantle, setOrUpdateOption });
+    await trackFirstOrderReceived({ session, store, discountedOrderValue });
     
     // Record every order received event in Mantle
-    await trackOrderReceivedOnMantle({ session, orderId: payload.id, discountedOrderValue, sendUsageEventToMantle });
+    await trackOrderReceivedOnMantle({ session, orderId: payload.id, discountedOrderValue });
   } catch (error) {
+    console.log(error)
   }
 
   try {
@@ -66,14 +65,14 @@ export const action = async ({ request }) => {
     const planRevenueLimitBySubscription = await getPlanRevenueLimitBySubscription({planName: subscription?.plan?.name});
     if (planRevenueLimitBySubscription === 0) return;
 
-    const dateRange = getDateRangeForWebhookOrderAnalytics({subscription, store});
+    const dateRange = getDateRangeForAnalytics({subscription, store});
     const storeCurrentRevenue = await getStoreCurrentRevenue({session, ...dateRange});
 
     if (!storeCurrentRevenue.success) return;
 
-    await track75ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, getOptionValue, sendUsageEventToMantle});
+    await track75ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue});
     
-    await track100ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, getOptionValue, sendUsageEventToMantle});
+    await track100ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue});
   } catch (error) {
     console.log(error);
   }

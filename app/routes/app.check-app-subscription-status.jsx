@@ -1,7 +1,7 @@
 import { authenticate } from "../shopify.server";
 import { PLANS } from "../utils/plans";
 import { getStoreDetails } from "../services/store.service"
-import { getDateRangeForWebhookOrderAnalytics } from "../utils/utils";
+import { getDateRangeForAnalytics } from "../utils/utils";
 import { getStoreCurrentRevenue } from "../services/analytics.service";
 import { getPlanRevenueLimitBySubscription } from "../services/subscription.service"
 import { getMantleCustomer } from "../services/mantle.service";
@@ -32,7 +32,7 @@ export const action = async ({ request }) => {
 
   const planRevenueLimitBySubscription = await getPlanRevenueLimitBySubscription({planName: subscription?.plan?.name});
     
-  const dateRange = getDateRangeForWebhookOrderAnalytics({subscription: subscription, store});
+  const dateRange = getDateRangeForAnalytics({subscription: subscription, store});
   const storeCurrentRevenue = await getStoreCurrentRevenue({session, ...dateRange});
 
   if (!isPartnerDevelopment && storeCurrentRevenue?.success && (planRevenueLimitBySubscription !==0 && storeCurrentRevenue?.discountedMonthlyRevenue <= planRevenueLimitBySubscription)) {

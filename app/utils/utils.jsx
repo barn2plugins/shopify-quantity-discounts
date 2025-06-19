@@ -662,35 +662,9 @@ export const validateDiscountForm = (formData) => {
 };
 
 /**
- * Determines the date range for analytics based on subscription period or current month.
- */
-export const getDateRangeForAnalytics = (subscription) => {
-  if (subscription) {
-    return {
-      startDate: subscription?.currentPeriodStart,
-      endDate: subscription?.currentPeriodEnd,
-    }
-  }
-
-  const startDate = new Date();
-  startDate.setDate(1);
-  startDate.setHours(0, 0, 0, 0);
-
-  const endDate = new Date(startDate);
-  endDate.setMonth(endDate.getMonth() + 1);
-  endDate.setDate(0);
-  endDate.setHours(23, 59, 59, 999);
-
-  return {
-    startDate,
-    endDate,
-  }
-}
-
-/**
  * Determines the date range for webhook order analytics based on subscription or store creation date.
  */
-export const getDateRangeForWebhookOrderAnalytics = ({subscription, store}) => {
+export const getDateRangeForAnalytics = ({subscription, store}) => {
   if (subscription && subscription?.currentPeriodStart) {
     return {
       startDate: subscription?.currentPeriodStart,
@@ -699,8 +673,7 @@ export const getDateRangeForWebhookOrderAnalytics = ({subscription, store}) => {
   }
 
   const endDate = new Date(store?.createdAt);
-  endDate.setMonth(endDate.getMonth() + 1);
-  endDate.setDate(0);
+  endDate.setDate(endDate.getDate() + 30);
   endDate.setHours(23, 59, 59, 999);
   
   return {
