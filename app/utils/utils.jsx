@@ -364,8 +364,8 @@ export const getBarn2VolumeDiscountFunctionId = (storedata) => {
  * 
  */ 
 export const getStoreActiveThemeGid = (storedata) => {
-  const themes = storedata.data.themes.edges;
-  const activeTheme = themes.find((theme) => theme.node.role === 'MAIN');
+  const themes = storedata?.data?.themes?.edges;
+  const activeTheme = themes?.find((theme) => theme.node.role === 'MAIN');
   return activeTheme ? activeTheme.node.id : null;
 }
 

@@ -59,7 +59,7 @@ export const fetchStoreDetails = async (admin) => {
 // Save store details to the database
 export const saveStoreDetails = async ({sessionId, storeData, volumeDiscountFunctionId, shopifyAutomaticDiscountId}) => {
   try {
-    const shop = storeData.data.shop;
+    const shop = storeData?.data?.shop;
     const getActiveThemeGid = getStoreActiveThemeGid(storeData);
 
     await prisma.session.update({
