@@ -169,7 +169,7 @@ export function run(input) {
     // Create the discount based on discount type
     const discountAmount = {
       value: discountType === "amount" 
-        ? { fixedAmount: { amount: parseFloat(discountValue) } }
+        ? { fixedAmount: { amount: parseFloat(discountValue) * group.quantity } }
         : { percentage: { value: parseFloat(discountValue) } }
     };
 
