@@ -1,4 +1,4 @@
-import { getOption } from "../models/Options.server"
+import { getOption, getOptionForDateRange } from "../models/Options.server"
 import { setOption } from "../models/Options.server";
 
 export async function setOrUpdateOption(params) {
@@ -23,4 +23,16 @@ export async function getOptionValue({storeId, key}) {
       displayError: 'Could not retrieve option'
     };
   }
+}
+
+export async function getOptionValueForDateRange(params) {
+  try {
+    return await getOptionForDateRange(params)
+  } catch (error) {
+    return { 
+      success: false,
+      error: error.message,
+      displayError: 'Could not retrieve option'
+    };
+  } 
 }

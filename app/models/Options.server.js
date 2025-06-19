@@ -45,3 +45,30 @@ export async function getOption({storeId, key}) {
   }
   return null
 }
+
+/**
+ * Retrieves an option value from the database for a specific store and date range
+ * 
+ * @param {Object} params - The parameters object
+ * @param {number} params.storeId - The ID of the store
+ * @param {string} params.key - The key of the option to retrieve
+ * @param {Date} params.startDate - The start date of the date range
+ * @param {Date} params.endDate - The end date of the date range
+ * @returns {Promise<string|null>} The option value if found, null otherwise
+ */
+export async function getOptionForDateRange({storeId, key, startDate, endDate}) {
+  const option = await prisma.options.findUnique({
+    where: {
+      storeId,
+      key,
+      updatedAt: {
+        gte: startDate,
+        lte: endDate
+      }
+    }
+  })
+  if (option) {
+    return option.value
+  }
+  return null
+}

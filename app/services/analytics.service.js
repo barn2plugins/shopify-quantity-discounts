@@ -6,7 +6,7 @@ import {
   getAllTimeOrderRevenue,
 } from "../models/OrderAnalytics.server.js";
 
-import { getOptionValue, setOrUpdateOption } from "./options.service";
+import { getOptionValue, getOptionValueForDateRange, setOrUpdateOption } from "./options.service";
 import { sendUsageEventToMantle } from "./mantle.service"
 
 /**
@@ -177,10 +177,11 @@ export async function track75ThresholdOnMantle({
   payload, 
   store, 
   planRevenueLimitBySubscription, 
-  storeCurrentRevenue
+  storeCurrentRevenue,
+  dateRange
 }) {
   // Check if this 75 threshold haven't recorded
-  const thresholdReached75 = await getOptionValue({ storeId: store.id, key: 'threshold_reached_75' });
+  const thresholdReached75 = await getOptionValueForDateRange({ storeId: store.id, key: 'threshold_reached_75', ...dateRange });
   if (thresholdReached75) return;
     
   const revenueThreshold75Percentage = 0.75;
@@ -207,10 +208,11 @@ export async function track100ThresholdOnMantle({
   payload, 
   store, 
   planRevenueLimitBySubscription, 
-  storeCurrentRevenue
+  storeCurrentRevenue,
+  dateRange
 }) {
   // Check if this 100 threshold haven't recorded
-  const thresholdReached100 = await getOptionValue({ storeId: store.id, key: 'threshold_reached_100' });
+  const thresholdReached100 = await getOptionValueForDateRange({ storeId: store.id, key: 'threshold_reached_100', ...dateRange });
   if (thresholdReached100) return;
   
   if (storeCurrentRevenue?.discountedMonthlyRevenue >= planRevenueLimitBySubscription) {

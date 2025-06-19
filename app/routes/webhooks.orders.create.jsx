@@ -70,9 +70,11 @@ export const action = async ({ request }) => {
 
     if (!storeCurrentRevenue.success) return;
 
-    await track75ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue});
-    
-    await track100ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue});
+    // Currently, only send threshold reached notifications for free plans without any subscription
+    if (!subscription) {
+      await track75ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, dateRange});
+      await track100ThresholdOnMantle({session, payload, store, planRevenueLimitBySubscription, storeCurrentRevenue, dateRange});
+    }
   } catch (error) {
     console.log(error);
   }
