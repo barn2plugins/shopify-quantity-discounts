@@ -84,8 +84,8 @@ export default function App() {
       </head>
       <body>
         <div className="barn2-app-root">
-          { isPartnerDevelopment && !hasActivePayment && <PartnerDevelopment/> }
-          { !isPartnerDevelopment && !hasActivePayment && <UpgradeNotice/> }
+          {/* { isPartnerDevelopment && !hasActivePayment && <PartnerDevelopment/> }
+          { !isPartnerDevelopment && !hasActivePayment && <UpgradeNotice/> } */}
           <Outlet />
           { <Credits/> }
         </div>
