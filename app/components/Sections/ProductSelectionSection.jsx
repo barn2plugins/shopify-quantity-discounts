@@ -112,7 +112,7 @@ export default function ProductSelectionSection({
         title: product.title
       }));
       setExcludedCollections(formattedSelection);
-    } if (resourceSelection) {
+    } else if (resourceSelection) {
       setExcludedCollections([]);
     }
   }

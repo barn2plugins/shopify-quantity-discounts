@@ -280,6 +280,12 @@
       &.discount-columns-9 {
         grid-template-columns: repeat(9, 1fr);
       }
+
+      .barn2-discount-bundle {
+        .barn2-highlighted-text {
+          right: calc(50% - 39px);
+        }
+      }
     }
   }
 }
