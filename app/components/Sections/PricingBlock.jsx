@@ -24,7 +24,7 @@ export default function PricingBlock({
 }) {
   const [pressedButtonIndex, setPressedButtonIndex] = useState(0);
   const handleBilling = async (plan, index) => {
-    if (plan.name === 'Free') return;
+    if (isActivePlan(plan)) return;
     setLoading(true);
     setPressedButtonIndex(index);
     
@@ -47,7 +47,7 @@ export default function PricingBlock({
   }
 
   const isActivePlan = (plan) => {
-    if (!currentSubscription && plan.name === 'Free') return true;
+    if (!currentSubscription && (plan.name === 'Free' || plan.name === 'Starter')) return true;
     return plan?.id === currentSubscription?.plan?.id;
   }
 

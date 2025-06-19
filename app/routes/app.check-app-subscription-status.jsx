@@ -1,5 +1,4 @@
 import { authenticate } from "../shopify.server";
-import { PLANS } from "../utils/plans";
 import { getStoreDetails } from "../services/store.service"
 import { getDateRangeForAnalytics } from "../utils/utils";
 import { getStoreCurrentRevenue } from "../services/analytics.service";

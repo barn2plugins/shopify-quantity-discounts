@@ -1,7 +1,6 @@
 import { authenticate } from "../shopify.server";
 import { getEligibleDiscountBundle, getLatestDiscountBundle } from "../services/bundle.service";
 import { getStoreDetails } from "../services/store.service";
-import { getMantleCustomer } from "../services/mantle.service";
 
 export async function action({ request }) {
   if (request.method !== 'POST') {
