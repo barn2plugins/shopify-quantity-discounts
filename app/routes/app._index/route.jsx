@@ -43,7 +43,7 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { session, billing } = await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
   
   const formData = await request.formData();
   const fetcherData = Object.fromEntries(formData);
@@ -156,7 +156,7 @@ export default function Index() {
           action: '/app/check-app-embed-status'
         }
       )
-    }, 200);
+    }, 300);
 
     // Cleanup function to clear the timeout on unmount
     return () => {
@@ -175,7 +175,7 @@ export default function Index() {
           method: "POST",
         }
       );
-    }, 400);
+    }, 200);
 
     // Cleanup function to clear the timeout on unmount
     return () => clearTimeout(timeoutId);

@@ -26,7 +26,7 @@ export const monthlyPlans = [
     price: 0,
     features: [
       '<strong>Intro offer: Free for first 50 stores 🎁</strong>',
-      'Up to $1,000/month in additional revenue',
+      'Up to <strong>$1,000/month</strong> in additional revenue',
       'All features included',
       'Unlimited bundles & discounts',
       'Email & live chat support'
