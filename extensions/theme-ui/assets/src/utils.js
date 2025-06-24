@@ -52,7 +52,7 @@ export const unHideQuantityAndVariantBlocks = () => {
 
   const variantSelector = document.querySelector('.product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios, variant-picker.variant-picker');
   if (variantSelector) {
-    quantityInput.style.removeProperty('display');
+    variantSelector.style.removeProperty('display');
   }
 }
 
