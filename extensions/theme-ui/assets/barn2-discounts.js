@@ -21203,7 +21203,9 @@ const vk = (H) => {
   document.documentElement.style.setProperty("--barn2-bundles-corner-radius", D);
 }, dT = () => {
   const H = document.querySelector(".product-form__input.product-form__quantity, quantity-selector-component.quantity-selector");
-  H && H.style.removeProperty("display"), document.querySelector(".product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios, variant-picker.variant-picker") && H.style.removeProperty("display");
+  H && H.style.removeProperty("display");
+  const W = document.querySelector(".product__info-container variant-selects, .product__info-wrapper variant-selects, .product-page-section variant-selects, .product__info-wrapper variant-radios, variant-picker.variant-picker");
+  W && W.style.removeProperty("display");
 }, $o = (H, W) => {
   const D = document.querySelector('product-form.product-form form, product-form-component [action="/cart/add"]');
   if (!D) return;
@@ -21460,7 +21462,7 @@ function mk({
               ] }),
               /* @__PURE__ */ Ve.jsxs("div", { className: "barn2-dbs-bottom", children: [
                 /* @__PURE__ */ Ve.jsx("span", { className: "barn2-dbs-price", children: ct(k, "discounted") }),
-                te.showOriginalPrice && k.discount && /* @__PURE__ */ Ve.jsx(
+                te.showOriginalPrice && parseFloat(k.discount) !== 0 && /* @__PURE__ */ Ve.jsx(
                   "span",
                   {
                     className: fE(
