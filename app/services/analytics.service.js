@@ -118,7 +118,7 @@ const getOrderAnalyticsData = async (params) => {
 export async function trackFirstOrderReceived({ session, store, discountedOrderValue }) {
   // Check if this is the first order received
   const firstOrderReceived = await getOptionValue({ storeId: store.id, key: 'first_order_received' });
-  
+
   if (firstOrderReceived) {
     return;
   }
@@ -133,6 +133,7 @@ export async function trackFirstOrderReceived({ session, store, discountedOrderV
   // Record first order received in the store
   await setOrUpdateOption({
     sessionId: session.id, 
+    storeId: store.id,
     key: 'first_order_received', 
     value: 'true'
   });
@@ -198,6 +199,7 @@ export async function track75ThresholdOnMantle({
   // Record threshold 75 order revenue
   await setOrUpdateOption({
     sessionId: session.id, 
+    storeId: store.id,
     key: 'threshold_reached_75', 
     value: 'true'
   });
@@ -226,6 +228,7 @@ export async function track100ThresholdOnMantle({
   // Record threshold 100 order revenue
   await setOrUpdateOption({
     sessionId: session.id, 
+    storeId: store.id,
     key: 'threshold_reached_100', 
     value: 'true'
   });

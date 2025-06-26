@@ -1,93 +1,71 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
-// enough when changing adapters.
-// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model Session {
-  id              String    @id
-  shop            String
-  state           String
-  isOnline        Boolean   @default(false)
-  scope           String?
-  expires         DateTime?
-  accessToken     String
-  mantleApiToken  String?
-
-  // User Information
-  userId        String?
-  firstName     String?
-  lastName      String?
-  email         String?
-  accountOwner  Boolean  @default(false)
-  locale        String?
-  collaborator  Boolean? @default(false)
-  emailVerified Boolean? @default(false)
-
-  // Relations
-  store         Store?
+  id             String    @id
+  shop           String
+  state          String
+  isOnline       Boolean   @default(false)
+  scope          String?
+  expires        DateTime?
+  accessToken    String
+  mantleApiToken String?
+  userId         String?
+  firstName      String?
+  lastName       String?
+  email          String?
+  accountOwner   Boolean   @default(false)
+  locale         String?
+  collaborator   Boolean?  @default(false)
+  emailVerified  Boolean?  @default(false)
+  store          Store?
 }
 
 model Store {
-  id                              Int     @id @default(autoincrement())
-  sessionId                       String  @unique
-  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  // Shop Information
+  id                              Int              @id @default(autoincrement())
+  sessionId                       String           @unique
   storeName                       String?
   url                             String?
   shopOwnerName                   String?
   currency                        String?
   ianaTimezone                    String?
   planDisplayName                 String?
-  isPartnerDevelopment            Boolean? @default(false)
-  isShopifyPlus                   Boolean? @default(false)
+  isPartnerDevelopment            Boolean?         @default(false)
+  isShopifyPlus                   Boolean?         @default(false)
   activeThemeGid                  String?
-  appEmbedDisabled                Boolean? @default(true)
-
+  appEmbedDisabled                Boolean?         @default(true)
   volumeDiscountFunctionId        String?
   shopifyAutomaticDiscountId      String?
-
-  // Money Formats
   moneyFormat                     String?
   moneyInEmailsFormat             String?
   moneyWithCurrencyFormat         String?
   moneyWithCurrencyInEmailsFormat String?
-
-  // API Support
-  checkoutApiSupported            Boolean? @default(false)
-
-  createdAt                       DateTime @default(now())
-  updatedAt                       DateTime @updatedAt
-
-  // Relations
+  checkoutApiSupported            Boolean?         @default(false)
+  createdAt                       DateTime         @default(now())
+  updatedAt                       DateTime         @updatedAt
   discountBundles                 DiscountBundle[]
-  subscriptions                   Subscription[]
-  orderAnalytics                  OrderAnalytics[]
   options                         Options[]
+  orderAnalytics                  OrderAnalytics[]
+  session                         Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  subscriptions                   Subscription[]
 }
 
 model DiscountBundle {
-  id                  Int   @id @default(autoincrement())
+  id                  Int      @id @default(autoincrement())
   storeId             Int
-  store               Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
   name                String
-  type                String  @default("")
-  previewEnabled      Boolean @default(false)
-  whichProducts       String  @default("")
-  layout              String  @default("")
-  priority            Int     @default(0)
-  active              Boolean @default(false)
+  type                String   @default("")
+  previewEnabled      Boolean  @default(false)
+  whichProducts       String   @default("")
+  layout              String   @default("")
+  priority            Int      @default(0)
+  active              Boolean  @default(false)
   selectedProducts    String?
   selectedCollections String?
   excludedProducts    String?
@@ -101,16 +79,14 @@ model DiscountBundle {
   designOptions       String?
   customDesigns       String?
   previewOptions      String?
-
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  store               Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
-  id                Int   @id @default(autoincrement())
-  storeId           Int
-  store            Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
+  id               Int       @id @default(autoincrement())
+  storeId          Int
   chargeId         String
   plan             String
   price            String
@@ -121,32 +97,32 @@ model Subscription {
   trialDays        Int?
   billingOn        DateTime?
   billingPeriodEnd DateTime?
-
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  store            Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model OrderAnalytics {
-  id                    Int   @id @default(autoincrement())
-  storeId               Int
-  store                 Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  orderId               BigInt
-  lineItems             String
-  discountedOrderValue  Decimal? @db.Decimal(10, 2)
-
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id                   Int      @id @default(autoincrement())
+  storeId              Int
+  orderId              BigInt
+  lineItems            String
+  discountedOrderValue Decimal? @db.Decimal(10, 2)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  store                Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Options {
-  id        Int   @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   storeId   Int
-  store     Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  key       String @unique
+  key       String
   value     String
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([storeId, key])
 }

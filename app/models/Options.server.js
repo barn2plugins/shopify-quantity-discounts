@@ -9,20 +9,36 @@ import prisma from "../db.server"
  * @param {string} params.value - The value to store for the option
  * @returns {Promise<Object>} The created or updated option object
  */
-export async function setOption({sessionId, key, value}) {
-  return await prisma.options.upsert({
+export async function setOption({sessionId, storeId, key, value}) {
+  // First, try to find the existing record
+  const existingOption = await prisma.options.findUnique({
     where: {
+      storeId,
       key
-    },
-    update: {
-      value,
-    },
-    create: {
-      store: { connect: { sessionId } },
-      key,
-      value,
-    },
+    }
   });
+
+  if (existingOption) {
+    // Update the existing record
+    return await prisma.options.update({
+      where: {
+        storeId,
+        key
+      },
+      data: {
+        value,
+      }
+    });
+  } else {
+    // Create a new record
+    return await prisma.options.create({
+      data: {
+        store: { connect: { sessionId } },
+        key,
+        value,
+      }
+    });
+  }
 }
 
 /**
