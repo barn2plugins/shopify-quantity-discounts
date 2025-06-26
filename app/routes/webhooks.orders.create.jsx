@@ -1,7 +1,7 @@
 import { findDiscountBundlesByNames } from "../services/bundle.service";
-import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceived, trackOrderReceivedOnMantle, track75ThresholdOnMantle, track100ThresholdOnMantle } from "../services/analytics.service";
+import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceivedOnMantle, trackOrderReceivedOnMantle, track75ThresholdOnMantle, track100ThresholdOnMantle } from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
-import { trackOrderReceiveEvent } from "../services/mixpanel.service"
+import { trackOrderReceiveOnMixpanel } from "../services/mixpanel.service"
 import { getStoreDetails } from "../services/store.service";
 import { getPlanRevenueLimitBySubscription } from "../services/subscription.service"
 import { processOrderLineItems } from "../utils/analytics";
@@ -48,10 +48,10 @@ export const action = async ({ request }) => {
 
   try {
     // Track the order receive event in Mixpanel
-    await trackOrderReceiveEvent({session, order: { id: payload.id, revenue: discountedOrderValue }})
+    await trackOrderReceiveOnMixpanel({session, order: { id: payload.id, revenue: discountedOrderValue }})
 
     // For the first order received, send the event to Mantle
-    await trackFirstOrderReceived({ session, store, discountedOrderValue });
+    await trackFirstOrderReceivedOnMantle({ session, store, discountedOrderValue });
     
     // Record every order received event in Mantle
     await trackOrderReceivedOnMantle({ session, orderId: payload.id, discountedOrderValue });

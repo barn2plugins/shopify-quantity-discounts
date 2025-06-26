@@ -115,7 +115,7 @@ const getOrderAnalyticsData = async (params) => {
  * @param {number} params.discountedOrderValue - The value of the discounted order
  * @returns {Promise<void>}
  */
-export async function trackFirstOrderReceived({ session, store, discountedOrderValue }) {
+export async function trackFirstOrderReceivedOnMantle({ session, store, discountedOrderValue }) {
   // Check if this is the first order received
   const firstOrderReceived = await getOptionValue({ storeId: store.id, key: 'first_order_received' });
 
@@ -188,13 +188,16 @@ export async function track75ThresholdOnMantle({
   const revenueThreshold75Percentage = 0.75;
   const revenueThreshold75 = planRevenueLimitBySubscription * revenueThreshold75Percentage;
   
-  if (storeCurrentRevenue?.discountedMonthlyRevenue >= revenueThreshold75) {
-    await sendUsageEventToMantle({
-      session,
-      eventName: "threshold_reached_75",
-      properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
-    });
+  if (storeCurrentRevenue?.discountedMonthlyRevenue < revenueThreshold75) {
+    return;
   }
+
+  // Send the event to Mantle
+  await sendUsageEventToMantle({
+    session,
+    eventName: "threshold_reached_75",
+    properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
+  });
 
   // Record threshold 75 order revenue
   await setOrUpdateOption({
@@ -217,13 +220,16 @@ export async function track100ThresholdOnMantle({
   const thresholdReached100 = await getOptionValueForDateRange({ storeId: store.id, key: 'threshold_reached_100', ...dateRange });
   if (thresholdReached100) return;
   
-  if (storeCurrentRevenue?.discountedMonthlyRevenue >= planRevenueLimitBySubscription) {
-    await sendUsageEventToMantle({
-      session,
-      eventName: "threshold_reached_100",
-      properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
-    })
+  if (storeCurrentRevenue?.discountedMonthlyRevenue < planRevenueLimitBySubscription) {
+    return;
   }
+
+  // Send the event to Mantle
+  await sendUsageEventToMantle({
+    session,
+    eventName: "threshold_reached_100",
+    properties: { 'Order ID': payload.id, 'Revenue': storeCurrentRevenue?.discountedMonthlyRevenue }
+  });
 
   // Record threshold 100 order revenue
   await setOrUpdateOption({

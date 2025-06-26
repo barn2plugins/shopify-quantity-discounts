@@ -254,7 +254,7 @@ export const trackBundlePrioritiesEvent = async ({session, totalBundles}) => {
  * @param {Object} params - The parameters object
  * @param {Object} params.session - The session object containing shop information
  */
-export const trackOrderReceiveEvent = async ({session, order}) => {
+export const trackOrderReceiveOnMixpanel = async ({session, order}) => {
   const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN);
 
   mp.track('Bundle order received', {

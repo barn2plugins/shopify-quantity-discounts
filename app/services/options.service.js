@@ -5,6 +5,7 @@ export async function setOrUpdateOption(params) {
   try {
     return await await setOption(params);
   } catch (error) {
+    console.log(error.message);
     return { 
       success: false,
       error: error.message,
@@ -17,6 +18,7 @@ export async function getOptionValue({storeId, key}) {
   try {
     return await getOption({storeId, key})
   } catch (error) {
+    console.log(error.message);
     return { 
       success: false,
       error: error.message,
@@ -29,6 +31,7 @@ export async function getOptionValueForDateRange(params) {
   try {
     return await getOptionForDateRange(params)
   } catch (error) {
+    console.log(error.message);
     return { 
       success: false,
       error: error.message,

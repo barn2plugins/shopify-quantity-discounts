@@ -13,8 +13,10 @@ export async function setOption({sessionId, storeId, key, value}) {
   // First, try to find the existing record
   const existingOption = await prisma.options.findUnique({
     where: {
-      storeId,
-      key
+      storeId_key: {
+        storeId,
+        key
+      }
     }
   });
 
@@ -22,8 +24,10 @@ export async function setOption({sessionId, storeId, key, value}) {
     // Update the existing record
     return await prisma.options.update({
       where: {
-        storeId,
-        key
+        storeId_key: {
+          storeId,
+          key
+        }
       },
       data: {
         value,
@@ -52,8 +56,10 @@ export async function setOption({sessionId, storeId, key, value}) {
 export async function getOption({storeId, key}) {
   const option = await prisma.options.findUnique({
     where: {
-      storeId,
-      key
+      storeId_key: {
+        storeId,
+        key
+      }
     }
   })
   if (option) {
@@ -73,7 +79,7 @@ export async function getOption({storeId, key}) {
  * @returns {Promise<string|null>} The option value if found, null otherwise
  */
 export async function getOptionForDateRange({storeId, key, startDate, endDate}) {
-  const option = await prisma.options.findUnique({
+  const option = await prisma.options.findFirst({
     where: {
       storeId,
       key,
