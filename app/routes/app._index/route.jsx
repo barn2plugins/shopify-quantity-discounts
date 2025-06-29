@@ -67,6 +67,7 @@ export const action = async ({ request }) => {
     // Get the store details for this session
     const store = await getStoreDetails(session.id, {
       id: true,
+      moneyFormat: true,
       createdAt: true
     });
     const mantleCustomer = await getMantleCustomer({session});
@@ -82,7 +83,8 @@ export const action = async ({ request }) => {
     const analyticsData = getStoreAnalyticsData({orderAnalyticsData, analyticsDateRange});
     
     return {
-      analyticsData
+      analyticsData,
+      moneyFormat: store?.moneyFormat || "${{amount}}"
     }
   }
 
@@ -97,6 +99,7 @@ export default function Index() {
 
   const { discountBundles, bundlesDiscountsExtensionId, pagination } = useLoaderData();
   const [ isAppEmbedDisabled, setIsAppEmbedDisabled ] = useState(false);
+  const [ moneyFormat, setMoneyFormat ] = useState("${{amount}}");
 
   const [ bundles, setBundles ] = useState(discountBundles || []);
   const [ bundlesPagination, setBundlesPagination ] = useState(pagination || {});
@@ -127,6 +130,7 @@ export default function Index() {
     if (analyticsFetcher.data?.analyticsData) {
       setAnalyticsDataLoaded(true);
       setAnalyticsData(analyticsFetcher.data?.analyticsData);
+      setMoneyFormat(analyticsFetcher.data?.moneyFormat);
     }
     if (storeStatusFetcher.data?.shouldLimitFeatures) {
       setShouldLimitFeatures(storeStatusFetcher.data?.shouldLimitFeatures === true)
@@ -193,7 +197,7 @@ export default function Index() {
             <BlockStack gap={500}>
               { bundles.length > 0 && isAppEmbedDisabled && <AppBlockEmbed bundlesDiscountsExtensionId={bundlesDiscountsExtensionId} />}
               {!analyticsDataLoaded && <DiscountAnalyticsSkeleton/>}
-              {analyticsDataLoaded && <DiscountAnalytics analyticsData={analyticsData}/>}
+              {analyticsDataLoaded && <DiscountAnalytics analyticsData={analyticsData} moneyFormat={moneyFormat}/>}
               <BlockStack gap="1000">
                 <DiscountBundlesTable 
                   fetcher={fetcher} 

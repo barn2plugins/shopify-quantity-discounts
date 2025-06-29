@@ -8,14 +8,16 @@ import {
 
 import {InfoIcon} from '@shopify/polaris-icons';
 
-function DataCard({data}) {
+import { displayFormattedPrice } from '../../../utils/utils';
+
+function DataCard({data, moneyFormat}) {
   
   const printAmount = () => {
     if (data.title.toLowerCase().includes('orders')) {
       return data.amount || 0;
     } else {
       const amount = parseFloat(data.amount) || 0;
-      return `$${amount.toFixed(2)}`;
+      return displayFormattedPrice(moneyFormat, amount);
     }
   }
 

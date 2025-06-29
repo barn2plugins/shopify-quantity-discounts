@@ -8,7 +8,7 @@ import {
 
 // Internal components and libraries
 import DataCard from "./DataCard";
-export default function DiscountAnalytics({analyticsData}) {
+export default function DiscountAnalytics({analyticsData, moneyFormat}) {
   
   return (
     <Layout>
@@ -20,10 +20,10 @@ export default function DiscountAnalytics({analyticsData}) {
                 <Box>
                   <div className="analytics-card-boxes">
                     <div className="analytics-card-box analytics-card-box-first">
-                      <DataCard data={analyticsData.discountedMonthlyOrders}/>
+                      <DataCard data={analyticsData.discountedMonthlyOrders} moneyFormat={moneyFormat}/>
                     </div>
                     <div className="analytics-card-box analytics-card-box-last">
-                      <DataCard data={analyticsData.discountedAllTimeOrders}/>
+                      <DataCard data={analyticsData.discountedAllTimeOrders} moneyFormat={moneyFormat}/>
                     </div>
                   </div>
                 </Box>
@@ -34,10 +34,10 @@ export default function DiscountAnalytics({analyticsData}) {
                 <Box>
                   <div className="analytics-card-boxes">
                     <div className="analytics-card-box analytics-card-box-first">
-                      <DataCard data={analyticsData.discountedMonthlyRevenue}/>
+                      <DataCard data={analyticsData.discountedMonthlyRevenue} moneyFormat={moneyFormat}/>
                     </div>
                     <div className="analytics-card-box analytics-card-box-last">
-                      <DataCard data={analyticsData.discountedAllTimeRevenue}/>
+                      <DataCard data={analyticsData.discountedAllTimeRevenue} moneyFormat={moneyFormat}/>
                     </div>
                   </div>
                 </Box>
