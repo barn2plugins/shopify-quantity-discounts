@@ -16,11 +16,13 @@ export default function PricingBlock({
   plans,
   currentSubscription,
   setCurrentSubscription,
+  shopify,
   discount,
   client,
   defaultPlans, 
   loading, 
   setLoading,
+  isPartnerDevelopment
 }) {
   const [pressedButtonIndex, setPressedButtonIndex] = useState(0);
   const handleBilling = async (plan, index) => {
@@ -31,13 +33,14 @@ export default function PricingBlock({
     const subscribe = await client.subscribe({
       planId: plan.id,
       discountId: discount?.id,
+      test: isPartnerDevelopment,
       returnUrl: '/app'
     });
     
     setLoading(false);
 
     if (subscribe.error) {
-      console.error('Unable to subscribe: ', subscribe.error);
+      shopify.toast.show('Unable to subscribe', {isError: true});
     } else if(subscribe?.confirmationUrl) {
       open(subscribe.confirmationUrl, "_top");
     } else if(subscribe.active) {
