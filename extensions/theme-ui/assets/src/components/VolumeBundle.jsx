@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import classNames from 'classnames/dedupe';
-import { updateOrCreateInput } from '../utils';
+import { updateOrCreateInput, displayFormattedPrice } from '../utils';
 
 export default function VolumeBundle({
   bundleData, 
@@ -18,14 +18,6 @@ export default function VolumeBundle({
   const selectedVariantsRef = useRef(selectedVariants);
   const selectedBundleRef = useRef(selectedBundle);
 
-  const displayFormattedPrice = (price) => {
-    const formattedPrice = typeof price === 'number' ? 
-      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
-      price;
-
-    return storeDetails.moneyFormat.replace('{{amount}}', formattedPrice);
-  } 
-
   /**
    * Generates formatted discount text based on the bundle's discount type and value.
    * 
@@ -37,7 +29,7 @@ export default function VolumeBundle({
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(bundle.discount)}</span>
+      outputText = <span>Save {displayFormattedPrice(storeDetails?.moneyFormat, bundle.discount)}</span>
     } else {
       outputText = <span>Save {bundle.discount}%</span>
     }
@@ -104,7 +96,7 @@ export default function VolumeBundle({
     // Fix to 2 decimal places and ensure it's a number
     const priceWithFixedDecimal = Number(numericPrice.toFixed(2));
 
-    return displayFormattedPrice(priceWithFixedDecimal);
+    return displayFormattedPrice(storeDetails?.moneyFormat, priceWithFixedDecimal);
   }
 
   /**

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { unHideQuantityAndVariantBlocks, updateOrCreateInput } from '../utils'
+import { unHideQuantityAndVariantBlocks, updateOrCreateInput, displayFormattedPrice } from '../utils'
 
 export default function BulkPricing({
   bundleData, 
@@ -36,7 +36,7 @@ export default function BulkPricing({
     if ( pricingTier.discount_type === 'percentage' ) {
       text = pricingTier.discount + '% off';
     } else {
-      text = displayFormattedPrice(pricingTier.discount) + ' off';
+      text = displayFormattedPrice(storeDetails?.moneyFormat, pricingTier.discount) + ' off';
     }
 
     return <span className="b2-pricing-tier-discount">{text}</span>
@@ -67,14 +67,6 @@ export default function BulkPricing({
     }
 
     return Math.max(0, finalPrice.toFixed(2));
-  }
-
-  const displayFormattedPrice = (price) => {
-    const formattedPrice = typeof price === 'number' ? 
-      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
-      price;
-
-    return storeDetails.moneyFormat.replace('{{amount}}', formattedPrice);
   }
 
   /**
@@ -147,7 +139,7 @@ export default function BulkPricing({
                 <tr key={index}>
                   <td>{pricingTier.min_quantity}-{pricingTier.max_quantity}</td>
                   <td><span className="discount-pill">{getTierDiscountText(pricingTier)}</span></td>
-                  <td>{displayFormattedPrice(getDiscountedPrice(pricingTier))}</td>
+                  <td>{displayFormattedPrice(storeDetails?.moneyFormat, getDiscountedPrice(pricingTier))}</td>
                 </tr>
               )
             } ) }

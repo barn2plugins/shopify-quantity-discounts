@@ -1,34 +1,26 @@
 import { InlineGrid, BlockStack, Text } from '@shopify/polaris';
-import {currencyCodeToSymbol} from '../../utils/utils';
+import {displayFormattedPrice} from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames/dedupe';
 
 export default function VolumeBundlePreview({ formState, volumeBundles, store }) {
   const [selectedBundle, setSelectedBundle] = useState(null);
 
-  const demoProductPrice = 50;
-
-  const displayFormattedPrice = (price) => {
-    const formattedPrice = typeof price === 'number' ? 
-      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
-      price;
-
-    return store.moneyFormat.replace('{{amount}}', formattedPrice);
-  }
+  const demoProductPrice = 50.00;
 
   const displayCalculatedPrice = ( bundle ) => {
     if ( bundle.discount_type === 'amount' ) {
       const price = (bundle.quantity * demoProductPrice) - bundle.discount;
-      return displayFormattedPrice(price);
+      return displayFormattedPrice(store?.moneyFormat, price);
     } else if ( bundle.discount_type === 'percentage' ) {
       const totalPrice = bundle.quantity * demoProductPrice;
       const discountAmount = (totalPrice * bundle.discount) / 100;
-      return displayFormattedPrice(totalPrice - discountAmount);
+      return displayFormattedPrice(store?.moneyFormat, totalPrice - discountAmount);
     }
   }
 
   const displayOriginalPrice = ( bundle ) => {
-    return displayFormattedPrice(bundle.quantity * demoProductPrice)
+    return displayFormattedPrice(store?.moneyFormat, bundle.quantity * demoProductPrice)
   }
   
   /**
@@ -42,7 +34,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     let outputText = ''
 
     if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(bundle.discount)}</span>
+      outputText = <span>Save {displayFormattedPrice(store?.moneyFormat, bundle.discount)}</span>
     } else {
       outputText = <span>Save {bundle.discount}%</span>
     }

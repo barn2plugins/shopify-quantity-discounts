@@ -681,3 +681,66 @@ export const getDateRangeForAnalytics = ({subscription, store}) => {
     endDate
   }
 }
+
+/**
+ * Formats a price value according to a specified money format pattern.
+ */
+export const displayFormattedPrice = (moneyFormat, price) => {
+  const numericPrice = typeof price === 'number' ? price : parseFloat(price);
+  
+  if (isNaN(numericPrice)) return price;
+  
+  const formatters = {
+    '{{amount}}': () => 
+      numericPrice % 1 === 0 ? numericPrice.toString() : numericPrice.toFixed(2),
+    
+    '{{amount_no_decimals}}': () => 
+      Math.round(numericPrice).toString(),
+    
+    '{{amount_with_comma_separator}}': () => {
+      const formatted = numericPrice % 1 === 0 ? 
+        numericPrice.toString() : numericPrice.toFixed(2);
+      return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    
+    '{{amount_no_decimals_with_comma_separator}}': () => {
+      const rounded = Math.round(numericPrice).toString();
+      return rounded.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    
+    '{{amount_with_apostrophe_separator}}': () => {
+      const formatted = numericPrice % 1 === 0 ? 
+        numericPrice.toString() : numericPrice.toFixed(2);
+      return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+    },
+    
+    '{{amount_no_decimals_with_space_separator}}': () => {
+      const rounded = Math.round(numericPrice).toString();
+      return rounded.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    },
+    
+    '{{amount_with_space_separator}}': () => {
+      const formatted = numericPrice % 1 === 0 ? 
+        numericPrice.toString() : numericPrice.toFixed(2);
+      return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    },
+    
+    '{{amount_with_period_and_space_separator}}': () => {
+      const formatted = numericPrice % 1 === 0 ? 
+        numericPrice.toString() : numericPrice.toFixed(2);
+      return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, '. ');
+    }
+  };
+  
+  // Find which format is being used
+  for (const [placeholder, formatter] of Object.entries(formatters)) {
+    if (moneyFormat.includes(placeholder)) {
+      return moneyFormat.replace(placeholder, formatter());
+    }
+  }
+  
+  // Fallback to original logic if no match found
+  const formattedPrice = numericPrice % 1 === 0 ? 
+    numericPrice.toString() : numericPrice.toFixed(2);
+  return moneyFormat.replace('{{amount}}', formattedPrice);
+};

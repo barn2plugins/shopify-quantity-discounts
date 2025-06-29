@@ -1,5 +1,7 @@
+import {displayFormattedPrice} from '../../utils/utils';
+
 export default function BulkPricingPreview({ formState, pricingTiers, store }) {
-  const demoProductPrice = 50;
+  const demoProductPrice = 50.00;
 
   /**
    * Generates formatted discount text based on the pricing tier's discount type and value
@@ -15,18 +17,10 @@ export default function BulkPricingPreview({ formState, pricingTiers, store }) {
     if ( pricingTier.discount_type === 'percentage' ) {
       text = pricingTier.discount + '% off';
     } else {
-      text = displayFormattedPrice(pricingTier.discount) + ' off';
+      text = displayFormattedPrice(store?.moneyFormat, pricingTier.discount) + ' off';
     }
 
     return <span className="b2-pricing-tier-discount">{text}</span>
-  }
-
-  const displayFormattedPrice = (price) => {
-    const formattedPrice = typeof price === 'number' ? 
-      (price % 1 === 0 ? price.toString() : price.toFixed(2)) : 
-      price;
-
-    return store.moneyFormat.replace('{{amount}}', formattedPrice);
   }
 
   const getPrice = () => {
@@ -84,7 +78,7 @@ export default function BulkPricingPreview({ formState, pricingTiers, store }) {
                 <tr key={index}>
                   <td>{pricingTier.min_quantity}-{pricingTier.max_quantity}</td>
                   <td><span className="discount-pill">{getTierDiscountText(pricingTier)}</span></td>
-                  <td>{displayFormattedPrice(getDiscountedPrice(pricingTier))}</td>
+                  <td>{displayFormattedPrice(store?.moneyFormat, getDiscountedPrice(pricingTier))}</td>
                 </tr>
               )
             } ) }
