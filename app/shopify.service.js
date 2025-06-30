@@ -99,10 +99,8 @@ export const saveStoreDetails = async ({sessionId, storeData, volumeDiscountFunc
  * Creates a Shopify automatic discount for the store
  */
 export async function createShopifyVolumeDiscount({admin, volumeDiscountFunctionId, storeData}) {
-  // Get store timezone
-  const storeTimezone = storeData.data.shop.ianaTimezone;
   // Create today's date in store's timezone
-  const today = new Date().toLocaleString('en-US', { timeZone: storeTimezone });
+  const today = new Date().toLocaleString('en-US');
   const startsAt = new Date(today);
 
   const response = await admin.graphql(

@@ -109,7 +109,7 @@ export function run(input) {
     const discountCampaignName = firstItem?._barn2_discount_campaign_name?.value;
     const volumeBundles = JSON.parse(firstItem?._barn2_discount_volume_bundles?.value) || [];
 
-    // Find the applicable pricing tier based on total quantity
+    // Find the applicable volume discount based on total quantity
     const applicableBundle = volumeBundles.find(bundle => 
       group.totalQuantity === parseInt(bundle.quantity)
     );
@@ -137,8 +137,6 @@ export function run(input) {
       value: discountAmount.value,
       message: discountCampaignName
     });
-
-    break;
   }
 
   /**
