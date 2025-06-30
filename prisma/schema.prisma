@@ -105,7 +105,7 @@ model Subscription {
 model OrderAnalytics {
   id                   Int      @id @default(autoincrement())
   storeId              Int
-  orderId              BigInt
+  orderId              BigInt   @unique
   lineItems            String
   discountedOrderValue Decimal? @db.Decimal(10, 2)
   createdAt            DateTime @default(now())

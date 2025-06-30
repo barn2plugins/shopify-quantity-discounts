@@ -1,5 +1,13 @@
 import { findDiscountBundlesByNames } from "../services/bundle.service";
-import { saveOrderAnalytics, getStoreCurrentRevenue, trackFirstOrderReceivedOnMantle, trackOrderReceivedOnMantle, track75ThresholdOnMantle, track100ThresholdOnMantle } from "../services/analytics.service";
+import { 
+  orderExists,
+  saveOrderAnalytics, 
+  getStoreCurrentRevenue, 
+  trackFirstOrderReceivedOnMantle, 
+  trackOrderReceivedOnMantle, 
+  track75ThresholdOnMantle, 
+  track100ThresholdOnMantle 
+} from "../services/analytics.service";
 import { authenticate } from "../shopify.server";
 import { trackOrderReceiveOnMixpanel } from "../services/mixpanel.service"
 import { getStoreDetails } from "../services/store.service";
@@ -40,6 +48,12 @@ export const action = async ({ request }) => {
   const { parsedLineItems, discountedOrderValue, hasValidOrder } = processOrderLineItems(lineItems);
 
   if (!hasValidOrder) {
+    return new Response();
+  }
+
+  const orderExistsResponse = await orderExists({orderId: payload.id, sessionId: session?.id});
+
+  if (orderExistsResponse.success && orderExistsResponse.exists) {
     return new Response();
   }
 

@@ -1,5 +1,16 @@
 import prisma from "../db.server"
 
+export const doesOrderExist = async ({sessionId, orderId}) => {
+  return await prisma.orderAnalytics.findUnique({
+    where: {
+      store: {
+        sessionId
+      },
+      orderId: BigInt(orderId)
+    }
+  });
+}
+
 /**
  * Creates multiple order analytics records in a single transaction
  * @param {Object} params - The parameters object

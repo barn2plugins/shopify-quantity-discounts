@@ -33,7 +33,6 @@ export default function PricingBlock({
     const subscribe = await client.subscribe({
       planId: plan.id,
       discountId: discount?.id,
-      test: isPartnerDevelopment,
       returnUrl: '/app'
     });
     

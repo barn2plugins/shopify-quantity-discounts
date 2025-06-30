@@ -1,4 +1,5 @@
 import { 
+  doesOrderExist,
   createOrderAnalytics, 
   getCurrentMonthsOrderNumbers,
   getAllTimeOrderNumbers,
@@ -8,6 +9,21 @@ import {
 
 import { getOptionValue, getOptionValueForDateRange, setOrUpdateOption } from "./options.service";
 import { sendUsageEventToMantle } from "./mantle.service"
+
+export const orderExists = async (params) => {
+  try {
+    const exists = await doesOrderExist(params);
+    return {
+      success: true,
+      exists
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
 
 /**
  * Saves order analytics data and handles any errors that occur
