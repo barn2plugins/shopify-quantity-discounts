@@ -36,7 +36,7 @@ export const trackInstalledEvent = async ({session, storeData}) => {
     'Timezone': storeData?.data?.shop?.ianaTimezone,
     'Development store': storeData?.data?.shop?.partnerDevelopment ? 'Yes' : 'No',
     'Currency code': storeData?.data?.shop?.currencyCode,
-    'Money format': storeData?.data?.shop?.moneyFormat,
+    'Money format': storeData?.data?.shop?.currencyFormats?.moneyFormat,
     'Install date': new Date().toISOString(),
     'App version': process.env.APP_VERSION || '1.0.0',
   });
