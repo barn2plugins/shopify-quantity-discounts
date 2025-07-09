@@ -1,7 +1,7 @@
 import prisma from "../db.server"
 import { MantleClient } from "@heymantle/client"
 
-export const identifyCustomerOnMantle = async ({platformId, session}) => {
+export const identifyCustomerOnMantle = async ({session, storeData}) => {
   try {
     const mantleClient = new MantleClient({
       appId: process.env.MANTLE_APP_ID,
@@ -10,9 +10,14 @@ export const identifyCustomerOnMantle = async ({platformId, session}) => {
 
     const identifyResponse = await mantleClient.identify({
       platform: "shopify",
-      platformId,
+      platformId: storeData?.data?.shop?.id,
       myshopifyDomain: session.shop,
       accessToken: session.accessToken,
+      name: storeData?.data?.shop?.shopOwnerName,
+      email: storeData?.data?.shop?.email,
+      customerEmail: storeData?.data?.shop?.contactEmail || storeData?.data?.shop?.email,
+      createdAt: storeData?.data?.shop?.createdAt,
+      plan: storeData?.data?.shop?.plan?.displayName
     });
 
     const mantleApiToken = identifyResponse?.apiToken;

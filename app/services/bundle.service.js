@@ -9,6 +9,8 @@ import {
   finyManyByNames,
   getLatestDiscount
 } from '../models/Discount.server';
+import { getOptionValue, setOrUpdateOption } from "./options.service";
+import { sendUsageEventToMantle } from "./mantle.service"
 
 /**
  * Gets default bundle configuration with store-specific settings
@@ -496,4 +498,34 @@ export async function findDiscountBundlesByNames({nameOfDiscountApplications, se
       displayError: 'Failed to find bundles'
     }
   }
+}
+
+/**
+ * Tracks the first order received event and updates the store option
+ * @param {Object} params - The parameters object
+ * @param {Object} params.session - The session object
+ * @param {Object} params.store - The store object with id
+ * @returns {Promise<void>}
+ */
+export async function trackFirstDiscountCreatedEvent({ session, store }) {
+  // Check if this is the first order received
+  const hasCreatedDiscount = await getOptionValue({ storeId: store.id, key: 'has_created_discount' });
+
+  if (hasCreatedDiscount) {
+    return;
+  }
+
+  // Send the event to Mantle
+  await sendUsageEventToMantle({
+    session, 
+    eventName: 'has_created_discount',
+  });
+
+  // Record first order received in the store
+  await setOrUpdateOption({
+    sessionId: session.id, 
+    storeId: store.id,
+    key: 'has_created_discount', 
+    value: 'true'
+  });
 }

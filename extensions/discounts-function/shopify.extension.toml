@@ -3,6 +3,7 @@ api_version = "2025-01"
 [[extensions]]
 name = "Barn2 Bundles & Bulk Discounts Function"
 handle = "barn2-bundles-and-bulk-discounts-function"
+uid = "920d16c6-9a98-63aa-a8ad-fd5c93f1d590b7541faa"
 type = "function"
 
 description = "t:description"

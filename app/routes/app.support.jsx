@@ -1,4 +1,5 @@
 // External libraries and components
+import { useAppBridge } from '@shopify/app-bridge-react';
 import {
   Page,
   Card,
@@ -23,6 +24,16 @@ export default function SupportPage() {
 
   const openDocumentationPage = () => {
     const documentationUrl = 'https://barn2.com/kb-categories/barn2-bundles-discounts-documentation/'
+    window.open(documentationUrl, '_blank');
+  }
+
+  const handleReview = async () => {
+    const documentationUrl = 'https://apps.shopify.com/barn2-bundles-bulk-discounts'
+    window.open(documentationUrl, '_blank');
+  }
+
+  const handleGettingStartedVideo = async () => {
+    const documentationUrl = 'https://www.youtube.com/watch?v=yVnCUdLAkek'
     window.open(documentationUrl, '_blank');
   }
 
@@ -56,7 +67,7 @@ export default function SupportPage() {
                   </Text>
                   <ButtonGroup>
                     <Button onClick={() => openDocumentationPage()}>Documentation</Button>
-                    <Button>Getting started video</Button>
+                    <Button onClick={() => handleGettingStartedVideo()}>Getting started video</Button>
                   </ButtonGroup>
                 </BlockStack>
             </BlockStack>
@@ -71,7 +82,7 @@ export default function SupportPage() {
                     Your feedback helps others discover the app and supports ongoing improvements. We’d love to hear what you think.
                   </Text>
                   <InlineStack>
-                    <Button>Add a review</Button>
+                    <Button onClick={handleReview}>Add a review</Button>
                   </InlineStack>
                 </BlockStack>
             </BlockStack>

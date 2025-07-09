@@ -9,7 +9,7 @@ import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 
 // Internal services and components
 import { authenticate } from "../shopify.server"
-import { getDefaultBundle, createBundle } from "../services/bundle.service";
+import { getDefaultBundle, createBundle, trackFirstDiscountCreatedEvent } from "../services/bundle.service";
 import { getStoreDetails } from "../services/store.service";
 import { trackBundleCreateEvent } from "../services/mixpanel.service";
 
@@ -74,6 +74,8 @@ export const action = async ({ request }) => {
     if (!store) return null;
 
     const discountBundle = await createBundle({ admin, store, fetcherData });
+
+    await trackFirstDiscountCreatedEvent({session, store});
 
     if (discountBundle?.success === false) {
       return null;

@@ -68,16 +68,18 @@ const shopify = shopifyApp({
       }
 
       try {
-        setUserOnMixpanel({session, storeData});
+        // Identify customer on Mantle
+        await identifyCustomerOnMantle({session, storeData});
+
+        await setUserOnMixpanel({session, storeData});
         
         // Record first install event for the user
-        trackInstalledEvent({session, storeData});
+        await trackInstalledEvent({session, storeData});
 
       } catch (error) {
-        console.error('Error tracking user installed event on Mixpanel:', error);
+        console.log('Error tracking user installed event on Mixpanel:', error);
       }
 
-      await identifyCustomerOnMantle({platformId: storeData.data.shop.id, session});
     },
   },
   future: {

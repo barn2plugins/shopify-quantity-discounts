@@ -10,10 +10,12 @@ export const fetchStoreDetails = async (admin) => {
             id
             name
             email
+            contactEmail
             shopOwnerName
             currencyCode
             ianaTimezone
             url
+            createdAt
             plan {
                 displayName
                 partnerDevelopment
