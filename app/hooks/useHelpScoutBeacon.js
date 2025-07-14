@@ -13,7 +13,10 @@ export const useHelpScoutBeacon = (beaconId, userInfo) => {
     window.Beacon('identify', {
       email: userInfo?.email,
       name: userInfo?.name || '',
-      company: userInfo?.company || ''
+      company: userInfo?.company || '',
+      'Shopify-Shop': userInfo?.shopName || '',
+      'Shopify-URL': userInfo?.shopifyURL || '',
+      'Shopify-Plan': userInfo?.shopifyPlan || '',
     });
   }
 

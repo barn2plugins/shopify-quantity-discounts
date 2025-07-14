@@ -35,6 +35,9 @@ export const loader = async ({ request }) => {
   const store = await getStoreDetails(session.id, { 
     isPartnerDevelopment: true,
     shopOwnerName: true,
+    storeName: true,
+    url: true,
+    planDisplayName: true,
     session: {
       select: {
         email: true
@@ -48,7 +51,10 @@ export const loader = async ({ request }) => {
     helpScoutBeaconId,
     userData: {
       email: store?.session?.email,
-      name: store?.shopOwnerName
+      name: store?.shopOwnerName,
+      shopName: store?.storeName,
+      shopifyURL: store?.url,
+      shopifyPlan: store?.planDisplayName,
     }
   };
 };

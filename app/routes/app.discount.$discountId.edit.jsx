@@ -55,7 +55,7 @@ export const loader = async ({ request, params }) => {
   
   return { 
     discountBundle: parsedDiscountBundle, 
-    isSubscribed: hasActivePayment,
+    isSubscribed: true,
     appEmbedPopupDisplayed: appEmbedPopupDisplayed === 'true',
     store: {
       currencyCode: store?.currency || '$',

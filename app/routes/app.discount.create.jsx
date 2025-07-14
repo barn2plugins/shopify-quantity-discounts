@@ -35,10 +35,9 @@ export const loader = async ({ request }) => {
 
   const defaultBundle = await getDefaultBundle({sessionId: session.id, timezone: store?.ianaTimezone});
 
-  
   return {
     defaultBundle,
-    isSubscribed: hasActivePayment,
+    isSubscribed: true,
     store: {
       currencyCode: store?.currency || '$',
       ianaTimezone: store?.ianaTimezone || 'UTC',
