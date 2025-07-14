@@ -91,7 +91,12 @@ export async function updateStoreMetafieldForVolumeDiscount({admin, shopifyShopI
  * @returns {Promise<boolean|null>} Returns true if disabled, false if enabled, or null if error occurs
  */
 export async function isAppEmbedDisabled({admin, store}) {
-  const themeConfigData = await getThemeConfigData({admin, activeThemeGid: store?.activeThemeGid});
+  // Check if activeThemeGid exists and is valid
+  if (!store?.activeThemeGid) {
+    return null;
+  }
+
+  const themeConfigData = await getThemeConfigData({admin, activeThemeGid: store.activeThemeGid});
   if (themeConfigData === 'error') return null;
 
   return isBarn2AppEmbedDisabled(themeConfigData[0].body.content);
@@ -122,51 +127,76 @@ export async function getThemeConfigData({admin, activeThemeGid}) {
  * @returns {Promise<Array|'error'>} Array of theme file nodes containing file content and metadata, or 'error' if request fails
  */
 export async function fetchThemeFiles({admin, activeThemeGid, files}) {
-  const response = await admin.graphql(
-    `#graphql
-    query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
-      theme(id: $themeId) {
-        files(filenames: $filenames) {
-          nodes {
-            body {
-              ... on OnlineStoreThemeFileBodyBase64 {
-                contentBase64
-              }
-              ... on OnlineStoreThemeFileBodyText {
-                content
-              }
-              ... on OnlineStoreThemeFileBodyUrl {
-                url
-              }
-            }
-            checksumMd5
-            contentType
-            createdAt
-            filename
-            size
-            updatedAt
-          }
-          userErrors {
-            code
-            filename
-          }
-        }
-      }
-    }`,
-    {
-      variables: {
-        themeId: activeThemeGid,
-        filenames: files
-      }
-    }
-  );
-
-  const responseJson = await response.json();
-
-  const userErrors = responseJson.data.theme.files.userErrors;
-  if (userErrors.length > 0) {
+  // Validate that activeThemeGid is not null, undefined, or empty
+  if (!activeThemeGid || activeThemeGid.trim() === '') {
+    console.error('Invalid activeThemeGid provided:', activeThemeGid);
     return 'error';
   }
 
-  return responseJson.data.theme.files.nodes;
+  // Validate that files array is not empty
+  if (!files || files.length === 0) {
+    console.error('No files specified for theme file fetch');
+    return 'error';
+  }
+
+  try {
+    const response = await admin.graphql(
+      `#graphql
+      query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
+        theme(id: $themeId) {
+          files(filenames: $filenames) {
+            nodes {
+              body {
+                ... on OnlineStoreThemeFileBodyBase64 {
+                  contentBase64
+                }
+                ... on OnlineStoreThemeFileBodyText {
+                  content
+                }
+                ... on OnlineStoreThemeFileBodyUrl {
+                  url
+                }
+              }
+              checksumMd5
+              contentType
+              createdAt
+              filename
+              size
+              updatedAt
+            }
+            userErrors {
+              code
+              filename
+            }
+          }
+        }
+      }`,
+      {
+        variables: {
+          themeId: activeThemeGid,
+          filenames: files
+        }
+      }
+    );
+
+    const responseJson = await response.json();
+
+    // Check for GraphQL errors
+    if (responseJson.errors) {
+      console.error('GraphQL errors:', responseJson.errors);
+      return 'error';
+    }
+
+    // Check for user errors
+    const userErrors = responseJson.data?.theme?.files?.userErrors;
+    if (userErrors && userErrors.length > 0) {
+      console.error('User errors:', userErrors);
+      return 'error';
+    }
+
+    return responseJson.data?.theme?.files?.nodes || [];
+  } catch (error) {
+    console.error('Error fetching theme files:', error);
+    return 'error';
+  }
 }
