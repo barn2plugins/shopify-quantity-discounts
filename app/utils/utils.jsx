@@ -744,3 +744,22 @@ export const displayFormattedPrice = (moneyFormat, price) => {
     numericPrice.toString() : numericPrice.toFixed(2);
   return moneyFormat.replace('{{amount}}', formattedPrice);
 };
+
+/**
+ * Determines the current active plan name based on payment status and subscription data.
+ * 
+ * @param {boolean} hasActivePayment - Whether the user has an active payment subscription
+ * @param {Array<Object>} appSubscriptions - Array of app subscription objects with 'name' field
+ * @returns {string} The active plan name - "Starter" if no active payment, otherwise the name from the first subscription
+ */
+export const getCurrentActivePlanName = ({hasActivePayment, appSubscriptions}) => {
+  if (!hasActivePayment) {
+    return "Starter";
+  }
+  
+  if (appSubscriptions && appSubscriptions.length > 0) {
+    return appSubscriptions[0].name;
+  }
+  
+  return "Starter";
+};

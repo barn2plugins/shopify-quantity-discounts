@@ -17,18 +17,21 @@ import { authenticate } from "./shopify.server";
 import { getStoreDetails } from "./services/store.service.js";
 import { useHelpScoutBeacon } from "./hooks/useHelpScoutBeacon.js";
 import { deactivatePreviousAppSubscriptions } from "./services/subscription.service.js";
+import { getCurrentActivePlanName } from "./utils/utils.jsx";
 import './styles/app.scss';
 
 export const loader = async ({ request }) => {
   const { billing, session } = await authenticate.admin(request);
 
-  const {hasActivePayment} = await billing.check({
+  const {hasActivePayment, appSubscriptions} = await billing.check({
     plans: [PLANS.Starter_Monthly, PLANS.Growth_Monthly, PLANS.Pro_Monthly],
   });
 
   if (!hasActivePayment) {
     await deactivatePreviousAppSubscriptions({session});
   }
+
+  const currentPlanName = getCurrentActivePlanName({hasActivePayment, appSubscriptions});
 
   const helpScoutBeaconId = process.env.BEACON_ID;
   
@@ -54,7 +57,7 @@ export const loader = async ({ request }) => {
       name: store?.shopOwnerName,
       shopName: store?.storeName,
       shopifyURL: store?.url,
-      shopifyPlan: store?.planDisplayName,
+      shopifyPlan: currentPlanName,
     }
   };
 };
