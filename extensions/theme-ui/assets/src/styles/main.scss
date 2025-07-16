@@ -164,24 +164,6 @@
         flex-direction: column;
       }
 
-      &.selected {
-        background-color: var(--barn2-bundles-selected-color, #f1f1f1);
-        border-color: var(--barn2-bundles-selected-border-color, #616161);
-
-        .barn2-input-circle {
-          border-width: 2px;
-          border-color: var(--barn2-bundles-selected-border-color, #616161);
-        }
-
-        .barn2-dbs-bundle-title,
-        .barn2-dbs-price, 
-        .barn2-dbs-bundle-price,
-        .barn2-dbs-regular-price,
-        .barn2-dbs-text-block p {
-          color: var(--barn2-bundles-selected-text-color, #303030);
-        }
-      }
-
       .barn2-highlighted-text {
         position: absolute;
         background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));

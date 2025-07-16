@@ -1,6 +1,7 @@
 import { 
   BlockStack,
   Checkbox,
+  ChoiceList,
   Text,
   TextField,
 } from "@shopify/polaris";
@@ -21,6 +22,38 @@ export default function PreviewOptions({
   
   if ( formState.type === 'bulk_pricing' && formState.previewEnabled === false ) {
     return null;
+  }
+
+  // Backward compatibility: convert old boolean format to new string format
+  const getDisplaySavingValue = () => {
+    const currentValue = formState.previewOptions?.displaySaving;
+    const legacyAmountSaved = formState.previewOptions?.amountSaved;
+    
+    // If new format exists, use it
+    if (currentValue && typeof currentValue === 'string') {
+      return [currentValue];
+    }
+    
+    // Backward compatibility for legacy boolean format
+    if (typeof legacyAmountSaved === 'boolean') {
+      return [legacyAmountSaved ? 'percentage_saving' : 'none'];
+    }
+    
+    // Default to percentage_saving
+    return ['percentage_saving'];
+  }
+
+  const handleDisplaySavingChange = (value) => {
+    const selectedValue = value[0];
+    setFormState({
+      ...formState, 
+      previewOptions: {
+        ...formState.previewOptions, 
+        displaySaving: selectedValue,
+        // Keep legacy field for backward compatibility during transition
+        amountSaved: selectedValue === 'percentage_saving' || selectedValue === 'exact_saving'
+      }
+    });
   }
 
   return (
@@ -49,10 +82,15 @@ export default function PreviewOptions({
             />
 
             { hasDiscount && 
-              <Checkbox
-                label="Amount saved"
-                checked={formState.previewOptions?.amountSaved}
-                onChange={(value) => setFormState({...formState, previewOptions: {...formState.previewOptions, amountSaved: value}})}
+              <ChoiceList
+                title="Display saving"
+                choices={[
+                  {label: 'Percentage saving', value: 'percentage_saving'},
+                  {label: 'Exact saving', value: 'exact_saving'},
+                  {label: 'None', value: 'none'},
+                ]}
+                selected={getDisplaySavingValue()}
+                onChange={handleDisplaySavingChange}
               />
             }
           </BlockStack>

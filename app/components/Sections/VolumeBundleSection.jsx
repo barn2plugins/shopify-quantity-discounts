@@ -4,12 +4,12 @@ import {
   Text, 
   Button, 
   TextField, 
-  Checkbox, 
   InlineStack,
-  Box
+  Box,
+  RadioButton
 } from '@shopify/polaris';
 import { PlusIcon, DeleteIcon } from '@shopify/polaris-icons';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { getDefaultBundleDiscountTypes } from '../../utils/utils';
 
 // Internal components
@@ -54,6 +54,26 @@ export default function VolumeBundleSection({
       return newBundles;
     });
   };
+
+  const handleHighlightedVolume = useCallback((index, field, value) => {
+    setVolumeBundles(prev => {
+      // Create a new array with all bundles
+      const newBundles = [...prev];
+      
+      // First, set all bundles' highlighted property to false
+      newBundles.forEach(bundle => {
+        bundle.highlighted = false;
+      });
+      
+      // Then set the selected bundle's highlighted property to the new value
+      newBundles[index] = {
+        ...newBundles[index],
+        [field]: value
+      };
+      
+      return newBundles;
+    });
+  }, []);
 
   /**
    * Removes a volume bundle from the list at the specified index
@@ -183,9 +203,10 @@ export default function VolumeBundleSection({
                 </td>
                 <td className="cell_highlighted">
                   <InlineStack align="center">
-                    <Checkbox
+                    <RadioButton
+                      name="highlight_bundle"
                       checked={bundle.highlighted}
-                      onChange={(checked) => handleVolumeChange(index, 'highlighted', checked)}
+                      onChange={(checked) => handleHighlightedVolume(index, 'highlighted', checked)}
                     />
                   </InlineStack>
                 </td>

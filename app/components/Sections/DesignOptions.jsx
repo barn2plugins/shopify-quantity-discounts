@@ -103,45 +103,6 @@ export default function DesignOptions({ formState, setFormState }) {
             <Grid.Cell columnSpan={{xs: 6}}>
               <BlockStack gap={400}>
                 <BlockStack gap={100}>
-                  <Text as="p" variant="bodyLg" fontWeight="medium">Selected text color</Text>
-                  <ColorField 
-                    onChange={updateDesignColorField} 
-                    value={formState?.customDesigns?.selectedTextColor || '#303030'} 
-                    field="selectedTextColor" 
-                  />
-                </BlockStack>
-              </BlockStack>
-            </Grid.Cell>
-            
-            <Grid.Cell columnSpan={{xs: 6}}>
-              <BlockStack gap={400}>
-                <BlockStack gap={100}>
-                  <Text as="p" variant="bodyLg" fontWeight="medium">Selected border color</Text>
-                  <ColorField 
-                    onChange={updateDesignColorField} 
-                    value={formState?.customDesigns?.selectedBorderColor || '#616161'} 
-                    field="selectedBorderColor" 
-                  />
-                </BlockStack>
-              </BlockStack>
-            </Grid.Cell>
-            
-            <Grid.Cell columnSpan={{xs: 6}}>
-              <BlockStack gap={400}>
-                <BlockStack gap={100}>
-                  <Text as="p" variant="bodyLg" fontWeight="medium">Selected background color</Text>
-                  <ColorField 
-                    onChange={updateDesignColorField} 
-                    value={formState?.customDesigns?.selectedColor || '#f1f1f1'} 
-                    field="selectedColor" 
-                  />
-                </BlockStack>
-              </BlockStack>
-            </Grid.Cell>
-            
-            <Grid.Cell columnSpan={{xs: 6}}>
-              <BlockStack gap={400}>
-                <BlockStack gap={100}>
                   <Text as="p" variant="bodyLg" fontWeight="medium">Highlighted background color</Text>
                   <ColorField 
                     onChange={updateDesignColorField} 

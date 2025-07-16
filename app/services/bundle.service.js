@@ -65,7 +65,8 @@ export async function getDefaultBundle({sessionId, timezone}) {
       title: 'Buy More, Save More',
       description: 'Time-limited offer!',
       showOriginalPrice: true,
-      amountSaved: true
+      displaySaving: 'percentage_saving',
+      amountSaved: true // Keeping it for backward compatibility
     }
   }
 }

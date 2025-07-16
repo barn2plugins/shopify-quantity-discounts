@@ -19,7 +19,47 @@ export default function VolumeBundle({
   const selectedBundleRef = useRef(selectedBundle);
 
   /**
-   * Generates formatted discount text based on the bundle's discount type and value.
+   * Determines if savings should be displayed based on new displaySaving field or legacy amountSaved field
+   * 
+   * @returns {boolean} Whether to show savings display
+   */
+  const shouldDisplaySaving = () => {
+    const displaySaving = previewOptions?.displaySaving;
+    const legacyAmountSaved = previewOptions?.amountSaved;
+    
+    // If new format exists, use it
+    if (displaySaving) {
+      return displaySaving !== 'none';
+    }
+    
+    // Backward compatibility for legacy boolean format
+    return legacyAmountSaved === true;
+  }
+
+  /**
+   * Gets the display saving mode (percentage_saving, exact_saving, or none)
+   * 
+   * @returns {string} The display saving mode
+   */
+  const getDisplaySavingMode = () => {
+    const displaySaving = previewOptions?.displaySaving;
+    const legacyAmountSaved = previewOptions?.amountSaved;
+    
+    // If new format exists, use it
+    if (displaySaving) {
+      return displaySaving;
+    }
+    
+    // Backward compatibility: if legacy was true, default to percentage_saving
+    if (legacyAmountSaved === true) {
+      return 'percentage_saving';
+    }
+    
+    return 'none';
+  }
+
+  /**
+   * Generates formatted discount text based on the bundle's discount type, value, and display mode.
    * 
    * @param {Object} bundle - The bundle object containing discount information
    * @param {string} bundle.discount_type - The type of discount ('amount' or 'percentage')
@@ -27,15 +67,35 @@ export default function VolumeBundle({
    */
   const discountText = (bundle) => {
     let outputText = ''
-
-    if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(storeDetails?.moneyFormat, bundle.discount)}</span>
-    } else {
-      outputText = <span>Save {bundle.discount}%</span>
-    }
+    const displayMode = getDisplaySavingMode();
 
     if (!bundle.discount) {
       outputText = <span>Regular price</span>
+      return outputText;
+    }
+
+    if (displayMode === 'exact_saving') {
+      // Show exact dollar amount saved
+      if (bundle.discount_type === 'amount') {
+        outputText = <span>Save {displayFormattedPrice(storeDetails?.moneyFormat, bundle.discount)}</span>
+      } else {
+        // Calculate exact amount for percentage discounts
+        const productPrice = getPrice(bundle);
+        const totalPrice = bundle.quantity * productPrice;
+        const discountAmount = (totalPrice * bundle.discount) / 100;
+        outputText = <span>Save {displayFormattedPrice(storeDetails?.moneyFormat, discountAmount)}</span>
+      }
+    } else if (displayMode === 'percentage_saving') {
+      // Show percentage (legacy behavior)
+      if (bundle.discount_type === 'amount') {
+        // Convert amount to percentage for display
+        const productPrice = getPrice(bundle);
+        const totalPrice = bundle.quantity * productPrice;
+        const percentage = ((bundle.discount / totalPrice) * 100).toFixed(0);
+        outputText = <span>Save {percentage}%</span>
+      } else {
+        outputText = <span>Save {bundle.discount}%</span>
+      }
     }
 
     return outputText;
@@ -196,6 +256,22 @@ export default function VolumeBundle({
     });
   }
 
+  /**
+   * Checks if a bundle should be highlighted based on selection state or bundle properties
+   * @param {Object} bundle - The bundle object
+   * @param {number} index - Bundle index in array
+   * @returns {boolean} True if bundle should be highlighted
+   */
+  const checkIsHighlightedOrSelected = (bundle) => {
+    // If a bundle is selected, only highlight the selected bundle
+    if (selectedBundle) {
+      return selectedBundle.id === bundle.id;
+    }
+    
+    // On initial load, check if bundle has highlighted property
+    return bundle.highlighted;
+  }
+
   useEffect(() => {
     // Find the highlighted bundle
     const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
@@ -340,7 +416,7 @@ export default function VolumeBundle({
         cleanup();
       }
     };
-  }, []); // Empty dependency array - runs only once
+  }, []);
 
   // Separate useEffect for updating UI based on selectedVariants
   useEffect(() => {
@@ -434,12 +510,11 @@ export default function VolumeBundle({
               className={classNames(
                 'barn2-discount-bundle',
                 {
-                  'highlighted': bundle.highlighted,
-                  'selected': isBundleSelected(bundle),
+                  'highlighted': checkIsHighlightedOrSelected(bundle),
                 }
               )}
               onClick={() => {
-                setSelectedBundle(bundle);
+                  setSelectedBundle(bundle);
                 if (selectedBundle?.id !== bundle?.id) {
                   updateProductQuantity(bundle.quantity);
                   updateProductVariantId();
@@ -452,7 +527,7 @@ export default function VolumeBundle({
                 <div className="barn2-dbs-text-block-wrapper">
                   <div className="barn2-dbs-text-block">
                     <h4 className="barn2-dbs-bundle-title">{bundle.description}</h4>
-                    { previewOptions.amountSaved && <p>{discountText(bundle)}</p> }
+                    { shouldDisplaySaving() && <p>{discountText(bundle)}</p> }
                   </div>
                   { bundleData.layout === 'horizontal' && isBundleSelected(bundle) && shopifyProductVariants.length > 1 && getVariantPickerBars() }
                 </div>

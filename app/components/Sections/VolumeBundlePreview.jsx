@@ -24,7 +24,47 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
   }
   
   /**
-   * Generates formatted discount text based on the bundle's discount type and value.
+   * Determines if savings should be displayed based on new displaySaving field or legacy amountSaved field
+   * 
+   * @returns {boolean} Whether to show savings display
+   */
+  const shouldDisplaySaving = () => {
+    const displaySaving = formState.previewOptions?.displaySaving;
+    const legacyAmountSaved = formState.previewOptions?.amountSaved;
+    
+    // If new format exists, use it
+    if (displaySaving) {
+      return displaySaving !== 'none';
+    }
+    
+    // Backward compatibility for legacy boolean format
+    return legacyAmountSaved === true;
+  }
+
+  /**
+   * Gets the display saving mode (percentage_saving, exact_saving, or none)
+   * 
+   * @returns {string} The display saving mode
+   */
+  const getDisplaySavingMode = () => {
+    const displaySaving = formState.previewOptions?.displaySaving;
+    const legacyAmountSaved = formState.previewOptions?.amountSaved;
+    
+    // If new format exists, use it
+    if (displaySaving) {
+      return displaySaving;
+    }
+    
+    // Backward compatibility: if legacy was true, default to percentage_saving
+    if (legacyAmountSaved === true) {
+      return 'percentage_saving';
+    }
+    
+    return 'none';
+  }
+
+  /**
+   * Generates formatted discount text based on the bundle's discount type, value, and display mode.
    * 
    * @param {Object} bundle - The bundle object containing discount information
    * @param {string} bundle.discount_type - The type of discount ('amount' or 'percentage')
@@ -32,18 +72,54 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
    */
   const discountText = (bundle) => {
     let outputText = ''
-
-    if ( bundle.discount_type === 'amount' ) {
-      outputText = <span>Save {displayFormattedPrice(store?.moneyFormat, bundle.discount)}</span>
-    } else {
-      outputText = <span>Save {bundle.discount}%</span>
-    }
+    const displayMode = getDisplaySavingMode();
 
     if (!bundle.discount) {
       outputText = <span>Regular price</span>
+      return outputText;
+    }
+
+    if (displayMode === 'exact_saving') {
+      // Show exact dollar amount saved
+      if (bundle.discount_type === 'amount') {
+        outputText = <span>Save {displayFormattedPrice(store?.moneyFormat, bundle.discount)}</span>
+      } else {
+        // Calculate exact amount for percentage discounts
+        const totalPrice = bundle.quantity * demoProductPrice;
+        const discountAmount = (totalPrice * bundle.discount) / 100;
+        outputText = <span>Save {displayFormattedPrice(store?.moneyFormat, discountAmount)}</span>
+      }
+    } else if (displayMode === 'percentage_saving') {
+      // Show percentage (legacy behavior)
+      if (bundle.discount_type === 'amount') {
+        // Convert amount to percentage for display
+        const totalPrice = bundle.quantity * demoProductPrice;
+        const percentage = ((bundle.discount / totalPrice) * 100).toFixed(0);
+        outputText = <span>Save {percentage}%</span>
+      } else {
+        outputText = <span>Save {bundle.discount}%</span>
+      }
     }
 
     return outputText;
+  }
+
+  /**
+   * Checks if a bundle should be highlighted based on selection state or bundle properties
+   * @param {Object} bundle - The bundle object
+   * @param {number} index - Bundle index in array
+   * @returns {boolean} True if bundle should be highlighted
+   */
+  const checkIsHighlightedOrSelected = (bundle, index) => {
+    if (typeof selectedBundle === 'number' && selectedBundle === index) {
+      return true;
+    }
+
+    if (typeof selectedBundle !== 'number' && bundle.highlighted) {
+      return true;
+    }
+
+    return false;
   }
 
   if (volumeBundles.length <= 0 || (formState.type === 'bulk_pricing' && formState.previewEnabled === false) ) {
@@ -70,8 +146,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                 className={classNames(
                   'bundle-single',
                   {
-                    'highlighted': bundle.highlighted,
-                    'selected': selectedBundle === index
+                    'highlighted': checkIsHighlightedOrSelected(bundle, index),
                   }
                 )}
                 onClick={(event) => setSelectedBundle(index)}
@@ -92,7 +167,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                     alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
                   }}>
                     <h4 className='bundle-title'>{bundle.description}</h4>
-                    { formState.previewOptions?.amountSaved && <p className="bundle-description">{ discountText(bundle) }</p> }
+                    { shouldDisplaySaving() && <p className="bundle-description">{ discountText(bundle) }</p> }
                   </BlockStack>
                 </BlockStack>
 
