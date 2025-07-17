@@ -3,8 +3,12 @@ import {displayFormattedPrice} from '../../utils/utils';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames/dedupe';
 
-export default function VolumeBundlePreview({ formState, volumeBundles, store }) {
+export default function VolumeBundlePreview({ formState, volumeBundles, store, productQueryFetcher }) {
+  const [demoProductOptions, setDemoProductOptions] = useState([]);
   const [selectedBundle, setSelectedBundle] = useState(null);
+  const [fetchedProduct, setFetchedProduct] = useState(null);
+  const [selectedVariants, setSelectedVariants] = useState([]);
+  const [demoProductVariants, setDemoProductVariants] = useState([]);
 
   const demoProductPrice = 50.00;
 
@@ -122,6 +126,149 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
     return false;
   }
 
+  const previewProduct = productQueryFetcher.data;
+
+  useEffect(() => {
+    if (previewProduct && !previewProduct.success) return;
+
+    setDemoProductOptions(previewProduct?.product?.options || []);
+    setDemoProductVariants(previewProduct?.product?.variants?.edges || []);
+
+  }, [previewProduct])
+
+  const fetchProducts = async () => {
+    try {
+      productQueryFetcher.submit(
+        {
+          intent: 'getProductWithVariations'
+        },
+        {
+          method: 'POST',
+          action: '/app/product-query'
+        }
+      )
+    } catch (error) {
+      console.error('Error fetching product:', error);
+    }
+  };
+
+  const getCurrentVariantValue = (barIndex, optionIndex) => {
+    if (!selectedVariants?.[barIndex]) return '';
+
+    const currentVariantOptions = selectedVariants[barIndex].options;
+    return currentVariantOptions?.[optionIndex] || '';
+  };
+
+  const setBundleSelectedVariants = (bundle) => {
+    if (!bundle || !demoProductVariants.length) return;
+    
+    // Get the first variant as default
+    const defaultVariant = demoProductVariants[0]?.node;
+    if (!defaultVariant) return;
+
+    // Create initial variant selections for the bundle quantity
+    const duplicatedSelections = Array.from({ length: bundle.quantity }, () => ({
+      available: defaultVariant.availableForSale,
+      id: defaultVariant.id,
+      options: defaultVariant.selectedOptions.map(option => option.value),
+      price: parseFloat(defaultVariant.price),
+    }));
+
+    setSelectedVariants(duplicatedSelections);
+  };
+
+  const handleVariantChange = (e, barIndex, optionIndex) => {
+    setSelectedVariants((prevSelectedVariants) => {
+      const updatedVariants = prevSelectedVariants.map((variant, index) => {
+        if (index === barIndex) {
+          return {
+            ...variant,
+            options: variant.options.map((opt, idx) => 
+              idx === optionIndex ? e.target.value : opt
+            )
+          };
+        }
+        return variant;
+      });
+                            
+      // Find matching variant from demoProductVariants
+      const matchingVariant = demoProductVariants.find(({ node }) => {
+        return node.selectedOptions.every((option, index) => 
+          option.value === updatedVariants[barIndex].options[index]
+        );
+      });
+
+      if (matchingVariant) {
+        // Update the variant info
+        updatedVariants[barIndex].id = matchingVariant.node.id;
+        updatedVariants[barIndex].available = matchingVariant.node.availableForSale;
+        updatedVariants[barIndex].price = parseFloat(matchingVariant.node.price);
+      }
+
+      return updatedVariants;
+    });
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Set highlighted bundle as selected on component mount
+  useEffect(() => {
+    if (volumeBundles.length > 0 && selectedBundle === null) {
+      const highlightedIndex = volumeBundles.findIndex(bundle => bundle.highlighted);
+      if (highlightedIndex !== -1) {
+        setSelectedBundle(highlightedIndex);
+      }
+    }
+  }, [volumeBundles, selectedBundle]);
+
+  // Initialize selected variants when a bundle is selected
+  useEffect(() => {
+    if (selectedBundle !== null && typeof selectedBundle === 'number') {
+      const bundle = volumeBundles[selectedBundle];
+      if (bundle) {
+        setBundleSelectedVariants(bundle);
+      }
+    }
+  }, [selectedBundle, volumeBundles, demoProductVariants]);
+
+  const getVariantPickerBars = (bundle) => {
+    if (!demoProductOptions.length || !bundle) return null;
+    
+    return (
+      <div className="variant-picker-bars">
+        {Array.from({ length: bundle.quantity }).map((_, barIndex) => (
+          <div key={barIndex} className="variant-bar">
+            <div 
+              className="variant-bar-content" 
+              data-variant-available={selectedVariants[barIndex]?.available}
+            >
+              <span className="variant-bar-number">{barIndex + 1}</span>
+              <div className={`variant-selects variant-count-${demoProductOptions.length}`}>
+                {demoProductOptions.map((option, optionIndex) => (
+                  <div className="variant-select" key={optionIndex}>
+                    <select
+                      value={getCurrentVariantValue(barIndex, optionIndex)}
+                      onChange={(e) => handleVariantChange(e, barIndex, optionIndex)}
+                    >
+                      {option.values.map((value, valueIndex) => (
+                        <option key={valueIndex} value={value}>{value}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {!selectedVariants[barIndex]?.available && (
+              <p className="variant-unavailable">Sorry, this is currently unavailable.</p>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   if (volumeBundles.length <= 0 || (formState.type === 'bulk_pricing' && formState.previewEnabled === false) ) {
     return null;
   }
@@ -149,7 +296,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                     'highlighted': checkIsHighlightedOrSelected(bundle, index),
                   }
                 )}
-                onClick={(event) => setSelectedBundle(index)}
+                onClick={() => setSelectedBundle(index)}
               >
                 { bundle.label.length > 0 && <span className="highlightedText">{bundle.label}</span>}
                 <BlockStack 
@@ -161,13 +308,26 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
                     <input type="radio" name="" id="" />
                     <span className="input-circle"></span>
                   </div>
-                  <BlockStack style={{
-                    gap: "5px",
-                    flexDirection: 'column',
-                    alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
-                  }}>
-                    <h4 className='bundle-title'>{bundle.description}</h4>
-                    { shouldDisplaySaving() && <p className="bundle-description">{ discountText(bundle) }</p> }
+                  <BlockStack  style={{
+                      gap: "5px",
+                      flexDirection: 'column',
+                      alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
+                    }}>
+                    <BlockStack style={{
+                      gap: "5px",
+                      flexDirection: 'column',
+                      alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
+                    }}>
+                      <h4 className='bundle-title'>{bundle.description}</h4>
+                      { shouldDisplaySaving() && <p className="bundle-description">{ discountText(bundle) }</p> }
+                    </BlockStack>
+                    <BlockStack>
+                      {formState.layout === 'horizontal' && 
+                        selectedBundle === index && 
+                        demoProductVariants.length > 1 && 
+                        getVariantPickerBars(bundle)
+                      }
+                    </BlockStack>
                   </BlockStack>
                 </BlockStack>
 
@@ -194,6 +354,15 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store })
             ) })}
         </InlineGrid>
       </div>
+
+      {/* Add variant picker bars for vertical layout */}
+      {formState.layout === 'vertical' && 
+       selectedBundle !== null && 
+       demoProductVariants.length > 1 && (
+        <div className="variant-bars-wrapper">
+          {getVariantPickerBars(volumeBundles[selectedBundle])}
+        </div>
+      )}
     </div>
   )
 }

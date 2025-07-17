@@ -125,6 +125,7 @@ export const action = async ({ request }) => {
 export default function DiscountPage() {
   const fetcher = useFetcher();
   const storeStatusFetcher = useFetcher();
+  const productQueryFetcher = useFetcher();
   const shopify = useAppBridge();
   const navigate = useNavigate();
   const { discountBundle, isSubscribed, appEmbedPopupDisplayed, store } = useLoaderData();
@@ -367,6 +368,7 @@ export default function DiscountPage() {
                 isLoading={isLoading}
                 hasUnsavedChanges={hasUnsavedChanges}
                 handleDiscard={handleDiscard}
+                productQueryFetcher={productQueryFetcher}
               />
             </div>
           </div>

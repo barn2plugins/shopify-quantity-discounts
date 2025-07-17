@@ -27,6 +27,7 @@ export default function Sidebar({
   handleDiscard,
   isLoading,
   hasUnsavedChanges,
+  productQueryFetcher
 }) {
 
   useEffect(() => {
@@ -95,6 +96,7 @@ export default function Sidebar({
                   setFormState={setFormState}
                   volumeBundles={volumeBundles}
                   store={store}
+                  productQueryFetcher={productQueryFetcher}
                 />
               }
 

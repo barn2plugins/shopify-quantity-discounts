@@ -567,8 +567,59 @@
   }
 }
 
+.variant-picker-bars {
+  margin-top: 20px;
+  .variant-bar {
+    .variant-bar-content {
+      display: flex;
+      margin-bottom: 8px;
+      align-items: self-start;
 
-// Style Components
+      .variant-bar-number {
+        background-color: #001;
+        height: 20px;
+        width: 20px;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        margin-right: 10px;
+        border-radius: 100px;
+        margin-top: 4px;
+      }
+
+      .variant-selects {
+        display: grid;
+        gap: 8px;
+
+        &.variant-count-2 {
+          grid-template-columns: 50% 50%;
+        }
+
+        select {
+          height: 27px;
+          width: 100%;
+          border: 1px solid rgba(0,0,0,.4);
+          padding: 2px 4px;
+          color: #6b6868;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+.variant-bars-wrapper {
+  border-top: 1px solid rgba(0,0,0,.4);
+  margin-top: 20px;
+
+  .variant-bar {
+    .variant-selects {
+      width: calc(100% - 40px);
+    }
+  }
+}
 
 // Toggle switcher
 .toggle-switcher {
