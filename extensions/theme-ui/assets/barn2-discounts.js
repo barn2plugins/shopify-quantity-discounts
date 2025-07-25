@@ -21682,7 +21682,7 @@ function Ek() {
   var ie, j, ne, G;
   const [F, W] = jt.useState((ne = (j = (ie = window == null ? void 0 : window.ShopifyAnalytics) == null ? void 0 : ie.meta) == null ? void 0 : j.product) == null ? void 0 : ne.id), [_, he] = jt.useState(null), [ye, Ke] = jt.useState(((G = window == null ? void 0 : window.b2ProductData) == null ? void 0 : G.isDesignMode) || !1), [ze, S] = jt.useState({}), [We, Se] = jt.useState(!1), K = async (de) => {
     try {
-      return await (await fetch("/apps/barn2-bundles-bulk-dev/discountbundle", {
+      return await (await fetch("/apps/barn2-bundles-bulk-discounts/discountbundle", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
