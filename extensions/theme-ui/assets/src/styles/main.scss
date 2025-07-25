@@ -173,6 +173,7 @@
         padding: 3px 10px;
         font-size: 9px;
         line-height: 1.4;
+        border-radius: 4px;
       }
 
       &.highlighted {
@@ -250,6 +251,30 @@
           top: -10px;
         }
       }
+
+      &.barn2-bundle-corner-slightlyRounded {
+        .barn2-discount-bundle {
+          .barn2-highlighted-text {
+            border-radius: 4px;
+          }
+        }
+      }
+
+      &.barn2-bundle-corner-fullyRounded {
+        .barn2-discount-bundle {
+          .barn2-highlighted-text {
+            border-radius: 12px;
+          }
+        }
+      }
+
+      &.barn2-bundle-corner-square {
+        .barn2-discount-bundle {
+          .barn2-highlighted-text {
+            border-radius: 0px;
+          }
+        }
+      }
     }
 
     &.barn2-dbs-layout-vertical {
@@ -305,7 +330,15 @@
       &.barn2-bundle-corner-fullyRounded {
         .barn2-discount-bundle {
           .barn2-highlighted-text {
-            border-radius: 10px;
+            border-radius: 12px;
+          }
+        }
+      }
+
+      &.barn2-bundle-corner-square {
+        .barn2-discount-bundle {
+          .barn2-highlighted-text {
+            border-radius: 0px;
           }
         }
       }

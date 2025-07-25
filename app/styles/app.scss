@@ -557,7 +557,7 @@
       background-color: var(--barn2-bundles-bundle-badge-color, rgb(26, 26, 26));
       color: var(--barn2-bundles-badge-text-color, #ffffff);
       top: -9px;
-      border-radius: 0;
+      border-radius: 4px;
       padding: 3px 7px;
       font-size: 10px;
       right: calc(50% - 38px);
@@ -581,17 +581,40 @@
         right: 85px;
       }
     }
+
+    &.corner-fullyRounded {
+      .bundle-single .highlightedText {
+        border-radius: 12px;
+      }
+    }
+
+    &.corner-slightlyRounded {
+      .bundle-single .highlightedText {
+        border-radius: 7px;
+      }
+    }
+    
+    &.corner-square {
+      .bundle-single .highlightedText {
+        border-radius: 0px;
+      }
+    }
   }
 
   &.layout-vertical {
     &.corner-fullyRounded {
       .bundle-single .highlightedText {
-        border-radius: 10px;
+        border-radius: 12px;
       }
     }
     &.corner-slightlyRounded {
       .bundle-single .highlightedText {
         border-radius: 4px;
+      }
+    }
+    &.corner-square {
+      .bundle-single .highlightedText {
+        border-radius: 0px;
       }
     }
   }
