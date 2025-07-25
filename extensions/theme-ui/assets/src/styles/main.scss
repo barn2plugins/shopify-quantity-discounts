@@ -130,7 +130,7 @@
         width: 13px;
         height: 13px;
         border-radius: 100px;
-        border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
+        border: 1px solid #000000;
         display: inline-block;
         background-color: white;
       }
@@ -173,17 +173,12 @@
         padding: 3px 10px;
         font-size: 9px;
         line-height: 1.4;
-        border-radius: 3px;
       }
 
       &.highlighted {
         background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
         border-color: var(--barn2-bundles-highlighted-border-color, #D2D2D2);
-
-        .barn2-input-circle {
-          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
-        }
-
+      
         .barn2-dbs-bundle-title,
         .barn2-dbs-price,
         .barn2-dbs-bundle-price,
@@ -198,7 +193,6 @@
         border-color: var(--barn2-bundles-selected-border-color, #616161);
 
         .barn2-input-circle {
-          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
           position: relative;
           &:after {
             position: absolute;
@@ -295,6 +289,24 @@
       .barn2-discount-bundle {
         .barn2-highlighted-text {
           right: calc(50% - 39px);
+          top: -11px;
+        }
+      }
+
+
+      &.barn2-bundle-corner-slightlyRounded {
+        .barn2-discount-bundle {
+          .barn2-highlighted-text {
+            border-radius: 4px;
+          }
+        }
+      }
+
+      &.barn2-bundle-corner-fullyRounded {
+        .barn2-discount-bundle {
+          .barn2-highlighted-text {
+            border-radius: 10px;
+          }
         }
       }
     }
@@ -329,8 +341,8 @@
 
   .barn2-db-bar-number {
     background-color: #001;
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     color: #fff;
     display: flex;
     justify-content: center;
@@ -354,7 +366,7 @@
       width: 100%;
 
       select {
-        height: 27px;
+        height: 26px;
         width: 100%;
         border: 1px solid rgba(0,0,0,.4);
         padding: 2px 4px;

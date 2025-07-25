@@ -320,7 +320,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
         <p className="main-description">{formState.previewOptions?.description}</p>
       </div>
 
-      <div className={`bundles-list layout-${formState?.layout}`}>
+      <div className={`bundles-list layout-${formState?.layout} corner-${formState?.customDesigns?.cornerRadius || 'square'}`}>
         <InlineGrid columns={formState?.layout === 'horizontal' ? '1' : volumeBundles.length} gap={400}>
           { volumeBundles.map((bundle, index) => {
             return (

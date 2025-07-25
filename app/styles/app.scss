@@ -528,12 +528,6 @@
       .bundle-regular-price {
         color: var(--barn2-bundles-highlighted-text-color, #303030);
       }
-
-      .input-field {
-        .input-circle {
-          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
-        }
-      }
     }
 
     &.selected {
@@ -566,7 +560,7 @@
       border-radius: 0;
       padding: 3px 7px;
       font-size: 10px;
-      right: calc(50% - 35px);
+      right: calc(50% - 38px);
       line-height: 1.6;
     }
   }
@@ -585,6 +579,19 @@
 
       .highlightedText {
         right: 85px;
+      }
+    }
+  }
+
+  &.layout-vertical {
+    &.corner-fullyRounded {
+      .bundle-single .highlightedText {
+        border-radius: 10px;
+      }
+    }
+    &.corner-slightlyRounded {
+      .bundle-single .highlightedText {
+        border-radius: 4px;
       }
     }
   }
@@ -639,7 +646,8 @@
 }
 
 .variant-bars-wrapper {
-  border-top: 1px solid rgba(0,0,0,.4);
+  border-bottom: 1px solid rgba(0,0,0,.4);
+  padding-bottom: 20px;
   margin-top: 20px;
 
   .variant-bar {

@@ -12,6 +12,7 @@ export default function VolumeBundle({
   const [volumeBundles, setVolumeBundles] = useState([]);
   const [layout, setLayout] = useState();
   const [previewOptions, setPreviewOptions] = useState([]);
+  const [customDesigns, setCustomDesigns] = useState({});
   const [shopifyProductOptions, setShopifyProductOptions] = useState(window.b2ProductData?.product?.options || []);
   const [shopifyProductVariants, setShopifyProductVariants] = useState(window.b2ProductData?.product?.variants || []);
   const [selectedVariants, setSelectedVariants] = useState([]);
@@ -460,6 +461,7 @@ export default function VolumeBundle({
   useEffect(() => {
     setVolumeBundles(JSON.parse(bundleData.volumeBundles || []));
     setPreviewOptions(JSON.parse(bundleData.previewOptions || {}));
+    setCustomDesigns(JSON.parse(bundleData.customDesigns || {}));
     setLayout(bundleData.layout);
   }, []);
 
@@ -512,7 +514,8 @@ export default function VolumeBundle({
         className={classNames(
           'barn2-discount-bundles-list',
           `barn2-dbs-layout-${layout}`,
-          `discount-columns-${volumeBundles.length}`
+          `discount-columns-${volumeBundles.length}`,
+          `barn2-bundle-corner-${customDesigns?.cornerRadius || 'square'}`
         )}
       >
         { volumeBundles.map((bundle, index) => {
