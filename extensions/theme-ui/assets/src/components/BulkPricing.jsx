@@ -137,7 +137,12 @@ export default function BulkPricing({
             { pricingTiers.length > 0 && pricingTiers.map( (pricingTier, index) => {
               return (
                 <tr key={index}>
-                  <td>{pricingTier.min_quantity}-{pricingTier.max_quantity}</td>
+                  <td>
+                    {pricingTier.max_quantity === 0 || !pricingTier.max_quantity 
+                      ? `${pricingTier.min_quantity}+` 
+                      : `${pricingTier.min_quantity}-${pricingTier.max_quantity}`
+                    }
+                  </td>
                   <td><span className="discount-pill">{getTierDiscountText(pricingTier)}</span></td>
                   <td>{displayFormattedPrice(storeDetails?.moneyFormat, getDiscountedPrice(pricingTier))}</td>
                 </tr>

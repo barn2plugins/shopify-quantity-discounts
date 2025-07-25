@@ -21599,11 +21599,7 @@ function gk({
         /* @__PURE__ */ Pe.jsx("th", { children: "Price per item" })
       ] }) }),
       /* @__PURE__ */ Pe.jsx("tbody", { children: ye.length > 0 && ye.map((j, ne) => /* @__PURE__ */ Pe.jsxs("tr", { children: [
-        /* @__PURE__ */ Pe.jsxs("td", { children: [
-          j.min_quantity,
-          "-",
-          j.max_quantity
-        ] }),
+        /* @__PURE__ */ Pe.jsx("td", { children: j.max_quantity === 0 || !j.max_quantity ? `${j.min_quantity}+` : `${j.min_quantity}-${j.max_quantity}` }),
         /* @__PURE__ */ Pe.jsx("td", { children: /* @__PURE__ */ Pe.jsx("span", { className: "discount-pill", children: We(j) }) }),
         /* @__PURE__ */ Pe.jsx("td", { children: ev(he == null ? void 0 : he.moneyFormat, K(j)) })
       ] }, ne)) })
