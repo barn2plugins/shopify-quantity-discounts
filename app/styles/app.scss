@@ -466,8 +466,8 @@
 
 .bundles-list {
   .bundle-single {
-    border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));;
-    border-radius: var(--barn2-bundles-corner-radius, 7px);
+    border: 1.5px solid var(--barn2-bundles-bundle-border-color, #D2D2D2);
+    border-radius: var(--barn2-bundles-corner-radius, 12px);
     padding: var(--p-space-600) var(--p-space-400) var(--p-space-400);
     display: flex;
     gap: var(--p-space-600);
@@ -479,16 +479,16 @@
 
     .bundle-title,
     .bundle-discounted-price {
-      font-size: 14px;
-      line-height: 15px;
-      font-weight: var(--p-font-weight-medium);
+      font-size: 17px;
+      line-height: 18px;
+      font-weight: var(--p-font-weight-semibold);
       color: var(--barn2-bundles-bundle-text-color, #303030);
     }
 
     .bundle-description,
     .bundle-regular-price {
-      font-size: 12px;
-      line-height: 12px;
+      font-size: 11.5px;
+      line-height: 14px;
       color: var(--barn2-bundles-bundle-text-color, #303030);
     }
 
@@ -508,18 +508,19 @@
       }
 
       .input-circle {
-        width: 10px;
-        height: 10px;
+        width: 14px;
+        height: 14px;
         border-radius: 100px;
-        border: 2px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
+        border: 1px solid #000000;
         background-color: white;
         display: inline-block;
+        box-sizing: border-box;
       }
     }
 
     &.highlighted {
       background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
-      border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+      border-color: var(--barn2-bundles-highlighted-border-color, #D2D2D2);
 
       .bundle-title,
       .bundle-discounted-price,
@@ -535,17 +536,38 @@
       }
     }
 
+    &.selected {
+      background-color: var(--barn2-bundles-selected-color, #f1f1f1);
+      border-color: var(--barn2-bundles-selected-border-color, #616161);
+
+      .input-field {
+        .input-circle {
+          position: relative;
+          &:after {
+            position: absolute;
+            content: "";
+            width: 8px;
+            height: 8px;
+            left: 2px;
+            top: 2px;
+            z-index: 9;
+            background: #000;
+            border-radius: 100%;
+          }
+        }
+      }
+    }
+
     .highlightedText {
       position: absolute;
-      background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
+      background-color: var(--barn2-bundles-bundle-badge-color, rgb(26, 26, 26));
       color: var(--barn2-bundles-badge-text-color, #ffffff);
-      top: 0;
-      border-radius: 0 0 10px 10px;
-      padding: 3px 5px;
-      font-size: 9px;
-      width: 70px;
+      top: -9px;
+      border-radius: 0;
+      padding: 3px 7px;
+      font-size: 10px;
       right: calc(50% - 35px);
-      line-height: 1.4;
+      line-height: 1.6;
     }
   }
 
@@ -553,38 +575,44 @@
     .bundle-single {
       flex-direction: row;
       justify-content: space-between;
-      padding: var(--p-space-300) var(--p-space-400);
+      padding: var(--p-space-500) var(--p-space-600) var(--p-space-500) var(--p-space-400);
 
       .input-field {
         margin-bottom: 0px;
-        margin-right: 10px;
+        margin-right: 14px;
+        margin-top: 10px;
       }
 
       .highlightedText {
-        right: 65px;
+        right: 85px;
       }
     }
   }
 }
 
 .variant-picker-bars {
-  margin-top: 20px;
+  margin-top: 10px;
+
   .variant-bar {
+    &:not(:last-child) {
+      .variant-bar-content {
+        margin-bottom: 8px;
+      }
+    }
     .variant-bar-content {
       display: flex;
-      margin-bottom: 8px;
       align-items: self-start;
 
       .variant-bar-number {
         background-color: #001;
-        height: 20px;
-        width: 20px;
+        height: 17px;
+        width: 17px;
         color: #fff;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 12px;
-        margin-right: 10px;
+        font-size: 11px;
+        margin-right: 8px;
         border-radius: 100px;
         margin-top: 4px;
       }
@@ -598,11 +626,11 @@
         }
 
         select {
-          height: 27px;
+          height: 25px;
           width: 100%;
           border: 1px solid rgba(0,0,0,.4);
           padding: 2px 4px;
-          color: #6b6868;
+          color: #333232;
           font-size: 12px;
         }
       }

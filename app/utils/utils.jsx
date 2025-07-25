@@ -453,6 +453,8 @@ export const setCustomDesignStyles = (bundleData) => {
   document.documentElement.style.setProperty('--barn2-bundles-bundle-border-color', customDesigns.bundleBorderColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-border-color', customDesigns.highlightedBorderColor);
   document.documentElement.style.setProperty('--barn2-bundles-highlighted-color', customDesigns.highlightedColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-border-color', customDesigns.selectedBorderColor);
+  document.documentElement.style.setProperty('--barn2-bundles-selected-color', customDesigns.selectedColor);
   document.documentElement.style.setProperty('--barn2-bundles-bundle-badge-color', customDesigns.badgeBackgroundColor);
   document.documentElement.style.setProperty('--barn2-bundles-badge-text-color', customDesigns.badgeTextColor);
 
@@ -468,10 +470,10 @@ export const setCustomDesignStyles = (bundleData) => {
   let borderRadius = '0';
   switch (customDesigns.cornerRadius) {
     case 'slightlyRounded':
-      borderRadius = '8px';
+      borderRadius = '12px';
       break;
     case 'fullyRounded':
-      borderRadius = '15px';
+      borderRadius = '50px';
       break;
     case 'square':
     default:
@@ -740,23 +742,4 @@ export const displayFormattedPrice = (moneyFormat, price) => {
   const formattedPrice = numericPrice % 1 === 0 ? 
     numericPrice.toString() : numericPrice.toFixed(2);
   return moneyFormat.replace('{{amount}}', formattedPrice);
-};
-
-/**
- * Determines the current active plan name based on payment status and subscription data.
- * 
- * @param {boolean} hasActivePayment - Whether the user has an active payment subscription
- * @param {Array<Object>} appSubscriptions - Array of app subscription objects with 'name' field
- * @returns {string} The active plan name - "Starter" if no active payment, otherwise the name from the first subscription
- */
-export const getCurrentActivePlanName = ({hasActivePayment, appSubscriptions}) => {
-  if (!hasActivePayment) {
-    return "Starter";
-  }
-  
-  if (appSubscriptions && appSubscriptions.length > 0) {
-    return appSubscriptions[0].name;
-  }
-  
-  return "Starter";
 };

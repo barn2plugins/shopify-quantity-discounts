@@ -112,6 +112,32 @@ export default function DesignOptions({ formState, setFormState }) {
                 </BlockStack>
               </BlockStack>
             </Grid.Cell>
+ 
+            <Grid.Cell columnSpan={{xs: 6}}>
+              <BlockStack gap={400}>
+                <BlockStack gap={100}>
+                  <Text as="p" variant="bodyLg" fontWeight="medium">Selected border color</Text>
+                  <ColorField 
+                    onChange={updateDesignColorField} 
+                    value={formState?.customDesigns?.selectedBorderColor} 
+                    field="selectedBorderColor" 
+                  />
+                </BlockStack>
+              </BlockStack>
+            </Grid.Cell>
+            
+            <Grid.Cell columnSpan={{xs: 6}}>
+              <BlockStack gap={400}>
+                <BlockStack gap={100}>
+                  <Text as="p" variant="bodyLg" fontWeight="medium">Selected background color</Text>
+                  <ColorField 
+                    onChange={updateDesignColorField} 
+                    value={formState?.customDesigns?.selectedColor} 
+                    field="selectedColor" 
+                  />
+                </BlockStack>
+              </BlockStack>
+            </Grid.Cell>
             
             <Grid.Cell columnSpan={{xs: 6}}>
               <BlockStack gap={400}>

@@ -28,10 +28,10 @@ export const setCustomDesignStyles = (bundleData) => {
   let borderRadius = '0';
   switch (customDesigns.cornerRadius) {
     case 'slightlyRounded':
-      borderRadius = '8px';
+      borderRadius = '12px';
       break;
     case 'fullyRounded':
-      borderRadius = '15px';
+      borderRadius = '50px';
       break;
     case 'square':
     default:

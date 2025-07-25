@@ -257,32 +257,44 @@ export default function VolumeBundle({
   }
 
   /**
-   * Checks if a bundle should be highlighted based on selection state or bundle properties
+   * Gets the appropriate CSS classes for a bundle based on its state
    * @param {Object} bundle - The bundle object
-   * @param {number} index - Bundle index in array
-   * @returns {boolean} True if bundle should be highlighted
+   * @returns {Object} Object with highlighted and selected boolean properties
    */
-  const checkIsHighlightedOrSelected = (bundle) => {
-    // If a bundle is selected, only highlight the selected bundle
-    if (selectedBundle) {
-      return selectedBundle.id === bundle.id;
-    }
+  const getBundleClasses = (bundle) => {
+    const isSelected = selectedBundle && selectedBundle.id === bundle.id;
+    const shouldBeHighlighted = !selectedBundle && bundle.highlighted;
     
-    // On initial load, check if bundle has highlighted property
-    return bundle.highlighted;
+    return {
+      highlighted: shouldBeHighlighted,
+      selected: isSelected
+    };
+  }
+
+  /**
+   * Handles bundle click - toggles between highlighted and selected states
+   * @param {Object} bundle - The bundle object
+   */
+  const handleBundleClick = (bundle) => {
+    if (selectedBundle && selectedBundle.id === bundle.id) {
+      // Clicking on already selected bundle - deselect it and restore highlighted state
+      setSelectedBundle(null);
+    } else {
+      // Clicking on a different bundle - select it
+      setSelectedBundle(bundle);
+      if (selectedBundle?.id !== bundle?.id) {
+        updateProductQuantity(bundle.quantity);
+        updateProductVariantId();
+      }
+    }
   }
 
   useEffect(() => {
-    // Find the highlighted bundle
+    // Find the highlighted bundle and set initial quantity/form data without selecting it
     const highlightedBundle = volumeBundles.find(bundle => bundle.highlighted);
-    if (highlightedBundle) {
+    if (highlightedBundle && !selectedBundle) {
       updateProductQuantity(highlightedBundle.quantity);
-      if(shopifyProductVariants.length > 1) {
-        setSelectedBundle(highlightedBundle);
-      } else {
-        updateProductQuantity(highlightedBundle.quantity);
-        addDiscountBundleToForm(highlightedBundle);
-      }
+      addDiscountBundleToForm(highlightedBundle);
     }
   }, [volumeBundles]);
 
@@ -509,17 +521,9 @@ export default function VolumeBundle({
               key={index} 
               className={classNames(
                 'barn2-discount-bundle',
-                {
-                  'highlighted': checkIsHighlightedOrSelected(bundle),
-                }
+                getBundleClasses(bundle)
               )}
-              onClick={() => {
-                  setSelectedBundle(bundle);
-                if (selectedBundle?.id !== bundle?.id) {
-                  updateProductQuantity(bundle.quantity);
-                  updateProductVariantId();
-                }
-              }}
+              onClick={() => handleBundleClick(bundle)}
             >
               { bundle.label.length > 0 && <span className="barn2-highlighted-text">{bundle.label}</span>}
               <div className="barn2-dbs-top">

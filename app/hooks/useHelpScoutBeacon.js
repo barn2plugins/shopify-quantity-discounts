@@ -1,6 +1,9 @@
-// useHelpScoutBeacon.js
-
-// HelpScout Beacon hook
+/**
+ * HelpScout Beacon hook
+ * @param {*} beaconId 
+ * @param {*} userInfo 
+ * @returns 
+ */
 export const useHelpScoutBeacon = (beaconId, userInfo) => {
   // Only run on client side
   if (typeof window === 'undefined') return;
@@ -8,6 +11,30 @@ export const useHelpScoutBeacon = (beaconId, userInfo) => {
   // Avoid duplicate script loading
   if (window.Beacon) {
     window.Beacon('init', beaconId);
+
+    // Helper function to format dates as "Mar 22, 2024"
+    const formatDate = (dateString) => {
+      if (!dateString) return null;
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    };
+
+    console.log({
+      email: userInfo?.email,
+      name: userInfo?.name || '',
+      company: userInfo?.company || '',
+      'Shopify-Shop': userInfo?.shopName || '',
+      'Shopify-URL': userInfo?.shopifyURL || '',
+      'Shopify-Plan': userInfo?.shopifyPlan || '',
+      'Shopify-Plan-Status': userInfo?.shopifyPlanStatus || '',
+      'Shopify-Installation-Date': formatDate(userInfo?.installationDate) || '',
+      ...(userInfo?.cancelledOn && { 'Shopify-Plan-Cancelled-On': formatDate(userInfo.cancelledOn) }),
+      ...(userInfo?.trialEndsAt && { 'Shopify-Trial-Ends-At': formatDate(userInfo.trialEndsAt) }),
+    });
     
     // Identify user if info is provided
     window.Beacon('identify', {
@@ -17,6 +44,10 @@ export const useHelpScoutBeacon = (beaconId, userInfo) => {
       'Shopify-Shop': userInfo?.shopName || '',
       'Shopify-URL': userInfo?.shopifyURL || '',
       'Shopify-Plan': userInfo?.shopifyPlan || '',
+      'Shopify-Plan-Status': userInfo?.shopifyPlanStatus || '',
+      'Shopify-Installation-Date': formatDate(userInfo?.installationDate) || '',
+      ...(userInfo?.cancelledOn && { 'Shopify-Plan-Cancelled-On': formatDate(userInfo.cancelledOn) }),
+      ...(userInfo?.trialEndsAt && { 'Shopify-Trial-Ends-At': formatDate(userInfo.trialEndsAt) }),
     });
   }
 

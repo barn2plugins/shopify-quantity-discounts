@@ -109,24 +109,69 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
   }
 
   /**
-   * Checks if a bundle should be highlighted based on selection state or bundle properties
+   * Gets the appropriate CSS class for a bundle based on its state
    * @param {Object} bundle - The bundle object
    * @param {number} index - Bundle index in array
-   * @returns {boolean} True if bundle should be highlighted
+   * @returns {Object} Object with highlighted and selected boolean properties
    */
-  const checkIsHighlightedOrSelected = (bundle, index) => {
-    if (typeof selectedBundle === 'number' && selectedBundle === index) {
-      return true;
-    }
-
-    if (typeof selectedBundle !== 'number' && bundle.highlighted) {
-      return true;
-    }
-
-    return false;
+  const getBundleClasses = (bundle, index) => {
+    const isSelected = typeof selectedBundle === 'number' && selectedBundle === index;
+    const shouldBeHighlighted = typeof selectedBundle !== 'number' && bundle.highlighted;
+    
+    return {
+      highlighted: shouldBeHighlighted,
+      selected: isSelected
+    };
   }
 
-  const previewProduct = productQueryFetcher.data;
+  /**
+   * Handles bundle click - toggles between highlighted and selected states
+   * @param {number} index - Bundle index
+   */
+  const handleBundleClick = (index) => {
+    if (selectedBundle === index) {
+      // Clicking on already selected bundle - deselect it and restore highlighted state
+      setSelectedBundle(null);
+    } else {
+      // Clicking on a different bundle - select it
+      setSelectedBundle(index);
+    }
+  }
+
+  /**
+   * Determines if variant picker should be shown for a bundle
+   * @param {number} index - Bundle index
+   * @returns {boolean} True if variant picker should be shown
+   */
+  const shouldShowVariantPicker = (index) => {
+    const bundle = volumeBundles[index];
+    if (!bundle) return false;
+
+    // If a bundle is selected, only show for the selected bundle
+    if (typeof selectedBundle === 'number') {
+      return selectedBundle === index;
+    }
+
+    // If no bundle is selected, show for highlighted bundle
+    return bundle.highlighted;
+  }
+
+  /**
+   * Gets the active bundle for variant picker (selected or highlighted)
+   * @returns {Object|null} The active bundle object or null
+   */
+  const getActiveBundleForVariantPicker = () => {
+    // If a bundle is selected, use that
+    if (typeof selectedBundle === 'number') {
+      return volumeBundles[selectedBundle];
+    }
+
+    // Otherwise, find the highlighted bundle
+    const highlightedIndex = volumeBundles.findIndex(bundle => bundle.highlighted);
+    return highlightedIndex !== -1 ? volumeBundles[highlightedIndex] : null;
+  }
+
+  const previewProduct = productQueryFetcher?.data;
 
   useEffect(() => {
     if (previewProduct && !previewProduct.success) return;
@@ -213,23 +258,14 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
     fetchProducts();
   }, []);
 
-  // Set highlighted bundle as selected on component mount
-  useEffect(() => {
-    if (volumeBundles.length > 0 && selectedBundle === null) {
-      const highlightedIndex = volumeBundles.findIndex(bundle => bundle.highlighted);
-      if (highlightedIndex !== -1) {
-        setSelectedBundle(highlightedIndex);
-      }
-    }
-  }, [volumeBundles, selectedBundle]);
+  // Keep selectedBundle as null initially to show highlighted state
+  // No automatic selection on mount - bundles will show as highlighted by default
 
-  // Initialize selected variants when a bundle is selected
+  // Initialize selected variants when active bundle changes
   useEffect(() => {
-    if (selectedBundle !== null && typeof selectedBundle === 'number') {
-      const bundle = volumeBundles[selectedBundle];
-      if (bundle) {
-        setBundleSelectedVariants(bundle);
-      }
+    const activeBundle = getActiveBundleForVariantPicker();
+    if (activeBundle) {
+      setBundleSelectedVariants(activeBundle);
     }
   }, [selectedBundle, volumeBundles, demoProductVariants]);
 
@@ -285,18 +321,16 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
       </div>
 
       <div className={`bundles-list layout-${formState?.layout}`}>
-        <InlineGrid columns={formState?.layout === 'horizontal' ? '1' : volumeBundles.length} gap={300}>
+        <InlineGrid columns={formState?.layout === 'horizontal' ? '1' : volumeBundles.length} gap={400}>
           { volumeBundles.map((bundle, index) => {
             return (
               <div 
                 key={index} 
                 className={classNames(
                   'bundle-single',
-                  {
-                    'highlighted': checkIsHighlightedOrSelected(bundle, index),
-                  }
+                  getBundleClasses(bundle, index)
                 )}
-                onClick={() => setSelectedBundle(index)}
+                onClick={() => handleBundleClick(index)}
               >
                 { bundle.label.length > 0 && <span className="highlightedText">{bundle.label}</span>}
                 <BlockStack 
@@ -309,7 +343,6 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
                     <span className="input-circle"></span>
                   </div>
                   <BlockStack  style={{
-                      gap: "5px",
                       flexDirection: 'column',
                       alignItems: formState.layout === 'horizontal'? 'flex-start' : 'center',
                     }}>
@@ -323,7 +356,7 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
                     </BlockStack>
                     <BlockStack>
                       {formState.layout === 'horizontal' && 
-                        selectedBundle === index && 
+                        shouldShowVariantPicker(index) && 
                         demoProductVariants.length > 1 && 
                         getVariantPickerBars(bundle)
                       }
@@ -357,10 +390,10 @@ export default function VolumeBundlePreview({ formState, volumeBundles, store, p
 
       {/* Add variant picker bars for vertical layout */}
       {formState.layout === 'vertical' && 
-       selectedBundle !== null && 
+       getActiveBundleForVariantPicker() && 
        demoProductVariants.length > 1 && (
         <div className="variant-bars-wrapper">
-          {getVariantPickerBars(volumeBundles[selectedBundle])}
+          {getVariantPickerBars(getActiveBundleForVariantPicker())}
         </div>
       )}
     </div>

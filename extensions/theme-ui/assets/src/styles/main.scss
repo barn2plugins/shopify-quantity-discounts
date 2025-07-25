@@ -99,12 +99,12 @@
 
   .barn2-discount-bundles-list {
     display: flex;
-    gap: 10px;
+    gap: 13px;
     margin-top: 20px;
 
     .barn2-discount-bundle {
-      border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
-      border-radius: var(--barn2-bundles-corner-radius, 7px);
+      border: 1.5px solid var(--barn2-bundles-bundle-border-color, #D2D2D2);
+      border-radius: var(--barn2-bundles-corner-radius, 12px);
       padding: var(--p-space-800) var(--p-space-400) var(--p-space-600);
       display: flex;
       gap: var(--p-space-500);
@@ -127,8 +127,8 @@
       }
 
       .barn2-input-circle {
-        width: 10px;
-        height: 10px;
+        width: 13px;
+        height: 13px;
         border-radius: 100px;
         border: 1px solid var(--barn2-bundles-bundle-border-color, rgb(97 97 97));
         display: inline-block;
@@ -141,17 +141,17 @@
 
       .barn2-dbs-bundle-title,
       .barn2-dbs-price {
-        font-size: 14px;
-        line-height: 15px;
-        font-weight: 550;
+        font-size: 16px;
+        line-height: 16px;
+        font-weight: 650;
         margin-bottom: 5px;
         color: var(--barn2-bundles-bundle-text-color, #303030);
       }
       .barn2-dbs-bundle-price,
       .barn2-dbs-regular-price,
       .barn2-dbs-text-block p {
-        font-size: 10px;
-        line-height: 13px;
+        font-size: 11px;
+        line-height: 12px;
         color: var(--barn2-bundles-bundle-text-color, #303030);
       }
 
@@ -166,23 +166,51 @@
 
       .barn2-highlighted-text {
         position: absolute;
-        background-color: var(--barn2-bundles-bundle-badge-color, rgba(26, 26, 26, 1));
+        background-color: var(--barn2-bundles-bundle-badge-color, rgb(26, 26, 26));
         color: var(--barn2-bundles-badge-text-color, #ffffff);
         top: -1px;
         right: 90px;
-        border-radius: 0 0 10px 10px;
-        padding: 3px 7px;
+        padding: 3px 10px;
         font-size: 9px;
-        width: 78px;
         line-height: 1.4;
+        border-radius: 3px;
       }
 
-      &.highlighted:not(.selected) {
-        border-color: var(--barn2-bundles-highlighted-border-color, rgb(97, 97, 97));
+      &.highlighted {
         background-color: var(--barn2-bundles-highlighted-color, #f1f1f1);
+        border-color: var(--barn2-bundles-highlighted-border-color, #D2D2D2);
 
         .barn2-input-circle {
           border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+        }
+
+        .barn2-dbs-bundle-title,
+        .barn2-dbs-price,
+        .barn2-dbs-bundle-price,
+        .barn2-dbs-regular-price,
+        .barn2-dbs-text-block p {
+          color: var(--barn2-bundles-highlighted-text-color, #303030);
+        }
+      }
+
+      &.selected {
+        background-color: var(--barn2-bundles-selected-color, #f1f1f1);
+        border-color: var(--barn2-bundles-selected-border-color, #616161);
+
+        .barn2-input-circle {
+          border-color: var(--barn2-bundles-highlighted-border-color, #616161);
+          position: relative;
+          &:after {
+            position: absolute;
+            content: "";
+            width: 7px;
+            height: 7px;
+            left: 2px;
+            top: 2px;
+            z-index: 9;
+            background: #000;
+            border-radius: 100%;
+          }
         }
 
         .barn2-dbs-bundle-title,
@@ -202,7 +230,7 @@
         flex-direction: row;
         align-items: self-start;
         justify-content: space-between;
-        padding: var(--p-space-400) var(--p-space-500);
+        padding: var(--p-space-600) var(--p-space-800) var(--p-space-600) var(--p-space-600);
 
         .barn2-dbs-text-block {
           margin-bottom: 0px;
@@ -217,14 +245,15 @@
           gap: 7px;
 
           .barn2-input-circle {
-            margin-top: 3px;
+            margin-bottom: 0;
+            margin-right: 2px;
+            margin-top: 7px;
           }
         }
 
-        &.highlighted {
-          .barn2-highlighted-text {
-            right: 90px;
-          }
+        .barn2-highlighted-text {
+          right: 110px;
+          top: -10px;
         }
       }
     }

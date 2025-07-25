@@ -7,6 +7,8 @@ import {
   useLoaderData
 } from "@remix-run/react";
 import { useEffect } from 'react';
+import { MantleClient } from "@heymantle/client"
+import { getMantleCustomer } from "./services/mantle.service.js"
 
 // Internal components and libraries
 import PartnerDevelopment from "./components/Notice/PartnerDevelopment";
@@ -17,7 +19,7 @@ import { authenticate } from "./shopify.server";
 import { getStoreDetails } from "./services/store.service.js";
 import { useHelpScoutBeacon } from "./hooks/useHelpScoutBeacon.js";
 import { deactivatePreviousAppSubscriptions } from "./services/subscription.service.js";
-import { getCurrentActivePlanName } from "./utils/utils.jsx";
+import { customerPlanOnMantle } from "./utils/utils.server.js";
 import './styles/app.scss';
 
 export const loader = async ({ request }) => {
@@ -31,8 +33,6 @@ export const loader = async ({ request }) => {
     await deactivatePreviousAppSubscriptions({session});
   }
 
-  const currentPlanName = getCurrentActivePlanName({hasActivePayment, appSubscriptions});
-
   const helpScoutBeaconId = process.env.BEACON_ID;
   
   const store = await getStoreDetails(session.id, { 
@@ -41,12 +41,17 @@ export const loader = async ({ request }) => {
     storeName: true,
     url: true,
     planDisplayName: true,
+    createdAt: true,
     session: {
       select: {
-        email: true
+        email: true,
+        mantleApiToken: true
       }
     }
   });
+
+  const mantleCustomer = await getMantleCustomer({session});
+  const customerPlan = customerPlanOnMantle(mantleCustomer);
 
   return {
     isPartnerDevelopment: store?.isPartnerDevelopment,
@@ -57,7 +62,11 @@ export const loader = async ({ request }) => {
       name: store?.shopOwnerName,
       shopName: store?.storeName,
       shopifyURL: store?.url,
-      shopifyPlan: currentPlanName,
+      installationDate: store?.createdAt,
+      shopifyPlan: customerPlan?.planName,
+      shopifyPlanStatus: customerPlan?.status,
+      ...(customerPlan.status === "Cancelled" && { cancelledOn: customerPlan?.cancelledOn }),
+      ...(customerPlan.status === "On trial" && { trialEndsAt: customerPlan?.trialEndsAt })
     }
   };
 };
