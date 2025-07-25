@@ -594,20 +594,44 @@ export const hexToHsb = (hex) => {
   };
 };
 
+/**
+ * Validates bulk pricing quantity ranges to ensure they are properly configured.
+ * Checks for two types of validation errors:
+ * 1. Invalid ranges where max_quantity <= min_quantity (except when max_quantity is 0 for "no limit")
+ * 2. Overlapping ranges between adjacent tiers
+ * 
+ * @param {Array<Object>} ranges - Array of pricing tier objects
+ * @param {number} ranges[].min_quantity - Minimum quantity for the tier
+ * @param {number} ranges[].max_quantity - Maximum quantity for the tier (0 means no limit)
+ * @returns {Object} Validation result object
+ */
 const hasValidBulkQuantityRanges = (ranges) => {
   const errors = [];
+  
+  ranges.forEach((range, index) => {
+    if (range.max_quantity !== 0 && range.max_quantity <= range.min_quantity) {
+      errors.push({
+        type: 'invalid_range',
+        index: index,
+        range: range
+      });
+    }
+  });
+  
   for (let i = 0; i < ranges.length - 1; i++) {
     const current = ranges[i];
     const next = ranges[i + 1];
-    // Check if current max_quantity is greater than or equal to next min_quantity
-    if (current.max_quantity >= next.min_quantity) {
+    
+    if (current.max_quantity !== 0 && current.max_quantity >= next.min_quantity) {
       errors.push({
+        type: 'overlapping_ranges',
         index: i,
         current: current,
-        next: next,
+        next: next
       });
     }
   }
+
   return {
       isValid: errors.length === 0,
       errors: errors

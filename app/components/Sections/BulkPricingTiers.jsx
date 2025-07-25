@@ -137,11 +137,23 @@ export default function BulkPricingTiers({
                       <td className="cell_quantity">
                           <TextField
                             type="number"
-                            min="1"
-                            value={bundle.max_quantity.toString()}
+                            min={index === pricingTiers.length - 1 ? "0" : "1"}
+                            value={bundle.max_quantity === 0 ? '' : bundle.max_quantity.toString()}
+                            placeholder={index === pricingTiers.length - 1 ? "" : ""}
                             onChange={(value) => {
-                              const numericValue = Math.max(1, parseInt(value) || 1);
-                              handleVolumeChange(index, 'max_quantity', numericValue);
+                              if (index === pricingTiers.length - 1) {
+                                // For last tier, allow blank/0 for "no limit"
+                                if (value === '' || value === '0') {
+                                  handleVolumeChange(index, 'max_quantity', 0);
+                                } else {
+                                  const numericValue = Math.max(1, parseInt(value) || 1);
+                                  handleVolumeChange(index, 'max_quantity', numericValue);
+                                }
+                              } else {
+                                // For other tiers, enforce minimum of 1
+                                const numericValue = Math.max(1, parseInt(value) || 1);
+                                handleVolumeChange(index, 'max_quantity', numericValue);
+                              }
                             }}
                             autoComplete="off"
                           />
