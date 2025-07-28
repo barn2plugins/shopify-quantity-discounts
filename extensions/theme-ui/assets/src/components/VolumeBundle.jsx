@@ -276,12 +276,18 @@ export default function VolumeBundle({
    * Handles bundle click - toggles between highlighted and selected states
    * @param {Object} bundle - The bundle object
    */
-  const handleBundleClick = (bundle) => {
+  const handleBundleClick = (bundle, event) => {
+    // Check if the clicked element or any of its parents has the class 'barn2-db-bars'
+    const isInsideVariantPicker = event.target.closest('.barn2-db-bars');
+    
+    // If clicked inside variant picker, don't toggle the bundle
+    if (isInsideVariantPicker) {
+      return;
+    }
+    
     if (selectedBundle && selectedBundle.id === bundle.id) {
-      // Clicking on already selected bundle - deselect it and restore highlighted state
       setSelectedBundle(null);
     } else {
-      // Clicking on a different bundle - select it
       setSelectedBundle(bundle);
       if (selectedBundle?.id !== bundle?.id) {
         updateProductQuantity(bundle.quantity);
@@ -526,7 +532,7 @@ export default function VolumeBundle({
                 'barn2-discount-bundle',
                 getBundleClasses(bundle)
               )}
-              onClick={() => handleBundleClick(bundle)}
+              onClick={(event) => handleBundleClick(bundle, event)}
             >
               { bundle.label.length > 0 && <span className="barn2-highlighted-text">{bundle.label}</span>}
               <div className="barn2-dbs-top">
